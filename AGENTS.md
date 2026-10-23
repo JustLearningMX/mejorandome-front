@@ -186,6 +186,17 @@ Los comandos corresponden a los scripts habituales del proyecto Astro y podrán 
 - Escribir mensajes de commit claros, concisos y en imperativo.
 - Realizar commits atómicos: cada commit representa un cambio lógico e independiente.
 
+#### Estrategia de ramas
+
+- **`main`**: contiene exclusivamente liberaciones de versiones estables.
+- **`develop`**: rama de integración donde se incorporan los cambios aprobados de cada feature.
+- Las ramas de trabajo se desprenden siempre de `develop` y siguen esta nomenclatura:
+  - `feat/<descripcion>` — nuevas funcionalidades.
+  - `fix/<descripcion>` — corrección de errores.
+  - `refactor/<descripcion>` — reestructuración de código sin cambiar comportamiento.
+  - `chore/<descripcion>` — tareas de mantenimiento, configuración o dependencias.
+- Al finalizar, cada rama se integra de vuelta a `develop` mediante pull request.
+
 ### Código limpio
 
 - Escribir código que se explique por sí mismo. Evitar comentarios innecesarios; los nombres de variables, funciones y tipos deben comunicar la intención.
