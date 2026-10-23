@@ -1,33 +1,14 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import Header from '../components/ui/Header.astro';
+import GoogleButton from '../components/ui/GoogleButton.astro';
+import { getAppUrl } from '../utils/paths';
+
+const dashboardUrl = getAppUrl('dashboard');
 ---
 
 <MainLayout title="Tu evolución personal">
-  <header class="nav-bar">
-    <a href={import.meta.env.BASE_URL} class="nav-logo">
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-primary)" opacity="0.9"/>
-        <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-primary)" opacity="0.45"/>
-      </svg>
-      <span>Mejorándome</span>
-    </a>
-    <nav class="nav-links">
-      <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
-      <a href="#como-funciona" class="nav-link">Cómo funciona</a>
-      <a href="#comenzar" class="nav-link">Comenzar</a>
-    </nav>
-    <button class="nav-hamburger" id="nav-toggle" aria-label="Abrir menú">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
-
-  <nav class="mobile-menu" id="mobile-menu">
-    <a href="#funcionalidades" class="mobile-link">Funcionalidades</a>
-    <a href="#como-funciona" class="mobile-link">Cómo funciona</a>
-    <a href="#comenzar" class="mobile-link">Comenzar</a>
-  </nav>
+  <Header />
 
   <main>
     <section class="hero-band">
@@ -42,8 +23,14 @@ import MainLayout from '../layouts/MainLayout.astro';
           Identifica patrones. Visualiza tu progreso. Todo en un solo lugar.
         </p>
         <div class="hero-actions">
-          <a href="#comenzar" class="btn-primary">Comenzar ahora</a>
-          <a href="#funcionalidades" class="btn-ghost">Explorar</a>
+          <div data-auth-guest class="hero-auth-slot">
+            <GoogleButton variant="hero" text="Comenzar con Google" />
+            <a href="#funcionalidades" class="btn-ghost">Explorar</a>
+          </div>
+          <div data-auth-user class="hero-auth-slot" style="display: none;">
+            <a href={dashboardUrl} class="btn-primary">Ir a mi espacio</a>
+            <a href="#funcionalidades" class="btn-ghost">Explorar</a>
+          </div>
         </div>
       </div>
       <div class="hero-visual">
@@ -217,7 +204,12 @@ import MainLayout from '../layouts/MainLayout.astro';
           No se trata de perfección. Se trata de comprensión.
           Cada registro es un paso hacia una mejor relación contigo.
         </p>
-        <a href="/dashboard" class="btn-primary btn-primary--lg">Ir al dashboard</a>
+        <div data-auth-guest class="cta-auth-group">
+          <GoogleButton variant="cta" text="Iniciar sesión con Google" />
+        </div>
+        <div data-auth-user class="cta-auth-group" style="display: none;">
+          <a href={dashboardUrl} class="btn-primary btn-primary--lg">Ir a mi dashboard</a>
+        </div>
         <p class="caption text-mute cta-note">
           Aplicación gratuita y personal. Tus datos son solo tuyos.
         </p>
@@ -242,104 +234,20 @@ import MainLayout from '../layouts/MainLayout.astro';
 </MainLayout>
 
 <style>
-  /* ─── Nav ─── */
-  .nav-bar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md) var(--space-lg);
-    background-color: var(--color-canvas);
-    border-bottom: 1px solid var(--color-hairline);
-  }
-
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.3px;
-  }
-
-  .nav-links {
-    display: none;
-    gap: var(--space-xs);
-  }
-
-  .nav-link {
-    font-size: 14px;
-    font-weight: 500;
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--rounded-sm);
-    transition: background-color 0.2s ease;
-  }
-
-  .nav-link:hover {
-    background-color: var(--color-canvas-soft);
-  }
-
-  .nav-hamburger {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: var(--space-xs);
-  }
-
-  .nav-hamburger span {
-    display: block;
-    width: 20px;
-    height: 1.5px;
-    background-color: var(--color-ink);
-    border-radius: 1px;
-    transition: all 0.3s ease;
-  }
-
-  .nav-hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(4px, 5px);
-  }
-
-  .nav-hamburger.active span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .nav-hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(4px, -5px);
-  }
-
-  /* ─── Mobile Menu ─── */
-  .mobile-menu {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 49px;
-    left: 0;
-    right: 0;
-    z-index: 99;
-    background-color: var(--color-canvas);
-    border-bottom: 1px solid var(--color-hairline);
-    padding: var(--space-lg);
-    gap: var(--space-sm);
-  }
-
-  .mobile-menu.open {
-    display: flex;
-  }
-
-  .mobile-link {
-    font-size: 16px;
-    font-weight: 500;
-    padding: var(--space-sm) 0;
-    border-bottom: 1px solid var(--color-hairline);
-  }
-
-  .mobile-link:last-child {
-    border-bottom: none;
-  }
-
   /* ─── Hero ─── */
+  .hero-auth-slot {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .cta-auth-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-md);
+  }
+
   .hero-band {
     display: flex;
     flex-direction: column;
@@ -737,20 +645,3 @@ import MainLayout from '../layouts/MainLayout.astro';
     }
   }
 </style>
-
-<script>
-  const toggle = document.getElementById('nav-toggle');
-  const menu = document.getElementById('mobile-menu');
-
-  toggle?.addEventListener('click', () => {
-    toggle.classList.toggle('active');
-    menu?.classList.toggle('open');
-  });
-
-  document.querySelectorAll('.mobile-link').forEach((link) => {
-    link.addEventListener('click', () => {
-      toggle?.classList.remove('active');
-      menu?.classList.remove('open');
-    });
-  });
-</script>

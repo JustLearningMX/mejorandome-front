@@ -1,0 +1,20 @@
+---
+import { getAppUrl } from '../../utils/paths';
+
+const dashboardUrl = getAppUrl('dashboard');
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${dashboardUrl}`} />
+    <title>Redirigiendo a Mi Espacio — Mejorándome</title>
+    <script define:vars={{ dashboardUrl }}>
+      window.location.href = dashboardUrl;
+    </script>
+  </head>
+  <body>
+    <p>Redirigiendo a tu espacio personal...</p>
+  </body>
+</html>

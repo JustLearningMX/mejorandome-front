@@ -1,0 +1,369 @@
+---
+import GoogleButton from './GoogleButton.astro';
+import { getAppUrl } from '../../utils/paths';
+
+interface Props {
+  currentPath?: string;
+  isDashboard?: boolean;
+}
+
+const { isDashboard = false } = Astro.props;
+const homeUrl = getAppUrl();
+const dashboardUrl = getAppUrl('dashboard');
+---
+
+<header class="nav-bar">
+  <a href={homeUrl} class="nav-logo" aria-label="Ir a inicio de Mejorándome">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-primary)" opacity="0.9"/>
+      <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-primary)" opacity="0.45"/>
+    </svg>
+    <span>Mejorándome</span>
+  </a>
+
+  <nav class="nav-links">
+    {isDashboard ? (
+      <>
+        <a href={dashboardUrl} class="nav-link active">Dashboard</a>
+        <a href="#peso" class="nav-link">Peso</a>
+        <a href="#alimentacion" class="nav-link">Alimentación</a>
+        <a href="#actividad" class="nav-link">Actividad</a>
+      </>
+    ) : (
+      <>
+        <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
+        <a href="#como-funciona" class="nav-link">Cómo funciona</a>
+        <a href="#comenzar" class="nav-link">Comenzar</a>
+      </>
+    )}
+  </nav>
+
+  <div class="nav-actions">
+    <!-- Estado: No autenticado -->
+    <div class="auth-guest-slot" data-auth-guest>
+      <GoogleButton variant="nav" text="Iniciar sesión" />
+    </div>
+
+    <!-- Estado: Autenticado -->
+    <div class="auth-user-slot" data-auth-user style="display: none;">
+      <a href={dashboardUrl} class="user-badge" title="Ir a tu espacio">
+        <span class="user-avatar" data-user-initial>U</span>
+        <span class="user-display-name" data-user-name>Mi Cuenta</span>
+      </a>
+      <button type="button" class="btn-logout" data-logout-button title="Cerrar sesión">
+        Salir
+      </button>
+    </div>
+
+    <button class="nav-hamburger" id="nav-toggle" aria-label="Abrir menú" type="button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu">
+  {isDashboard ? (
+    <>
+      <a href={dashboardUrl} class="mobile-link active">Dashboard</a>
+      <a href="#peso" class="mobile-link">Peso</a>
+      <a href="#alimentacion" class="mobile-link">Alimentación</a>
+      <a href="#actividad" class="mobile-link">Actividad</a>
+    </>
+  ) : (
+    <>
+      <a href="#funcionalidades" class="mobile-link">Funcionalidades</a>
+      <a href="#como-funciona" class="mobile-link">Cómo funciona</a>
+      <a href="#comenzar" class="mobile-link">Comenzar</a>
+    </>
+  )}
+
+  <div class="mobile-auth-section">
+    <div data-auth-guest class="mobile-guest-actions">
+      <GoogleButton variant="hero" text="Iniciar sesión con Google" />
+    </div>
+    <div data-auth-user class="mobile-user-actions" style="display: none;">
+      <a href={dashboardUrl} class="mobile-user-card">
+        <span class="user-avatar" data-user-initial>U</span>
+        <div class="mobile-user-info">
+          <span class="mobile-user-name" data-user-name>Mi Cuenta</span>
+          <span class="mobile-user-email text-mute caption" data-user-email></span>
+        </div>
+      </a>
+      <button type="button" class="btn-mobile-logout" data-logout-button>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+    height: 64px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink);
+    letter-spacing: -0.2px;
+  }
+
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .nav-link {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-body);
+    border-radius: var(--rounded-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .auth-guest-slot {
+    display: flex;
+    align-items: center;
+  }
+
+  .auth-user-slot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xxs) var(--space-sm) var(--space-xxs) var(--space-xxs);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    max-width: 180px;
+  }
+
+  .user-badge:hover {
+    border-color: var(--color-mute);
+    background-color: #443e3a;
+  }
+
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--rounded-full);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .user-display-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: var(--space-xs);
+  }
+
+  .btn-logout {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-mute);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-logout:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    padding: var(--space-xs);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    background-color: var(--color-ink);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-hamburger.active span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+
+  .nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-hamburger.active span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* Menú Móvil */
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .mobile-menu.open {
+    display: flex;
+  }
+
+  .mobile-link {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-body);
+    border-radius: var(--rounded-sm);
+  }
+
+  .mobile-link:hover,
+  .mobile-link.active {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .mobile-auth-section {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  .mobile-user-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    background-color: var(--color-canvas-soft);
+    border-radius: var(--rounded-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .mobile-user-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .btn-mobile-logout {
+    width: 100%;
+    padding: var(--space-sm);
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-mute);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+  }
+
+  .btn-mobile-logout:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+  }
+
+  @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+    }
+
+    .nav-hamburger {
+      display: none;
+    }
+
+    .mobile-menu {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  import { initGoogleAuth, updateAuthUI } from '../../utils/auth-client';
+
+  // Inicializar componentes interactivos de autenticación y navegación
+  function setupHeader() {
+    const toggle = document.getElementById('nav-toggle');
+    const menu = document.getElementById('mobile-menu');
+
+    toggle?.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+      menu?.classList.toggle('open');
+    });
+
+    document.querySelectorAll('.mobile-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        toggle?.classList.remove('active');
+        menu?.classList.remove('open');
+      });
+    });
+
+    initGoogleAuth();
+    updateAuthUI();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupHeader);
+  } else {
+    setupHeader();
+  }
+</script>

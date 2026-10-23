@@ -1,0 +1,676 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Header from '../../components/ui/Header.astro';
+import GoogleButton from '../../components/ui/GoogleButton.astro';
+import { getAppUrl } from '../../utils/paths';
+
+const homeUrl = getAppUrl();
+---
+
+<MainLayout title="Tu espacio personal" description="Panel de control personal para el seguimiento de peso, alimentación y actividad física.">
+  <Header isDashboard={true} />
+
+  <main class="dashboard-container">
+    <!-- Estado 1: No autenticado (Guardia visual para visitantes sin sesión) -->
+    <section id="auth-required-view" class="auth-gate-card" style="display: none;">
+      <div class="auth-gate-badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h1 class="display-sm">Acceso a tu espacio personal</h1>
+      <p class="body-md text-body auth-gate-desc">
+        Para ver tu evolución, registros de peso, hábitos de alimentación y pasos diarios, inicia sesión con tu cuenta de Google.
+      </p>
+      <div class="auth-gate-actions">
+        <GoogleButton variant="cta" text="Iniciar sesión con Google" />
+        <a href={homeUrl} class="btn-ghost-sm">Volver al inicio</a>
+      </div>
+    </section>
+
+    <!-- Estado 2: Vista de Usuario Autenticado -->
+    <section id="dashboard-view" class="dashboard-content" style="display: none;">
+      <!-- Hero de bienvenida del usuario -->
+      <header class="user-hero-card">
+        <div class="user-hero-main">
+          <div class="user-avatar-lg" id="view-user-avatar">U</div>
+          <div class="user-hero-text">
+            <div class="user-hero-eyebrow">
+              <span class="status-indicator"></span> Sesión activa
+            </div>
+            <h1 class="display-md" id="view-user-name">Usuario</h1>
+            <p class="body-sm text-body" id="view-user-email">usuario@ejemplo.com</p>
+          </div>
+        </div>
+        <div class="user-hero-meta">
+          <div class="meta-item">
+            <span class="meta-label">Zona horaria</span>
+            <span class="meta-value code-font" id="view-user-tz">America/Mexico_City</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">ID de Usuario</span>
+            <span class="meta-value code-font" id="view-user-id" title="Identificador único">...</span>
+          </div>
+          <button type="button" class="btn-ghost-danger" data-logout-button>
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <!-- Barra de acciones rápidas -->
+      <div class="quick-actions-bar">
+        <span class="body-sm text-body-strong">Acciones rápidas:</span>
+        <div class="quick-buttons">
+          <button type="button" class="btn-action" id="action-peso">
+            <span class="action-icon">⚖️</span> Registrar peso
+          </button>
+          <button type="button" class="btn-action" id="action-comida">
+            <span class="action-icon">🍽️</span> Registrar comida y saciedad
+          </button>
+          <button type="button" class="btn-action" id="action-actividad">
+            <span class="action-icon">🏃</span> Registrar pasos / ejercicio
+          </button>
+        </div>
+      </div>
+
+      <!-- Métricas Clave y Resumen de Estado -->
+      <section class="metrics-grid">
+        <!-- Tarjeta: Peso -->
+        <article class="metric-card">
+          <div class="metric-card-header">
+            <div>
+              <span class="caption text-mute">Seguimiento</span>
+              <h2 class="metric-card-title">Peso corporal</h2>
+            </div>
+            <span class="metric-tag">Semanal</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number">78.5</span>
+            <span class="metric-unit">kg</span>
+          </div>
+          <div class="metric-trend metric-trend--down">
+            ↓ 1.2 kg respecto a la semana anterior
+          </div>
+          <div class="metric-sparkline-wrap">
+            <svg viewBox="0 0 200 40" class="metric-sparkline" preserveAspectRatio="none">
+              <polyline
+                points="0,32 30,28 60,30 90,24 120,26 150,18 180,20 200,12"
+                fill="none"
+                stroke="var(--color-primary)"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <div class="metric-footer">
+            <span class="caption text-mute">Promedio del mes: 79.1 kg</span>
+          </div>
+        </article>
+
+        <!-- Tarjeta: Actividad Física -->
+        <article class="metric-card">
+          <div class="metric-card-header">
+            <div>
+              <span class="caption text-mute">iPhone Salud</span>
+              <h2 class="metric-card-title">Pasos y Ejercicio</h2>
+            </div>
+            <span class="metric-tag">Hoy</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number">8,420</span>
+            <span class="metric-unit">pasos</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 84%;"></div>
+          </div>
+          <div class="metric-split">
+            <div class="split-col">
+              <span class="caption text-mute">Meta diaria</span>
+              <span class="body-sm text-body-strong">10,000 pasos</span>
+            </div>
+            <div class="split-col">
+              <span class="caption text-mute">Ejercicio</span>
+              <span class="body-sm text-body-strong">45 min</span>
+            </div>
+          </div>
+          <div class="metric-footer">
+            <span class="caption text-mute">Promedio semanal: 9,150 pasos / día</span>
+          </div>
+        </article>
+
+        <!-- Tarjeta: Alimentación y Saciedad -->
+        <article class="metric-card">
+          <div class="metric-card-header">
+            <div>
+              <span class="caption text-mute">Patrones</span>
+              <h2 class="metric-card-title">Alimentación y Saciedad</h2>
+            </div>
+            <span class="metric-tag">Hoy</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number">3</span>
+            <span class="metric-unit">comidas registradas</span>
+          </div>
+          <div class="satiety-indicator">
+            <span class="satiety-label caption text-mute">Nivel de saciedad promedio:</span>
+            <span class="satiety-badge">Nivel 4 — Cómodamente satisfecho</span>
+          </div>
+          <div class="metric-split">
+            <div class="split-col">
+              <span class="caption text-mute">Pausas conscientes</span>
+              <span class="body-sm text-body-strong">2 de 3</span>
+            </div>
+            <div class="split-col">
+              <span class="caption text-mute">Repetición por gusto</span>
+              <span class="body-sm text-body-strong">0 veces</span>
+            </div>
+          </div>
+          <div class="metric-footer">
+            <span class="caption text-mute">Registro de saciedad al 100% hoy</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- Sección de información del sistema y contrato API -->
+      <section class="session-info-card">
+        <div class="session-info-header">
+          <h3 class="display-sm">Estado de la conexión</h3>
+          <span class="pill-badge" id="api-status-badge">API Conectada</span>
+        </div>
+        <p class="body-sm text-body">
+          Tu sesión está protegida mediante tokens JWT criptográficos validados por el backend NestJS (<code class="code-font">/api/auth/me</code>).
+        </p>
+        <div class="session-details-grid">
+          <div class="detail-box">
+            <span class="caption text-mute">Backend Endpoint</span>
+            <span class="body-sm code-font" id="endpoint-display">http://localhost:3000/api</span>
+          </div>
+          <div class="detail-box">
+            <span class="caption text-mute">Token Type</span>
+            <span class="body-sm code-font">Bearer JWT (7 días)</span>
+          </div>
+          <div class="detail-box">
+            <span class="caption text-mute">Verificación en vivo</span>
+            <span class="body-sm text-body-strong" id="live-sync-status">Sincronizado</span>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+</MainLayout>
+
+<style>
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg) var(--space-4xl);
+  }
+
+  /* Guardia para visitantes sin login */
+  .auth-gate-card {
+    max-width: 520px;
+    margin: var(--space-4xl) auto;
+    padding: var(--space-3xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .auth-gate-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--rounded-full);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-body);
+  }
+
+  .auth-gate-desc {
+    max-width: 420px;
+  }
+
+  .auth-gate-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+    margin-top: var(--space-sm);
+  }
+
+  .btn-ghost-sm {
+    font-size: 13px;
+    color: var(--color-mute);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--rounded-sm);
+    transition: color 0.15s ease;
+  }
+
+  .btn-ghost-sm:hover {
+    color: var(--color-ink);
+  }
+
+  /* Vista de Dashboard autenticado */
+  .dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+  }
+
+  /* User Hero Card */
+  .user-hero-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    padding: var(--space-2xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+  }
+
+  @media (min-width: 768px) {
+    .user-hero-card {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .user-hero-main {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .user-avatar-lg {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--rounded-full);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .user-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+
+  .user-hero-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4ade80;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--rounded-full);
+    background-color: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+  }
+
+  .user-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-mute);
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: var(--color-body-strong);
+  }
+
+  .code-font {
+    font-family: var(--font-mono);
+  }
+
+  .btn-ghost-danger {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: #f87171;
+    border: 1px solid #7f1d1d;
+    border-radius: var(--rounded-sm);
+    background-color: rgba(127, 29, 29, 0.15);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-ghost-danger:hover {
+    background-color: rgba(127, 29, 29, 0.3);
+    border-color: #ef4444;
+  }
+
+  /* Quick Actions Bar */
+  .quick-actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+  }
+
+  .quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-action:hover {
+    background-color: #443e3a;
+    border-color: var(--color-mute);
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 900px) {
+    .metrics-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .metric-card {
+    padding: var(--space-xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .metric-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .metric-card-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    margin-top: 2px;
+  }
+
+  .metric-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-xs);
+    color: var(--color-mute);
+  }
+
+  .metric-value-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+  }
+
+  .metric-number {
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .metric-unit {
+    font-size: 14px;
+    color: var(--color-body);
+  }
+
+  .metric-trend {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .metric-trend--down {
+    color: #4ade80;
+  }
+
+  .metric-sparkline-wrap {
+    height: 40px;
+    margin-top: var(--space-xs);
+  }
+
+  .metric-sparkline {
+    width: 100%;
+    height: 100%;
+  }
+
+  .progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background-color: var(--color-canvas);
+    border-radius: var(--rounded-full);
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-primary);
+    border-radius: var(--rounded-full);
+  }
+
+  .metric-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  .split-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .satiety-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .satiety-badge {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    background-color: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: var(--rounded-sm);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .metric-footer {
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  /* Session Info Card */
+  .session-info-card {
+    padding: var(--space-xl);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .session-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pill-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: var(--rounded-full);
+  }
+
+  .session-details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+
+  @media (min-width: 768px) {
+    .session-details-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .detail-box {
+    padding: var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+</style>
+
+<script>
+  import { authService } from '../../services/auth.service';
+  import { showAuthNotification } from '../../utils/auth-client';
+
+  async function initializeDashboard() {
+    const gateView = document.getElementById('auth-required-view');
+    const dashboardView = document.getElementById('dashboard-view');
+
+    const token = authService.getStoredToken();
+    const storedUser = authService.getStoredUser();
+
+    if (!token) {
+      if (gateView) gateView.style.display = 'flex';
+      if (dashboardView) dashboardView.style.display = 'none';
+      return;
+    }
+
+    // Usuario autenticado
+    if (gateView) gateView.style.display = 'none';
+    if (dashboardView) dashboardView.style.display = 'flex';
+
+    const renderUserData = (user: { id?: string; name?: string; email?: string; timezone?: string }) => {
+      const nameEl = document.getElementById('view-user-name');
+      const emailEl = document.getElementById('view-user-email');
+      const tzEl = document.getElementById('view-user-tz');
+      const idEl = document.getElementById('view-user-id');
+      const avatarEl = document.getElementById('view-user-avatar');
+
+      if (nameEl && user.name) nameEl.textContent = user.name;
+      if (emailEl && user.email) emailEl.textContent = user.email;
+      if (tzEl && user.timezone) tzEl.textContent = user.timezone;
+      if (idEl && user.id) idEl.textContent = user.id;
+      if (avatarEl && user.name) avatarEl.textContent = user.name.charAt(0).toUpperCase();
+    };
+
+    if (storedUser) {
+      renderUserData(storedUser);
+    }
+
+    // Validar token y sincronizar perfil con backend GET /api/auth/me
+    const syncStatus = document.getElementById('live-sync-status');
+    const endpointDisplay = document.getElementById('endpoint-display');
+    if (endpointDisplay) {
+      endpointDisplay.textContent = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
+    }
+
+    try {
+      const freshUser = await authService.getMe();
+      renderUserData(freshUser);
+      if (syncStatus) {
+        syncStatus.textContent = 'En línea con backend';
+        syncStatus.style.color = '#4ade80';
+      }
+    } catch (err) {
+      console.warn('No se pudo verificar token con el backend:', err);
+      if (syncStatus) {
+        syncStatus.textContent = 'Modo local (sin respuesta de API)';
+        syncStatus.style.color = 'var(--color-mute)';
+      }
+    }
+
+    // Eventos de botones de acción rápida
+    document.getElementById('action-peso')?.addEventListener('click', () => {
+      showAuthNotification('Módulo de registro de peso en desarrollo.', 'info');
+    });
+    document.getElementById('action-comida')?.addEventListener('click', () => {
+      showAuthNotification('Módulo de registro de alimentación en desarrollo.', 'info');
+    });
+    document.getElementById('action-actividad')?.addEventListener('click', () => {
+      showAuthNotification('Módulo de registro de actividad física en desarrollo.', 'info');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+  } else {
+    initializeDashboard();
+  }
+</script>

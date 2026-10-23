@@ -168,3 +168,40 @@ select {
 .text-body-strong {
   color: var(--color-body-strong);
 }
+
+/* Auth toast notification */
+.auth-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  max-width: 380px;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-canvas-soft);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  line-height: 20px;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.auth-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.auth-toast[data-type="error"] {
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.auth-toast[data-type="success"] {
+  border-color: #22c55e;
+  color: #86efac;
+}
