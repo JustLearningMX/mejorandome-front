@@ -1,0 +1,756 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Tu evolución personal">
+  <header class="nav-bar">
+    <a href="/" class="nav-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-primary)" opacity="0.9"/>
+        <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-primary)" opacity="0.45"/>
+      </svg>
+      <span>Mejorándome</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
+      <a href="#como-funciona" class="nav-link">Cómo funciona</a>
+      <a href="#comenzar" class="nav-link">Comenzar</a>
+    </nav>
+    <button class="nav-hamburger" id="nav-toggle" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-menu" id="mobile-menu">
+    <a href="#funcionalidades" class="mobile-link">Funcionalidades</a>
+    <a href="#como-funciona" class="mobile-link">Cómo funciona</a>
+    <a href="#comenzar" class="mobile-link">Comenzar</a>
+  </nav>
+
+  <main>
+    <section class="hero-band">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Control personal de salud</p>
+        <h1 class="display-xl hero-title">
+          Conoce tus hábitos.<br/>
+          <span class="display-serif">Transforma tu evolución.</span>
+        </h1>
+        <p class="hero-description body-lg text-body-strong">
+          Registra tu peso, alimentación, saciedad y actividad física.
+          Identifica patrones. Visualiza tu progreso. Todo en un solo lugar.
+        </p>
+        <div class="hero-actions">
+          <a href="#comenzar" class="btn-primary">Comenzar ahora</a>
+          <a href="#funcionalidades" class="btn-ghost">Explorar</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="mock-dashboard">
+          <div class="mock-header">
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-stat">
+              <span class="mock-label">Peso actual</span>
+              <span class="mock-value">78.5 <span class="mock-unit">kg</span></span>
+              <span class="mock-trend mock-trend--down">↓ 1.2 kg esta semana</span>
+            </div>
+            <div class="mock-chart">
+              <svg viewBox="0 0 280 80" class="mock-sparkline">
+                <polyline
+                  points="0,60 20,55 40,58 60,50 80,52 100,45 120,48 140,40 160,42 180,35 200,38 220,30 240,28 260,25 280,20"
+                  fill="none"
+                  stroke="var(--color-primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <polyline
+                  points="0,60 20,55 40,58 60,50 80,52 100,45 120,48 140,40 160,42 180,35 200,38 220,30 240,28 260,25 280,20"
+                  fill="url(#sparkGradient)"
+                  stroke="none"
+                />
+                <defs>
+                  <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.15"/>
+                    <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="mock-mini-stats">
+              <div class="mock-mini">
+                <span class="mock-mini-icon">🏃</span>
+                <span class="mock-mini-val">8,420</span>
+                <span class="mock-mini-label">pasos</span>
+              </div>
+              <div class="mock-mini">
+                <span class="mock-mini-icon">🔥</span>
+                <span class="mock-mini-val">45</span>
+                <span class="mock-mini-label">min ejercicio</span>
+              </div>
+              <div class="mock-mini">
+                <span class="mock-mini-icon">🍽️</span>
+                <span class="mock-mini-val">3</span>
+                <span class="mock-mini-label">comidas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band" id="funcionalidades">
+      <div class="section-header">
+        <p class="section-eyebrow caption text-mute">Funcionalidades</p>
+        <h2 class="display-lg">Todo lo que necesitas para entenderte mejor</h2>
+      </div>
+      <div class="features-grid">
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="M18 9l-5 5-2-2-4 4"/>
+            </svg>
+          </div>
+          <h3 class="display-sm">Seguimiento del peso</h3>
+          <p class="body-md text-body">
+            Registra tu peso diario y visualiza tu evolución con gráficas claras.
+            Consulta promedios semanales e identifica tendencias.
+          </p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+              <circle cx="9" cy="9" r="1" fill="currentColor"/>
+              <circle cx="15" cy="9" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="display-sm">Alimentación y saciedad</h3>
+          <p class="body-md text-body">
+            Registra comidas, porciones, hambre y saciedad.
+            Identifica si comes por necesidad o por impulso emocional.
+          </p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3 class="display-sm">Actividad física</h3>
+          <p class="body-md text-body">
+            Registra ejercicio, duración y pasos diarios.
+            Consulta tu historial y observa cómo te mantienes activo.
+          </p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 3v18"/>
+            </svg>
+          </div>
+          <h3 class="display-sm">Resúmenes inteligentes</h3>
+          <p class="body-md text-body">
+            Compara periodos, analiza promedios y descubre patrones
+            en tu alimentación, peso y actividad.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-band content-band--soft" id="como-funciona">
+      <div class="section-header">
+        <p class="section-eyebrow caption text-mute">Cómo funciona</p>
+        <h2 class="display-lg">Tres pasos hacia una mejor versión de ti</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <span class="step-number">01</span>
+          <h3 class="display-sm">Registra</h3>
+          <p class="body-md text-body">
+            Anota tu peso, comidas, nivel de hambre y saciedad,
+            y la actividad física que realizaste.
+          </p>
+        </div>
+        <div class="step-connector">
+          <svg viewBox="0 0 40 12" fill="none">
+            <path d="M0 6h32m0 0l-6-5m6 5l-6 5" stroke="var(--color-mute)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-card">
+          <span class="step-number">02</span>
+          <h3 class="display-sm">Observa</h3>
+          <p class="body-md text-body">
+            Consulta gráficas y resúmenes que revelan
+            cómo tus hábitos impactan tu bienestar.
+          </p>
+        </div>
+        <div class="step-connector">
+          <svg viewBox="0 0 40 12" fill="none">
+            <path d="M0 6h32m0 0l-6-5m6 5l-6 5" stroke="var(--color-mute)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-card">
+          <span class="step-number">03</span>
+          <h3 class="display-sm">Mejora</h3>
+          <p class="body-md text-body">
+            Toma decisiones informadas basadas en datos reales,
+            no en suposiciones.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band" id="comenzar">
+      <div class="cta-band">
+        <h2 class="display-lg">Empieza a conocerte hoy</h2>
+        <p class="body-lg text-body-strong cta-description">
+          No se trata de perfección. Se trata de comprensión.
+          Cada registro es un paso hacia una mejor relación contigo.
+        </p>
+        <a href="/dashboard" class="btn-primary btn-primary--lg">Ir al dashboard</a>
+        <p class="caption text-mute cta-note">
+          Aplicación gratuita y personal. Tus datos son solo tuyos.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-body)" opacity="0.9"/>
+          <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-body)" opacity="0.45"/>
+        </svg>
+        <span class="body-sm text-body">Mejorándome</span>
+      </div>
+      <p class="caption text-mute">
+        Herramienta personal de seguimiento. No sustituye una evaluación médica profesional.
+      </p>
+    </div>
+  </footer>
+</MainLayout>
+
+<style>
+  /* ─── Nav ─── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+
+  .nav-links {
+    display: none;
+    gap: var(--space-xs);
+  }
+
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--rounded-sm);
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-link:hover {
+    background-color: var(--color-canvas-soft);
+  }
+
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-xs);
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background-color: var(--color-ink);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 5px);
+  }
+
+  .nav-hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -5px);
+  }
+
+  /* ─── Mobile Menu ─── */
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 49px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+    padding: var(--space-lg);
+    gap: var(--space-sm);
+  }
+
+  .mobile-menu.open {
+    display: flex;
+  }
+
+  .mobile-link {
+    font-size: 16px;
+    font-weight: 500;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .mobile-link:last-child {
+    border-bottom: none;
+  }
+
+  /* ─── Hero ─── */
+  .hero-band {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xl);
+    padding: var(--space-3xl) var(--space-lg) var(--space-4xl);
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero-title {
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero-description {
+    max-width: 520px;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  /* ─── Buttons ─── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--rounded-sm);
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.88;
+  }
+
+  .btn-primary--lg {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 16px;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--rounded-sm);
+    border: 1px solid var(--color-hairline);
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--color-canvas-soft);
+  }
+
+  /* ─── Mock Dashboard ─── */
+  .hero-visual {
+    width: 100%;
+  }
+
+  .mock-dashboard {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    overflow: hidden;
+    animation: floatUp 0.8s ease-out both;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes floatUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mock-header {
+    display: flex;
+    gap: 6px;
+    padding: var(--space-sm) var(--space-lg);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .mock-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--rounded-full);
+    background-color: var(--color-hairline);
+  }
+
+  .mock-body {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .mock-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+
+  .mock-label {
+    font-size: 12px;
+    color: var(--color-mute);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .mock-value {
+    font-size: clamp(32px, 5vw, 40px);
+    font-weight: 400;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .mock-unit {
+    font-size: 18px;
+    color: var(--color-mute);
+  }
+
+  .mock-trend {
+    font-size: 13px;
+    font-family: var(--font-mono);
+    color: var(--color-body);
+  }
+
+  .mock-trend--down {
+    color: #8ecfa0;
+  }
+
+  .mock-chart {
+    width: 100%;
+  }
+
+  .mock-sparkline {
+    width: 100%;
+    height: auto;
+  }
+
+  .mock-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .mock-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xxs);
+    padding: var(--space-sm);
+    background-color: var(--color-canvas);
+    border-radius: var(--rounded-sm);
+    border: 1px solid var(--color-hairline);
+  }
+
+  .mock-mini-icon {
+    font-size: 18px;
+  }
+
+  .mock-mini-val {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+  }
+
+  .mock-mini-label {
+    font-size: 11px;
+    color: var(--color-mute);
+    text-align: center;
+  }
+
+  /* ─── Sections ─── */
+  .content-band {
+    padding: var(--space-4xl) var(--space-lg);
+  }
+
+  .content-band--soft {
+    background-color: var(--color-canvas-soft);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-3xl);
+  }
+
+  .section-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: var(--space-sm);
+  }
+
+  /* ─── Features ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .feature-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    transition: border-color 0.25s ease;
+  }
+
+  .feature-card:hover {
+    border-color: var(--color-mute);
+  }
+
+  .feature-icon {
+    color: var(--color-primary);
+    margin-bottom: var(--space-xs);
+  }
+
+  /* ─── Steps ─── */
+  .steps-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .step-card {
+    text-align: center;
+    max-width: 320px;
+  }
+
+  .step-number {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    color: var(--color-hairline);
+    letter-spacing: -1px;
+    display: block;
+    margin-bottom: var(--space-sm);
+  }
+
+  .step-connector {
+    width: 40px;
+    transform: rotate(90deg);
+    color: var(--color-mute);
+  }
+
+  /* ─── CTA ─── */
+  .cta-band {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xl);
+    padding: var(--space-3xl) 0;
+    border-top: 1px solid var(--color-hairline);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .cta-description {
+    max-width: 480px;
+  }
+
+  .cta-note {
+    max-width: 320px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    padding: var(--space-3xl) var(--space-lg);
+  }
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  /* ─── Tablet (768px+) ─── */
+  @media (min-width: 768px) {
+    .nav-bar {
+      padding: var(--space-md) var(--space-xl);
+    }
+
+    .hero-band {
+      padding: var(--space-4xl) var(--space-xl);
+    }
+
+    .content-band {
+      padding: var(--space-5xl) var(--space-xl);
+    }
+
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .steps-grid {
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .step-connector {
+      transform: none;
+    }
+
+    .footer {
+      padding: var(--space-3xl) var(--space-xl);
+    }
+
+    .footer-content {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  /* ─── Desktop (1024px+) ─── */
+  @media (min-width: 1024px) {
+    .nav-links {
+      display: flex;
+    }
+
+    .nav-hamburger {
+      display: none;
+    }
+
+    .hero-band {
+      flex-direction: row;
+      align-items: center;
+      padding: var(--space-5xl) var(--space-xl);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-content {
+      flex: 1;
+    }
+
+    .hero-visual {
+      flex: 1;
+      max-width: 480px;
+    }
+
+    .content-band {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .content-band--soft {
+      max-width: 100%;
+    }
+
+    .content-band--soft > * {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl);
+    }
+
+    .footer {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  toggle?.addEventListener('click', () => {
+    toggle.classList.toggle('active');
+    menu?.classList.toggle('open');
+  });
+
+  document.querySelectorAll('.mobile-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      toggle?.classList.remove('active');
+      menu?.classList.remove('open');
+    });
+  });
+</script>
