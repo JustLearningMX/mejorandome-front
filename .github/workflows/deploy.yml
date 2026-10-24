@@ -18,6 +18,7 @@ jobs:
   build:
     name: Compilar sitio
     runs-on: ubuntu-latest
+    environment: github-pages
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
@@ -32,6 +33,9 @@ jobs:
         run: npm ci
 
       - name: Compilar proyecto Astro
+        env:
+          PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.PUBLIC_GOOGLE_CLIENT_ID || vars.PUBLIC_GOOGLE_CLIENT_ID }}
+          PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL || vars.PUBLIC_API_BASE_URL || 'http://localhost:3000/api' }}
         run: npm run build
 
       - name: Subir artefacto para Pages
