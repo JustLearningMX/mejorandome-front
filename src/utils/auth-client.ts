@@ -174,8 +174,31 @@ export function updateAuthUI(): void {
       el.textContent = user.email;
     });
 
+    const initial = user.name ? user.name.trim().charAt(0).toUpperCase() : 'U';
+
     document.querySelectorAll<HTMLElement>('[data-user-initial]').forEach((el) => {
-      el.textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+      el.textContent = initial;
+    });
+
+    // Renderizar foto de Google o inicial con manejo de error de carga
+    document.querySelectorAll<HTMLElement>('[data-user-avatar-wrap]').forEach((wrap) => {
+      const img = wrap.querySelector<HTMLImageElement>('[data-user-photo]');
+      const init = wrap.querySelector<HTMLElement>('[data-user-initial]');
+
+      if (user.picture && img) {
+        img.src = user.picture;
+        img.alt = user.name || 'Avatar';
+        img.style.display = 'block';
+        if (init) init.style.display = 'none';
+
+        img.onerror = () => {
+          img.style.display = 'none';
+          if (init) init.style.display = '';
+        };
+      } else {
+        if (img) img.style.display = 'none';
+        if (init) init.style.display = '';
+      }
     });
   }
 

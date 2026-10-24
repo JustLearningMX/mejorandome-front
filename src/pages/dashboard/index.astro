@@ -34,7 +34,10 @@ const homeUrl = getAppUrl();
       <!-- Hero de bienvenida del usuario -->
       <header class="user-hero-card">
         <div class="user-hero-main">
-          <div class="user-avatar-lg" id="view-user-avatar">U</div>
+          <div class="user-avatar-lg" id="view-user-avatar-wrap">
+            <img class="user-avatar-lg-img" id="view-user-photo" src="" alt="" style="display: none;" />
+            <span id="view-user-avatar">U</span>
+          </div>
           <div class="user-hero-text">
             <div class="user-hero-eyebrow">
               <span class="status-indicator"></span> Sesión activa
@@ -43,16 +46,13 @@ const homeUrl = getAppUrl();
             <p class="body-sm text-body" id="view-user-email">usuario@ejemplo.com</p>
           </div>
         </div>
-        <div class="user-hero-meta">
-          <div class="meta-item">
-            <span class="meta-label">Zona horaria</span>
-            <span class="meta-value code-font" id="view-user-tz">America/Mexico_City</span>
+
+        <div class="user-hero-motto">
+          <div class="motto-badge">
+            <span class="motto-icon" aria-hidden="true">🌱</span>
+            <span class="motto-text">Hábitos conscientes y progreso constante, un día a la vez.</span>
           </div>
-          <div class="meta-item">
-            <span class="meta-label">ID de Usuario</span>
-            <span class="meta-value code-font" id="view-user-id" title="Identificador único">...</span>
-          </div>
-          <button type="button" class="btn-ghost-danger" data-logout-button>
+          <button type="button" class="btn-ghost-danger" data-logout-button title="Cerrar sesión">
             Cerrar sesión
           </button>
         </div>
@@ -74,28 +74,29 @@ const homeUrl = getAppUrl();
         </div>
       </div>
 
-      <!-- Métricas Clave y Resumen de Estado -->
+      <!-- Métricas Clave y Resumen de Estado (Datos reales del backend / Sin datos dummy) -->
       <section class="metrics-grid">
-        <!-- Tarjeta: Peso -->
-        <article class="metric-card">
+        <!-- Tarjeta: Peso Corporal -->
+        <article class="metric-card" id="card-peso">
           <div class="metric-card-header">
             <div>
               <span class="caption text-mute">Seguimiento</span>
               <h2 class="metric-card-title">Peso corporal</h2>
             </div>
-            <span class="metric-tag">Semanal</span>
+            <span class="metric-tag" id="metric-peso-tag">Sin registro</span>
           </div>
           <div class="metric-value-wrap">
-            <span class="metric-number">78.5</span>
-            <span class="metric-unit">kg</span>
+            <span class="metric-number metric-empty" id="metric-peso-val">--</span>
+            <span class="metric-unit" id="metric-peso-unit">kg</span>
           </div>
-          <div class="metric-trend metric-trend--down">
-            ↓ 1.2 kg respecto a la semana anterior
+          <div class="metric-trend-wrap" id="metric-peso-trend-wrap">
+            <span class="metric-empty-notice" id="metric-peso-status-text">Sin mediciones registradas en el historial.</span>
           </div>
-          <div class="metric-sparkline-wrap">
-            <svg viewBox="0 0 200 40" class="metric-sparkline" preserveAspectRatio="none">
+          <div class="metric-sparkline-wrap" id="metric-peso-sparkline-wrap" style="display: none;">
+            <svg viewBox="0 0 200 40" class="metric-sparkline" preserveAspectRatio="none" id="metric-peso-svg">
               <polyline
-                points="0,32 30,28 60,30 90,24 120,26 150,18 180,20 200,12"
+                id="metric-peso-polyline"
+                points=""
                 fill="none"
                 stroke="var(--color-primary)"
                 stroke-width="2"
@@ -104,43 +105,43 @@ const homeUrl = getAppUrl();
             </svg>
           </div>
           <div class="metric-footer">
-            <span class="caption text-mute">Promedio del mes: 79.1 kg</span>
+            <span class="caption text-mute" id="metric-peso-footer">Promedio mensual: Sin datos aún</span>
           </div>
         </article>
 
-        <!-- Tarjeta: Actividad Física -->
-        <article class="metric-card">
+        <!-- Tarjeta: Actividad Física (Pasos y Ejercicio) -->
+        <article class="metric-card" id="card-actividad">
           <div class="metric-card-header">
             <div>
-              <span class="caption text-mute">iPhone Salud</span>
+              <span class="caption text-mute">Actividad física</span>
               <h2 class="metric-card-title">Pasos y Ejercicio</h2>
             </div>
             <span class="metric-tag">Hoy</span>
           </div>
           <div class="metric-value-wrap">
-            <span class="metric-number">8,420</span>
+            <span class="metric-number" id="metric-pasos-val">0</span>
             <span class="metric-unit">pasos</span>
           </div>
           <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width: 84%;"></div>
+            <div class="progress-bar-fill" id="metric-pasos-progress" style="width: 0%;"></div>
           </div>
           <div class="metric-split">
             <div class="split-col">
               <span class="caption text-mute">Meta diaria</span>
-              <span class="body-sm text-body-strong">10,000 pasos</span>
+              <span class="body-sm text-body-strong" id="metric-pasos-goal">10,000 pasos</span>
             </div>
             <div class="split-col">
               <span class="caption text-mute">Ejercicio</span>
-              <span class="body-sm text-body-strong">45 min</span>
+              <span class="body-sm text-body-strong" id="metric-ejercicio-min">0 min</span>
             </div>
           </div>
           <div class="metric-footer">
-            <span class="caption text-mute">Promedio semanal: 9,150 pasos / día</span>
+            <span class="caption text-mute" id="metric-actividad-footer">Sin actividad registrada el día de hoy</span>
           </div>
         </article>
 
         <!-- Tarjeta: Alimentación y Saciedad -->
-        <article class="metric-card">
+        <article class="metric-card" id="card-alimentacion">
           <div class="metric-card-header">
             <div>
               <span class="caption text-mute">Patrones</span>
@@ -149,52 +150,27 @@ const homeUrl = getAppUrl();
             <span class="metric-tag">Hoy</span>
           </div>
           <div class="metric-value-wrap">
-            <span class="metric-number">3</span>
-            <span class="metric-unit">comidas registradas</span>
+            <span class="metric-number" id="metric-comidas-val">0</span>
+            <span class="metric-unit" id="metric-comidas-unit">comidas registradas</span>
           </div>
           <div class="satiety-indicator">
             <span class="satiety-label caption text-mute">Nivel de saciedad promedio:</span>
-            <span class="satiety-badge">Nivel 4 — Cómodamente satisfecho</span>
+            <span class="satiety-badge satiety-badge--empty" id="metric-saciedad-badge">Sin registros de saciedad hoy</span>
           </div>
           <div class="metric-split">
             <div class="split-col">
               <span class="caption text-mute">Pausas conscientes</span>
-              <span class="body-sm text-body-strong">2 de 3</span>
+              <span class="body-sm text-body-strong" id="metric-pausas-val">0 registradas</span>
             </div>
             <div class="split-col">
               <span class="caption text-mute">Repetición por gusto</span>
-              <span class="body-sm text-body-strong">0 veces</span>
+              <span class="body-sm text-body-strong" id="metric-repeticion-val">0 veces</span>
             </div>
           </div>
           <div class="metric-footer">
-            <span class="caption text-mute">Registro de saciedad al 100% hoy</span>
+            <span class="caption text-mute" id="metric-alimentacion-footer">Registra tu primera comida para comenzar el seguimiento</span>
           </div>
         </article>
-      </section>
-
-      <!-- Sección de información del sistema y contrato API -->
-      <section class="session-info-card">
-        <div class="session-info-header">
-          <h3 class="display-sm">Estado de la conexión</h3>
-          <span class="pill-badge" id="api-status-badge">API Conectada</span>
-        </div>
-        <p class="body-sm text-body">
-          Tu sesión está protegida mediante tokens JWT criptográficos validados por el backend NestJS (<code class="code-font">/api/auth/me</code>).
-        </p>
-        <div class="session-details-grid">
-          <div class="detail-box">
-            <span class="caption text-mute">Backend Endpoint</span>
-            <span class="body-sm code-font" id="endpoint-display">http://localhost:3000/api</span>
-          </div>
-          <div class="detail-box">
-            <span class="caption text-mute">Token Type</span>
-            <span class="body-sm code-font">Bearer JWT (7 días)</span>
-          </div>
-          <div class="detail-box">
-            <span class="caption text-mute">Verificación en vivo</span>
-            <span class="body-sm text-body-strong" id="live-sync-status">Sincronizado</span>
-          </div>
-        </div>
       </section>
     </section>
   </main>
@@ -303,6 +279,15 @@ const homeUrl = getAppUrl();
     font-size: 24px;
     font-weight: 700;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .user-avatar-lg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--rounded-full);
   }
 
   .user-hero-text {
@@ -328,33 +313,43 @@ const homeUrl = getAppUrl();
     box-shadow: 0 0 8px #22c55e;
   }
 
-  .user-hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-lg);
-  }
-
-  .meta-item {
+  /* Frase representativa y acciones en el hero */
+  .user-hero-motto {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    align-items: flex-start;
+    gap: var(--space-md);
   }
 
-  .meta-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-mute);
+  @media (min-width: 768px) {
+    .user-hero-motto {
+      align-items: flex-end;
+      text-align: right;
+    }
   }
 
-  .meta-value {
+  .motto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-full);
     font-size: 13px;
-    color: var(--color-body-strong);
+    color: var(--color-body);
+    font-style: italic;
+    max-width: 380px;
   }
 
-  .code-font {
-    font-family: var(--font-mono);
+  .motto-icon {
+    font-style: normal;
+    font-size: 14px;
+  }
+
+  .motto-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .btn-ghost-danger {
@@ -471,9 +466,25 @@ const homeUrl = getAppUrl();
     color: var(--color-primary);
   }
 
+  .metric-number.metric-empty {
+    color: var(--color-mute);
+    opacity: 0.85;
+  }
+
   .metric-unit {
     font-size: 14px;
     color: var(--color-body);
+  }
+
+  .metric-trend-wrap {
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  .metric-empty-notice {
+    font-size: 12px;
+    color: var(--color-mute);
   }
 
   .metric-trend {
@@ -483,6 +494,10 @@ const homeUrl = getAppUrl();
 
   .metric-trend--down {
     color: #4ade80;
+  }
+
+  .metric-trend--up {
+    color: #f87171;
   }
 
   .metric-sparkline-wrap {
@@ -507,6 +522,7 @@ const homeUrl = getAppUrl();
     height: 100%;
     background-color: var(--color-primary);
     border-radius: var(--rounded-full);
+    transition: width 0.3s ease;
   }
 
   .metric-split {
@@ -540,64 +556,24 @@ const homeUrl = getAppUrl();
     font-weight: 500;
   }
 
+  .satiety-badge--empty {
+    background-color: var(--color-canvas);
+    color: var(--color-mute);
+    border-color: var(--color-hairline);
+  }
+
   .metric-footer {
     padding-top: var(--space-xs);
     border-top: 1px solid var(--color-hairline);
-  }
-
-  /* Session Info Card */
-  .session-info-card {
-    padding: var(--space-xl);
-    background-color: var(--color-canvas);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-md);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .session-info-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .pill-badge {
-    font-size: 12px;
-    padding: 3px 8px;
-    background-color: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    border-radius: var(--rounded-full);
-  }
-
-  .session-details-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-    margin-top: var(--space-sm);
-  }
-
-  @media (min-width: 768px) {
-    .session-details-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .detail-box {
-    padding: var(--space-md);
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-sm);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
   }
 </style>
 
 <script>
   import { authService } from '../../services/auth.service';
+  import { dashboardService } from '../../services/dashboard.service';
   import { showAuthNotification } from '../../utils/auth-client';
+  import type { AuthenticatedUser } from '../../types/auth';
+  import type { DashboardSummary } from '../../types/dashboard';
 
   async function initializeDashboard() {
     const gateView = document.getElementById('auth-required-view');
@@ -616,44 +592,178 @@ const homeUrl = getAppUrl();
     if (gateView) gateView.style.display = 'none';
     if (dashboardView) dashboardView.style.display = 'flex';
 
-    const renderUserData = (user: { id?: string; name?: string; email?: string; timezone?: string }) => {
+    // 1. Renderizar perfil de usuario en el hero (Avatar con foto de Google o inicial)
+    const renderUserProfile = (user: AuthenticatedUser) => {
       const nameEl = document.getElementById('view-user-name');
       const emailEl = document.getElementById('view-user-email');
-      const tzEl = document.getElementById('view-user-tz');
-      const idEl = document.getElementById('view-user-id');
-      const avatarEl = document.getElementById('view-user-avatar');
+      const photoEl = document.getElementById('view-user-photo') as HTMLImageElement | null;
+      const initialEl = document.getElementById('view-user-avatar');
 
       if (nameEl && user.name) nameEl.textContent = user.name;
       if (emailEl && user.email) emailEl.textContent = user.email;
-      if (tzEl && user.timezone) tzEl.textContent = user.timezone;
-      if (idEl && user.id) idEl.textContent = user.id;
-      if (avatarEl && user.name) avatarEl.textContent = user.name.charAt(0).toUpperCase();
+
+      const initial = user.name ? user.name.trim().charAt(0).toUpperCase() : 'U';
+      if (initialEl) initialEl.textContent = initial;
+
+      if (user.picture && photoEl) {
+        photoEl.src = user.picture;
+        photoEl.alt = user.name || 'Avatar';
+        photoEl.style.display = 'block';
+        if (initialEl) initialEl.style.display = 'none';
+
+        photoEl.onerror = () => {
+          photoEl.style.display = 'none';
+          if (initialEl) initialEl.style.display = 'block';
+        };
+      } else {
+        if (photoEl) photoEl.style.display = 'none';
+        if (initialEl) initialEl.style.display = 'block';
+      }
     };
 
     if (storedUser) {
-      renderUserData(storedUser);
+      renderUserProfile(storedUser);
     }
 
-    // Validar token y sincronizar perfil con backend GET /api/auth/me
-    const syncStatus = document.getElementById('live-sync-status');
-    const endpointDisplay = document.getElementById('endpoint-display');
-    if (endpointDisplay) {
-      endpointDisplay.textContent = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
-    }
+    // 2. Renderizar métricas reales en las cards (Sin datos dummy)
+    const renderMetrics = (summary: DashboardSummary) => {
+      // Card 1: Peso corporal
+      const pesoVal = document.getElementById('metric-peso-val');
+      const pesoTag = document.getElementById('metric-peso-tag');
+      const pesoTrendWrap = document.getElementById('metric-peso-trend-wrap');
+      const pesoFooter = document.getElementById('metric-peso-footer');
 
+      if (summary.weight.hasMeasurements && summary.weight.latestKg != null) {
+        if (pesoVal) {
+          pesoVal.textContent = summary.weight.latestKg.toFixed(1);
+          pesoVal.classList.remove('metric-empty');
+        }
+        if (pesoTag) pesoTag.textContent = summary.weight.latestDate || 'Último';
+
+        if (pesoTrendWrap) {
+          if (summary.weight.differenceKg != null) {
+            const isDown = summary.weight.differenceKg <= 0;
+            const diffFormatted = Math.abs(summary.weight.differenceKg).toFixed(1);
+            pesoTrendWrap.innerHTML = `
+              <span class="metric-trend ${isDown ? 'metric-trend--down' : 'metric-trend--up'}">
+                ${isDown ? '↓' : '↑'} ${diffFormatted} kg respecto a la medición anterior
+              </span>
+            `;
+          } else {
+            pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Primera medición registrada</span>';
+          }
+        }
+
+        if (pesoFooter) {
+          pesoFooter.textContent = summary.weight.monthlyAverageKg != null
+            ? `Promedio del mes: ${summary.weight.monthlyAverageKg.toFixed(1)} kg`
+            : 'Medición registrada';
+        }
+      } else {
+        // Estado real: Sin mediciones registradas en la base de datos
+        if (pesoVal) {
+          pesoVal.textContent = '--';
+          pesoVal.classList.add('metric-empty');
+        }
+        if (pesoTag) pesoTag.textContent = 'Sin registro';
+        if (pesoTrendWrap) {
+          pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Sin mediciones registradas en el historial.</span>';
+        }
+        if (pesoFooter) {
+          pesoFooter.textContent = 'Promedio mensual: Sin datos aún';
+        }
+      }
+
+      // Card 2: Actividad Física (Pasos y Ejercicio)
+      const pasosVal = document.getElementById('metric-pasos-val');
+      const pasosProgress = document.getElementById('metric-pasos-progress');
+      const pasosGoal = document.getElementById('metric-pasos-goal');
+      const ejercicioMin = document.getElementById('metric-ejercicio-min');
+      const actividadFooter = document.getElementById('metric-actividad-footer');
+
+      if (summary.activity.hasActivityToday && summary.activity.steps > 0) {
+        if (pasosVal) pasosVal.textContent = summary.activity.steps.toLocaleString();
+        const pct = Math.min(100, Math.round((summary.activity.steps / summary.activity.stepsGoal) * 100));
+        if (pasosProgress) pasosProgress.style.width = `${pct}%`;
+        if (pasosGoal) pasosGoal.textContent = `${summary.activity.stepsGoal.toLocaleString()} pasos`;
+        if (ejercicioMin) ejercicioMin.textContent = `${summary.activity.exerciseMinutes} min`;
+        if (actividadFooter) {
+          actividadFooter.textContent = summary.activity.weeklyAverageSteps != null
+            ? `Promedio semanal: ${summary.activity.weeklyAverageSteps.toLocaleString()} pasos / día`
+            : 'Actividad registrada hoy';
+        }
+      } else {
+        // Estado real: Sin actividad registrada hoy
+        if (pasosVal) pasosVal.textContent = '0';
+        if (pasosProgress) pasosProgress.style.width = '0%';
+        if (pasosGoal) pasosGoal.textContent = '10,000 pasos';
+        if (ejercicioMin) ejercicioMin.textContent = '0 min';
+        if (actividadFooter) actividadFooter.textContent = 'Sin actividad registrada el día de hoy';
+      }
+
+      // Card 3: Alimentación y Saciedad
+      const comidasVal = document.getElementById('metric-comidas-val');
+      const comidasUnit = document.getElementById('metric-comidas-unit');
+      const saciedadBadge = document.getElementById('metric-saciedad-badge');
+      const pausasVal = document.getElementById('metric-pausas-val');
+      const repeticionVal = document.getElementById('metric-repeticion-val');
+      const alimentacionFooter = document.getElementById('metric-alimentacion-footer');
+
+      if (summary.nutrition.hasMealsToday && summary.nutrition.mealsCount > 0) {
+        if (comidasVal) comidasVal.textContent = String(summary.nutrition.mealsCount);
+        if (comidasUnit) {
+          comidasUnit.textContent = summary.nutrition.mealsCount === 1 ? 'comida registrada' : 'comidas registradas';
+        }
+
+        if (saciedadBadge) {
+          if (summary.nutrition.averageSatietyLevel != null) {
+            saciedadBadge.className = 'satiety-badge';
+            saciedadBadge.textContent = `Nivel ${summary.nutrition.averageSatietyLevel} — ${summary.nutrition.satietyDescription || 'Satisfecho'}`;
+          } else {
+            saciedadBadge.className = 'satiety-badge satiety-badge--empty';
+            saciedadBadge.textContent = 'Sin nivel de saciedad registrado';
+          }
+        }
+
+        if (pausasVal) {
+          pausasVal.textContent = `${summary.nutrition.consciousPausesCount} de ${summary.nutrition.mealsCount}`;
+        }
+        if (repeticionVal) {
+          repeticionVal.textContent = `${summary.nutrition.repeatedMealsCount} veces`;
+        }
+        if (alimentacionFooter) {
+          alimentacionFooter.textContent = `${summary.nutrition.mealsCount} registro(s) completado(s) hoy`;
+        }
+      } else {
+        // Estado real: Sin comidas registradas hoy
+        if (comidasVal) comidasVal.textContent = '0';
+        if (comidasUnit) comidasUnit.textContent = 'comidas registradas';
+        if (saciedadBadge) {
+          saciedadBadge.className = 'satiety-badge satiety-badge--empty';
+          saciedadBadge.textContent = 'Sin registros de saciedad hoy';
+        }
+        if (pausasVal) pausasVal.textContent = '0 registradas';
+        if (repeticionVal) repeticionVal.textContent = '0 veces';
+        if (alimentacionFooter) {
+          alimentacionFooter.textContent = 'Registra tu primera comida para comenzar el seguimiento';
+        }
+      }
+    };
+
+    // Consultar datos reales de dashboard desde el backend
     try {
-      const freshUser = await authService.getMe();
-      renderUserData(freshUser);
-      if (syncStatus) {
-        syncStatus.textContent = 'En línea con backend';
-        syncStatus.style.color = '#4ade80';
-      }
+      const summary = await dashboardService.getSummary(token);
+      renderMetrics(summary);
     } catch (err) {
-      console.warn('No se pudo verificar token con el backend:', err);
-      if (syncStatus) {
-        syncStatus.textContent = 'Modo local (sin respuesta de API)';
-        syncStatus.style.color = 'var(--color-mute)';
-      }
+      console.warn('Error al obtener datos reales de dashboard:', err);
+    }
+
+    // Sincronizar usuario fresco de la API
+    try {
+      const freshUser = await authService.getMe(token);
+      renderUserProfile(freshUser);
+    } catch (err) {
+      console.warn('No se pudo sincronizar usuario con el backend:', err);
     }
 
     // Eventos de botones de acción rápida
