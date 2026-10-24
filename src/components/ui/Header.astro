@@ -47,9 +47,30 @@ const dashboardUrl = getAppUrl('dashboard');
     <!-- Estado: Autenticado -->
     <div class="auth-user-slot" data-auth-user style="display: none;">
       <a href={dashboardUrl} class="user-badge" title="Ir a tu espacio">
-        <span class="user-avatar" data-user-initial>U</span>
+        <span class="user-avatar" data-user-avatar-wrap>
+          <img class="user-avatar-img" data-user-photo src="" alt="" style="display: none;" />
+          <span class="user-avatar-initial" data-user-initial>U</span>
+        </span>
         <span class="user-display-name" data-user-name>Mi Cuenta</span>
       </a>
+
+      <!-- Icono Estado de la conexión al lado del botón Salir -->
+      <button
+        type="button"
+        class="btn-connection-status"
+        id="btn-connection-status"
+        aria-label="Estado de la conexión con el servidor"
+        title="Estado de la conexión"
+      >
+        <span class="status-indicator-dot" id="header-status-dot"></span>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+          <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+          <circle cx="12" cy="20" r="1"/>
+        </svg>
+      </button>
+
       <button type="button" class="btn-logout" data-logout-button title="Cerrar sesión">
         Salir
       </button>
@@ -85,18 +106,90 @@ const dashboardUrl = getAppUrl('dashboard');
     </div>
     <div data-auth-user class="mobile-user-actions" style="display: none;">
       <a href={dashboardUrl} class="mobile-user-card">
-        <span class="user-avatar" data-user-initial>U</span>
+        <span class="user-avatar" data-user-avatar-wrap>
+          <img class="user-avatar-img" data-user-photo src="" alt="" style="display: none;" />
+          <span class="user-avatar-initial" data-user-initial>U</span>
+        </span>
         <div class="mobile-user-info">
           <span class="mobile-user-name" data-user-name>Mi Cuenta</span>
           <span class="mobile-user-email text-mute caption" data-user-email></span>
         </div>
       </a>
+      <button type="button" class="btn-mobile-status" id="btn-mobile-connection-status">
+        <span class="status-indicator-dot"></span>
+        <span>Estado de la conexión</span>
+      </button>
       <button type="button" class="btn-mobile-logout" data-logout-button>
         Cerrar sesión
       </button>
     </div>
   </div>
 </nav>
+
+<!-- Dialog flotante: Estado de la conexión -->
+<dialog class="connection-dialog" id="connection-dialog" aria-labelledby="dialog-status-title">
+  <div class="connection-dialog-content">
+    <div class="connection-dialog-header">
+      <div class="connection-dialog-title-wrap">
+        <span class="connection-icon-wrap" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+            <circle cx="12" cy="20" r="1"/>
+          </svg>
+        </span>
+        <h2 id="dialog-status-title" class="connection-dialog-title">Estado de la conexión</h2>
+      </div>
+      <button type="button" class="btn-dialog-close" id="btn-close-status-dialog" aria-label="Cerrar ventana de estado">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="connection-status-pill-wrap">
+      <span class="pill-badge pill-badge--connected" id="dialog-api-status-badge">
+        <span class="badge-dot"></span> API Conectada
+      </span>
+    </div>
+
+    <p class="body-sm text-body connection-dialog-desc">
+      Tu sesión está protegida mediante tokens JWT criptográficos validados por el backend NestJS (<code class="code-font">/api/auth/me</code>).
+    </p>
+
+    <!-- Componentes de la card en vertical -->
+    <div class="connection-vertical-stack">
+      <div class="detail-box-vertical">
+        <div class="detail-box-top">
+          <span class="caption text-mute">Backend Endpoint</span>
+          <span class="detail-box-tag">REST API</span>
+        </div>
+        <span class="body-sm code-font detail-box-value" id="dialog-endpoint-display">http://localhost:3000/api</span>
+      </div>
+
+      <div class="detail-box-vertical">
+        <div class="detail-box-top">
+          <span class="caption text-mute">Tipo de Token</span>
+          <span class="detail-box-tag">Seguridad</span>
+        </div>
+        <span class="body-sm code-font detail-box-value">Bearer JWT (7 días)</span>
+      </div>
+
+      <div class="detail-box-vertical">
+        <div class="detail-box-top">
+          <span class="caption text-mute">Verificación en vivo</span>
+          <span class="detail-box-tag">Estado</span>
+        </div>
+        <div class="detail-sync-row">
+          <span class="status-indicator-dot" id="dialog-live-dot"></span>
+          <span class="body-sm text-body-strong" id="dialog-live-sync-status">Sincronizado con API</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
 
 <style>
   .nav-bar {
@@ -191,6 +284,19 @@ const dashboardUrl = getAppUrl('dashboard');
     justify-content: center;
     font-size: 11px;
     font-weight: 700;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .user-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--rounded-full);
+  }
+
+  .user-avatar-initial {
+    line-height: 1;
   }
 
   .user-display-name {
@@ -198,6 +304,45 @@ const dashboardUrl = getAppUrl('dashboard');
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-right: var(--space-xs);
+  }
+
+  /* Botón de Estado de la conexión en header */
+  .btn-connection-status {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-connection-status:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: #443e3a;
+  }
+
+  .status-indicator-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--rounded-full);
+    background-color: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .status-indicator-dot.offline {
+    background-color: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
   }
 
   .btn-logout {
@@ -306,6 +451,33 @@ const dashboardUrl = getAppUrl('dashboard');
     color: var(--color-ink);
   }
 
+  .btn-mobile-status {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-mobile-status:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+  }
+
+  .btn-mobile-status .status-indicator-dot {
+    position: static;
+  }
+
   .btn-mobile-logout {
     width: 100%;
     padding: var(--space-sm);
@@ -320,6 +492,178 @@ const dashboardUrl = getAppUrl('dashboard');
   .btn-mobile-logout:hover {
     color: var(--color-ink);
     border-color: var(--color-mute);
+  }
+
+  /* Dialog flotante de estado de la conexión */
+  .connection-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    padding: 0;
+    width: 92%;
+    max-width: 440px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+    z-index: 1000;
+  }
+
+  .connection-dialog::backdrop {
+    background-color: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .connection-dialog-content {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .connection-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .connection-dialog-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .connection-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--rounded-sm);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+  }
+
+  .connection-dialog-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .btn-dialog-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-dialog-close:hover {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .connection-status-pill-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: var(--rounded-full);
+  }
+
+  .pill-badge.offline {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--rounded-full);
+    background-color: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+  }
+
+  .pill-badge.offline .badge-dot {
+    background-color: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+  }
+
+  .connection-dialog-desc {
+    color: var(--color-body);
+  }
+
+  /* Componentes verticales en el popup */
+  .connection-vertical-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+
+  .detail-box-vertical {
+    padding: var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+
+  .detail-box-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .detail-box-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-mute);
+    padding: 1px 6px;
+    background-color: var(--color-canvas);
+    border-radius: var(--rounded-xs);
+    border: 1px solid var(--color-hairline);
+  }
+
+  .detail-box-value {
+    word-break: break-all;
+    color: var(--color-ink);
+  }
+
+  .detail-sync-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .detail-sync-row .status-indicator-dot {
+    position: static;
+  }
+
+  .code-font {
+    font-family: var(--font-mono);
   }
 
   @media (min-width: 768px) {
@@ -339,8 +683,81 @@ const dashboardUrl = getAppUrl('dashboard');
 
 <script>
   import { initGoogleAuth, updateAuthUI } from '../../utils/auth-client';
+  import { authService } from '../../services/auth.service';
 
-  // Inicializar componentes interactivos de autenticación y navegación
+  // Configuración del diálogo de estado de la conexión
+  function setupConnectionDialog() {
+    const dialog = document.getElementById('connection-dialog') as HTMLDialogElement | null;
+    const openBtn = document.getElementById('btn-connection-status');
+    const openMobileBtn = document.getElementById('btn-mobile-connection-status');
+    const closeBtn = document.getElementById('btn-close-status-dialog');
+
+    const openModal = () => {
+      if (dialog && !dialog.open) {
+        dialog.showModal();
+        checkBackendHealth();
+      }
+    };
+
+    const closeModal = () => {
+      if (dialog && dialog.open) {
+        dialog.close();
+      }
+    };
+
+    openBtn?.addEventListener('click', openModal);
+    openMobileBtn?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+
+    // Cerrar al hacer clic en el backdrop
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) {
+        closeModal();
+      }
+    });
+
+    // Actualizar URL del endpoint
+    const endpointEl = document.getElementById('dialog-endpoint-display');
+    if (endpointEl) {
+      endpointEl.textContent = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
+    }
+  }
+
+  async function checkBackendHealth() {
+    const headerDot = document.getElementById('header-status-dot');
+    const dialogDot = document.getElementById('dialog-live-dot');
+    const statusText = document.getElementById('dialog-live-sync-status');
+    const badge = document.getElementById('dialog-api-status-badge');
+
+    const token = authService.getStoredToken();
+    if (!token) return;
+
+    try {
+      await authService.getMe();
+      if (headerDot) headerDot.classList.remove('offline');
+      if (dialogDot) dialogDot.classList.remove('offline');
+      if (badge) {
+        badge.classList.remove('offline');
+        badge.innerHTML = '<span class="badge-dot"></span> API Conectada';
+      }
+      if (statusText) {
+        statusText.textContent = 'En línea con backend';
+        statusText.style.color = '#4ade80';
+      }
+    } catch {
+      if (headerDot) headerDot.classList.add('offline');
+      if (dialogDot) dialogDot.classList.add('offline');
+      if (badge) {
+        badge.classList.add('offline');
+        badge.innerHTML = '<span class="badge-dot"></span> Modo local';
+      }
+      if (statusText) {
+        statusText.textContent = 'Sin respuesta de API (modo local)';
+        statusText.style.color = 'var(--color-mute)';
+      }
+    }
+  }
+
   function setupHeader() {
     const toggle = document.getElementById('nav-toggle');
     const menu = document.getElementById('mobile-menu');
@@ -359,6 +776,7 @@ const dashboardUrl = getAppUrl('dashboard');
 
     initGoogleAuth();
     updateAuthUI();
+    setupConnectionDialog();
   }
 
   if (document.readyState === 'loading') {

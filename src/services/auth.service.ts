@@ -8,6 +8,25 @@ import type {
 const TOKEN_KEY = 'accessToken';
 const USER_KEY = 'user';
 
+function extractGooglePicture(idToken: string): string | undefined {
+  try {
+    const parts = idToken.split('.');
+    if (parts.length < 2) return undefined;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const parsed = JSON.parse(jsonPayload) as { picture?: string };
+    return typeof parsed.picture === 'string' && parsed.picture ? parsed.picture : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export const authService = {
   async loginWithGoogle(idToken: string): Promise<AuthResponse> {
     const payload: GoogleLoginRequest = { idToken };
@@ -15,6 +34,11 @@ export const authService = {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+
+    const googlePicture = extractGooglePicture(idToken);
+    if (googlePicture && !response.user.picture) {
+      response.user.picture = googlePicture;
+    }
 
     this.saveSession(response);
     return response;
@@ -39,12 +63,17 @@ export const authService = {
   saveSession(auth: AuthResponse): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem(TOKEN_KEY, auth.accessToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(auth.user));
+    this.saveUser(auth.user);
   },
 
   saveUser(user: AuthenticatedUser): void {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    const current = this.getStoredUser();
+    const mergedUser: AuthenticatedUser = {
+      ...user,
+      picture: user.picture || current?.picture,
+    };
+    localStorage.setItem(USER_KEY, JSON.stringify(mergedUser));
   },
 
   getStoredToken(): string | null {

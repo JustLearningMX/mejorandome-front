@@ -6,7 +6,8 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   name: string;
-  timezone: string;
+  timezone?: string;
+  picture?: string;
 }
 
 export interface AuthResponse {
