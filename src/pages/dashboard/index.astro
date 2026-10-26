@@ -80,7 +80,21 @@ const homeUrl = getAppUrl();
               <span class="caption text-mute">Seguimiento</span>
               <h2 class="metric-card-title">Peso corporal</h2>
             </div>
-            <span class="metric-tag" id="metric-peso-tag">Sin registro</span>
+            <div class="metric-header-actions">
+              <span class="metric-tag" id="metric-peso-tag">Sin registro</span>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-weight-card"
+                title="Registrar nuevo peso"
+                aria-label="Registrar nueva medición de peso"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="metric-value-wrap">
             <span class="metric-number metric-empty" id="metric-peso-val">--</span>
@@ -89,17 +103,10 @@ const homeUrl = getAppUrl();
           <div class="metric-trend-wrap" id="metric-peso-trend-wrap">
             <span class="metric-empty-notice" id="metric-peso-status-text">Sin mediciones registradas en el historial.</span>
           </div>
-          <div class="metric-sparkline-wrap" id="metric-peso-sparkline-wrap" style="display: none;">
-            <svg viewBox="0 0 200 40" class="metric-sparkline" preserveAspectRatio="none" id="metric-peso-svg">
-              <polyline
-                id="metric-peso-polyline"
-                points=""
-                fill="none"
-                stroke="var(--color-primary)"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
+          <div id="metric-peso-cta-wrap" class="metric-cta-wrap">
+            <button type="button" class="btn-card-cta" id="btn-card-register-peso">
+              + Registrar primer peso
+            </button>
           </div>
           <div class="metric-footer">
             <span class="caption text-mute" id="metric-peso-footer">Promedio mensual: Sin datos aún</span>
@@ -170,6 +177,74 @@ const homeUrl = getAppUrl();
         </article>
       </section>
     </section>
+
+    <!-- Dialog modal interactivo para Registrar Peso Corporal -->
+    <dialog id="weight-modal" class="app-modal" aria-labelledby="weight-modal-title">
+      <div class="app-modal-content">
+        <div class="app-modal-header">
+          <div class="app-modal-title-wrap">
+            <span class="app-modal-icon" aria-hidden="true">⚖️</span>
+            <div>
+              <h2 id="weight-modal-title" class="app-modal-title">Registrar peso corporal</h2>
+              <span class="caption text-mute">Seguimiento diario de evolución</span>
+            </div>
+          </div>
+          <button type="button" class="btn-dialog-close" id="btn-close-weight-modal" aria-label="Cerrar ventana de registro">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <form id="weight-form" class="app-modal-form" novalidate>
+          <div id="weight-form-error" class="form-error-banner" style="display: none;" role="alert"></div>
+
+          <div class="form-field">
+            <label for="input-weight-kg" class="form-label">
+              Peso en kilogramos <span class="required-star">*</span>
+            </label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                id="input-weight-kg"
+                name="weightKg"
+                step="0.01"
+                min="20.0"
+                max="350.0"
+                placeholder="Ej. 78.50"
+                required
+                class="form-input text-input-lg"
+              />
+              <span class="input-suffix">kg</span>
+            </div>
+            <span class="caption text-mute form-help">Rango permitido: 20.0 a 350.0 kg (hasta 2 decimales).</span>
+          </div>
+
+          <div class="form-field">
+            <label for="input-weight-date" class="form-label">
+              Fecha y hora de la medición
+            </label>
+            <input
+              type="datetime-local"
+              id="input-weight-date"
+              name="occurredAt"
+              class="form-input"
+            />
+            <span class="caption text-mute form-help">Opcional. Si se deja en blanco, se guardará el momento actual.</span>
+          </div>
+
+          <div class="app-modal-actions">
+            <button type="button" class="btn-cancel" id="btn-cancel-weight">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-submit" id="btn-submit-weight">
+              <span id="btn-submit-weight-text">Guardar medición</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </dialog>
   </main>
 </MainLayout>
 
@@ -310,12 +385,10 @@ const homeUrl = getAppUrl();
     box-shadow: 0 0 8px #22c55e;
   }
 
-  /* Frase representativa y acciones en el hero */
   .user-hero-motto {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-md);
   }
 
   @media (min-width: 768px) {
@@ -349,7 +422,6 @@ const homeUrl = getAppUrl();
     text-overflow: ellipsis;
   }
 
-
   /* Quick Actions Bar */
   .quick-actions-bar {
     display: flex;
@@ -380,7 +452,7 @@ const homeUrl = getAppUrl();
     border: 1px solid var(--color-hairline);
     border-radius: var(--rounded-sm);
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
 
   .btn-action:hover {
@@ -417,6 +489,12 @@ const homeUrl = getAppUrl();
     align-items: flex-start;
   }
 
+  .metric-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
   .metric-card-title {
     font-size: 18px;
     font-weight: 500;
@@ -431,6 +509,26 @@ const homeUrl = getAppUrl();
     border: 1px solid var(--color-hairline);
     border-radius: var(--rounded-xs);
     color: var(--color-mute);
+  }
+
+  .btn-metric-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--rounded-xs);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    color: var(--color-mute);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-metric-add:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: #443e3a;
   }
 
   .metric-value-wrap {
@@ -468,6 +566,30 @@ const homeUrl = getAppUrl();
     color: var(--color-mute);
   }
 
+  .metric-cta-wrap {
+    margin-top: var(--space-xs);
+  }
+
+  .btn-card-cta {
+    width: 100%;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: var(--color-canvas);
+    border: 1px dashed var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    text-align: center;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-card-cta:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: #443e3a;
+  }
+
   .metric-trend {
     font-size: 13px;
     font-weight: 500;
@@ -479,16 +601,6 @@ const homeUrl = getAppUrl();
 
   .metric-trend--up {
     color: #f87171;
-  }
-
-  .metric-sparkline-wrap {
-    height: 40px;
-    margin-top: var(--space-xs);
-  }
-
-  .metric-sparkline {
-    width: 100%;
-    height: 100%;
   }
 
   .progress-bar-bg {
@@ -547,11 +659,204 @@ const homeUrl = getAppUrl();
     padding-top: var(--space-xs);
     border-top: 1px solid var(--color-hairline);
   }
+
+  /* Estilos para Modal de Registro (Design System Warp-inspired) */
+  .app-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    padding: 0;
+    width: 92%;
+    max-width: 440px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+
+  .app-modal::backdrop {
+    background-color: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .app-modal-content {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .app-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .app-modal-icon {
+    font-size: 24px;
+  }
+
+  .app-modal-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.2;
+  }
+
+  .btn-dialog-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-dialog-close:hover {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .app-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body-strong);
+  }
+
+  .required-star {
+    color: #f87171;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    color: var(--color-ink);
+    font-size: 14px;
+    font-family: var(--font-sans);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
+  }
+
+  .input-with-suffix {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .text-input-lg {
+    font-size: 20px;
+    font-weight: 500;
+    padding-right: 48px;
+  }
+
+  .input-suffix {
+    position: absolute;
+    right: var(--space-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-mute);
+    pointer-events: none;
+  }
+
+  .form-help {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .form-error-banner {
+    padding: var(--space-xs) var(--space-md);
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--rounded-sm);
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .app-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .btn-cancel {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-cancel:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .btn-submit {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.92;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 </style>
 
 <script>
   import { authService } from '../../services/auth.service';
   import { dashboardService } from '../../services/dashboard.service';
+  import { weightService } from '../../services/weight.service';
   import { showAuthNotification } from '../../utils/auth-client';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
@@ -613,6 +918,7 @@ const homeUrl = getAppUrl();
       const pesoTag = document.getElementById('metric-peso-tag');
       const pesoTrendWrap = document.getElementById('metric-peso-trend-wrap');
       const pesoFooter = document.getElementById('metric-peso-footer');
+      const pesoCtaWrap = document.getElementById('metric-peso-cta-wrap');
 
       if (summary.weight.hasMeasurements && summary.weight.latestKg != null) {
         if (pesoVal) {
@@ -620,6 +926,7 @@ const homeUrl = getAppUrl();
           pesoVal.classList.remove('metric-empty');
         }
         if (pesoTag) pesoTag.textContent = summary.weight.latestDate || 'Último';
+        if (pesoCtaWrap) pesoCtaWrap.style.display = 'none';
 
         if (pesoTrendWrap) {
           if (summary.weight.differenceKg != null) {
@@ -627,11 +934,11 @@ const homeUrl = getAppUrl();
             const diffFormatted = Math.abs(summary.weight.differenceKg).toFixed(1);
             pesoTrendWrap.innerHTML = `
               <span class="metric-trend ${isDown ? 'metric-trend--down' : 'metric-trend--up'}">
-                ${isDown ? '↓' : '↑'} ${diffFormatted} kg respecto a la medición anterior
+                ${isDown ? '↓' : '↑'} ${diffFormatted} kg respecto a la anterior
               </span>
             `;
           } else {
-            pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Primera medición registrada</span>';
+            pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Medición registrada hoy</span>';
           }
         }
 
@@ -647,6 +954,7 @@ const homeUrl = getAppUrl();
           pesoVal.classList.add('metric-empty');
         }
         if (pesoTag) pesoTag.textContent = 'Sin registro';
+        if (pesoCtaWrap) pesoCtaWrap.style.display = 'block';
         if (pesoTrendWrap) {
           pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Sin mediciones registradas en el historial.</span>';
         }
@@ -747,10 +1055,118 @@ const homeUrl = getAppUrl();
       console.warn('No se pudo sincronizar usuario con el backend:', err);
     }
 
-    // Eventos de botones de acción rápida
-    document.getElementById('action-peso')?.addEventListener('click', () => {
-      showAuthNotification('Módulo de registro de peso en desarrollo.', 'info');
+    // 3. Modal de registro de peso
+    const weightModal = document.getElementById('weight-modal') as HTMLDialogElement | null;
+    const weightForm = document.getElementById('weight-form') as HTMLFormElement | null;
+    const weightInput = document.getElementById('input-weight-kg') as HTMLInputElement | null;
+    const dateInput = document.getElementById('input-weight-date') as HTMLInputElement | null;
+    const errorBanner = document.getElementById('weight-form-error');
+    const submitBtn = document.getElementById('btn-submit-weight') as HTMLButtonElement | null;
+    const submitBtnText = document.getElementById('btn-submit-weight-text');
+
+    const openWeightModal = () => {
+      if (!weightModal) return;
+      if (errorBanner) {
+        errorBanner.style.display = 'none';
+        errorBanner.textContent = '';
+      }
+      if (weightInput) {
+        weightInput.value = '';
+      }
+      if (dateInput) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        dateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+      weightModal.showModal();
+      setTimeout(() => weightInput?.focus(), 50);
+    };
+
+    const closeWeightModal = () => {
+      if (weightModal && weightModal.open) {
+        weightModal.close();
+      }
+    };
+
+    document.getElementById('action-peso')?.addEventListener('click', openWeightModal);
+    document.getElementById('btn-add-weight-card')?.addEventListener('click', openWeightModal);
+    document.getElementById('btn-card-register-peso')?.addEventListener('click', openWeightModal);
+    document.getElementById('btn-close-weight-modal')?.addEventListener('click', closeWeightModal);
+    document.getElementById('btn-cancel-weight')?.addEventListener('click', closeWeightModal);
+
+    weightModal?.addEventListener('click', (e) => {
+      if (e.target === weightModal) closeWeightModal();
     });
+
+    weightForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!weightInput) return;
+
+      const rawVal = weightInput.value.trim();
+      const weightVal = parseFloat(rawVal);
+
+      if (isNaN(weightVal) || weightVal < 20.0 || weightVal > 350.0) {
+        if (errorBanner) {
+          errorBanner.textContent = 'Por favor introduce un peso válido entre 20.0 y 350.0 kg.';
+          errorBanner.style.display = 'block';
+        }
+        weightInput.focus();
+        return;
+      }
+
+      let occurredAt: string | undefined = undefined;
+      if (dateInput && dateInput.value) {
+        try {
+          const parsedDate = new Date(dateInput.value);
+          if (!isNaN(parsedDate.getTime())) {
+            occurredAt = parsedDate.toISOString();
+          }
+        } catch {
+          // Dejar undefined para que el backend asigne 'now'
+        }
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitBtnText) submitBtnText.textContent = 'Guardando...';
+      if (errorBanner) errorBanner.style.display = 'none';
+
+      try {
+        await weightService.createWeight(
+          {
+            weightKg: Math.round(weightVal * 100) / 100,
+            occurredAt,
+          },
+          token
+        );
+
+        showAuthNotification(`¡Medición de ${weightVal.toFixed(1)} kg guardada exitosamente!`, 'success');
+        closeWeightModal();
+
+        // Actualizar dashboard inmediatamente con la nueva medición
+        const freshSummary = await dashboardService.getSummary(token);
+        renderMetrics(freshSummary);
+      } catch (err: unknown) {
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : 'Error al registrar la medición de peso';
+
+        if (errorBanner) {
+          errorBanner.textContent = errorMsg;
+          errorBanner.style.display = 'block';
+        }
+        showAuthNotification(errorMsg, 'error');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitBtnText) submitBtnText.textContent = 'Guardar medición';
+      }
+    });
+
+    // Otros botones de acción rápida
     document.getElementById('action-comida')?.addEventListener('click', () => {
       showAuthNotification('Módulo de registro de alimentación en desarrollo.', 'info');
     });
