@@ -197,8 +197,202 @@ import { MEAL_TYPES } from '../../types/nutrition';
 </dialog>
 
 <style>
-  .meal-modal-content {
+  /* Dialog y Centrado en pantalla */
+  dialog.meal-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    padding: 0;
+    width: 92%;
     max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hairline) transparent;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: var(--rounded-pill);
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-thumb:hover {
+    background: var(--color-mute);
+  }
+
+  dialog.meal-modal::backdrop {
+    background-color: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .meal-modal-content {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    background-color: var(--color-canvas);
+    width: 100%;
+  }
+
+  .app-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .app-modal-icon {
+    font-size: 24px;
+  }
+
+  .app-modal-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.2;
+  }
+
+  .btn-dialog-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-dialog-close:hover {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .app-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body-strong);
+  }
+
+  .required-star {
+    color: #f87171;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    color: var(--color-ink);
+    font-size: 14px;
+    font-family: var(--font-sans);
+    color-scheme: dark;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
+  }
+
+  .form-help {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .form-error-banner {
+    padding: var(--space-xs) var(--space-md);
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--rounded-sm);
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .app-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .btn-cancel {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-cancel:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .btn-submit {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.92;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* Selector de tipos de comida */
