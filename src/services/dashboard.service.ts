@@ -1,12 +1,75 @@
 import { apiRequest } from './api.client';
 import { weightService } from './weight.service';
-import type { DashboardSummary } from '../types/dashboard';
+import { nutritionService } from './nutrition.service';
+import type { DashboardSummary, NutritionSummary } from '../types/dashboard';
+import type { MealResponse } from '../types/nutrition';
+
+function computeNutritionSummary(meals: MealResponse[]): NutritionSummary {
+  if (!meals || meals.length === 0) {
+    return {
+      mealsCount: 0,
+      averageSatietyLevel: null,
+      satietyDescription: null,
+      consciousPausesCount: 0,
+      repeatedMealsCount: 0,
+      hasMealsToday: false,
+    };
+  }
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  const todaysMeals = meals.filter((m) => {
+    if (m.healthDay?.localDate) {
+      return m.healthDay.localDate === todayStr;
+    }
+    const d = new Date(m.occurredAt);
+    return (
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate()
+    );
+  });
+
+  const mealsCount = todaysMeals.length;
+  if (mealsCount === 0) {
+    return {
+      mealsCount: 0,
+      averageSatietyLevel: null,
+      satietyDescription: null,
+      consciousPausesCount: 0,
+      repeatedMealsCount: 0,
+      hasMealsToday: false,
+    };
+  }
+
+  const totalSatiety = todaysMeals.reduce((acc, m) => acc + (Number(m.satietyAfter) || 0), 0);
+  const averageSatiety = Math.round((totalSatiety / mealsCount) * 10) / 10;
+  const consciousPausesCount = todaysMeals.filter((m) => m.pausedBeforeMore === true).length;
+  const repeatedMealsCount = todaysMeals.filter((m) => m.wantedMoreEvenIfFull === true).length;
+
+  let satietyDesc = 'Satisfecho';
+  if (averageSatiety <= 3) satietyDesc = 'Hambre residual';
+  else if (averageSatiety <= 5) satietyDesc = 'Satisfecho moderado';
+  else if (averageSatiety <= 7) satietyDesc = 'Satisfecho pleno';
+  else if (averageSatiety <= 8) satietyDesc = 'Lleno';
+  else satietyDesc = 'Excesivamente lleno';
+
+  return {
+    mealsCount,
+    averageSatietyLevel: averageSatiety,
+    satietyDescription: satietyDesc,
+    consciousPausesCount,
+    repeatedMealsCount,
+    hasMealsToday: true,
+  };
+}
 
 export const dashboardService = {
   /**
    * Obtiene el resumen de métricas del usuario autenticado para el dashboard.
    * Consulta prioritariamente el endpoint de resumen o directamente los módulos
-   * específicos (como /api/weight) para mostrar con exactitud la información real.
+   * específicos (como /api/weight y /api/nutrition/meals) para mostrar información real.
    */
   async getSummary(token?: string | null): Promise<DashboardSummary> {
     const emptySummary: DashboardSummary = {
@@ -46,6 +109,23 @@ export const dashboardService = {
         token
       );
 
+      let nutritionData = {
+        ...emptySummary.nutrition,
+        ...(response.nutrition || {}),
+      };
+
+      // Si el endpoint de summary no tiene nutrición o no ha implementado el desglose
+      if (!response.nutrition || (!response.nutrition.hasMealsToday && response.nutrition.mealsCount === 0)) {
+        try {
+          const meals = await nutritionService.getMeals({ limit: 30 }, token);
+          if (meals && meals.length > 0) {
+            nutritionData = computeNutritionSummary(meals);
+          }
+        } catch {
+          // Ignorar fallback si falla
+        }
+      }
+
       return {
         weight: {
           ...emptySummary.weight,
@@ -55,13 +135,13 @@ export const dashboardService = {
           ...emptySummary.activity,
           ...(response.activity || {}),
         },
-        nutrition: {
-          ...emptySummary.nutrition,
-          ...(response.nutrition || {}),
-        },
+        nutrition: nutritionData,
       };
     } catch {
-      // Fallback inteligente: consultar directamente el historial de /api/weight
+      // Fallback inteligente: consultar directamente los módulos de peso y comidas
+      let weightSummary = emptySummary.weight;
+      let nutritionSummary = emptySummary.nutrition;
+
       try {
         const weightHistory = await weightService.getWeightHistory(30, token);
         if (weightHistory && weightHistory.length > 0) {
@@ -93,30 +173,40 @@ export const dashboardService = {
             month: 'short',
           });
 
-          return {
-            ...emptySummary,
-            weight: {
-              latestKg,
-              latestDate: formattedDate,
-              differenceKg: diff,
-              trendDirection:
-                diff === null
-                  ? null
-                  : diff < 0
-                  ? 'down'
-                  : diff > 0
-                  ? 'up'
-                  : 'neutral',
-              monthlyAverageKg: monthlyAvg,
-              hasMeasurements: true,
-            },
+          weightSummary = {
+            latestKg,
+            latestDate: formattedDate,
+            differenceKg: diff,
+            trendDirection:
+              diff === null
+                ? null
+                : diff < 0
+                ? 'down'
+                : diff > 0
+                ? 'up'
+                : 'neutral',
+            monthlyAverageKg: monthlyAvg,
+            hasMeasurements: true,
           };
         }
       } catch {
-        // En caso de que no haya respuesta de /api/weight aún
+        // En caso de que no haya respuesta de /api/weight
       }
 
-      return emptySummary;
+      try {
+        const meals = await nutritionService.getMeals({ limit: 30 }, token);
+        if (meals && meals.length > 0) {
+          nutritionSummary = computeNutritionSummary(meals);
+        }
+      } catch {
+        // En caso de que no haya respuesta de /api/nutrition/meals
+      }
+
+      return {
+        ...emptySummary,
+        weight: weightSummary,
+        nutrition: nutritionSummary,
+      };
     }
   },
 };

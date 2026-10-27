@@ -2,6 +2,7 @@
 import MainLayout from '../../layouts/MainLayout.astro';
 import Header from '../../components/ui/Header.astro';
 import GoogleButton from '../../components/ui/GoogleButton.astro';
+import MealModal from '../../components/nutrition/MealModal.astro';
 import { getAppUrl } from '../../utils/paths';
 
 const homeUrl = getAppUrl();
@@ -151,11 +152,25 @@ const homeUrl = getAppUrl();
               <span class="caption text-mute">Patrones</span>
               <h2 class="metric-card-title">Alimentación y Saciedad</h2>
             </div>
-            <span class="metric-tag">Hoy</span>
+            <div class="metric-header-actions">
+              <span class="metric-tag" id="metric-alimentacion-tag">Hoy</span>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-meal-card"
+                title="Registrar nueva comida"
+                aria-label="Registrar nueva comida y nivel de saciedad"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="metric-value-wrap">
-            <span class="metric-number" id="metric-comidas-val">0</span>
-            <span class="metric-unit" id="metric-comidas-unit">comidas registradas</span>
+            <span class="metric-number metric-empty" id="metric-comidas-val">0</span>
+            <span class="metric-unit" id="metric-comidas-unit">comidas hoy</span>
           </div>
           <div class="satiety-indicator">
             <span class="satiety-label caption text-mute">Nivel de saciedad promedio:</span>
@@ -171,10 +186,37 @@ const homeUrl = getAppUrl();
               <span class="body-sm text-body-strong" id="metric-repeticion-val">0 veces</span>
             </div>
           </div>
+          <div id="metric-meal-cta-wrap" class="metric-cta-wrap">
+            <button type="button" class="btn-card-cta" id="btn-card-register-meal">
+              + Registrar primera comida
+            </button>
+          </div>
           <div class="metric-footer">
             <span class="caption text-mute" id="metric-alimentacion-footer">Registra tu primera comida para comenzar el seguimiento</span>
           </div>
         </article>
+      </section>
+
+      <!-- Sección de comidas registradas hoy -->
+      <section class="meals-log-section" id="section-meals-log">
+        <div class="meals-log-header">
+          <div class="meals-log-title-wrap">
+            <h3 class="meals-log-title">Comidas del día</h3>
+            <span class="caption text-mute" id="meals-count-subtitle">0 registros hoy</span>
+          </div>
+          <button type="button" class="btn-action-sm" id="btn-header-add-meal">
+            <span class="action-icon">➕</span> Registrar comida
+          </button>
+        </div>
+
+        <div id="meals-list-container" class="meals-list-container">
+          <div class="meals-empty-state" id="meals-empty-state">
+            <span class="meals-empty-icon" aria-hidden="true">🥗</span>
+            <p class="body-sm text-body">Aún no has registrado comidas el día de hoy.</p>
+            <span class="caption text-mute">Registra lo que comiste y cómo te sentiste para identificar patrones de saciedad y apetito.</span>
+          </div>
+          <div id="meals-items-list" class="meals-items-list" style="display: none;"></div>
+        </div>
       </section>
     </section>
 
@@ -245,6 +287,9 @@ const homeUrl = getAppUrl();
         </form>
       </div>
     </dialog>
+
+    <!-- Dialog modal interactivo para Registrar Comida y Saciedad -->
+    <MealModal />
   </main>
 </MainLayout>
 
@@ -851,15 +896,218 @@ const homeUrl = getAppUrl();
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  /* Sección de comidas del día */
+  .meals-log-section {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .meals-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .meals-log-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meals-log-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .btn-action-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-ink);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-action-sm:hover {
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .meals-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl) var(--space-lg);
+    background-color: var(--color-canvas);
+    border: 1px dashed var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    text-align: center;
+    gap: var(--space-xs);
+  }
+
+  .meals-empty-icon {
+    font-size: 32px;
+    margin-bottom: var(--space-xs);
+  }
+
+  .meals-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .meal-item-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    transition: border-color 0.15s ease;
+  }
+
+  .meal-item-card:hover {
+    border-color: var(--color-mute);
+  }
+
+  .meal-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .meal-item-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .btn-delete-meal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    padding: 3px;
+    border-radius: var(--rounded-xs);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-delete-meal:hover {
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.12);
+  }
+
+  .meal-item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .meal-item-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .meal-item-type {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .meal-item-time {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-mute);
+  }
+
+  .meal-item-desc {
+    font-size: 14px;
+    color: var(--color-body);
+    line-height: 1.5;
+  }
+
+  .meal-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
+  .meal-tag-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--rounded-pill);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    color: var(--color-body-strong);
+  }
+
+  .meal-tag-pill--hunger {
+    border-color: rgba(234, 179, 8, 0.3);
+    color: #fde047;
+    background-color: rgba(234, 179, 8, 0.1);
+  }
+
+  .meal-tag-pill--satiety {
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #86efac;
+    background-color: rgba(34, 197, 94, 0.1);
+  }
+
+  .meal-tag-pill--pause {
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #7dd3fc;
+    background-color: rgba(56, 189, 248, 0.1);
+  }
+
+  .meal-tag-pill--repeat {
+    border-color: rgba(244, 114, 182, 0.3);
+    color: #f472b6;
+    background-color: rgba(244, 114, 182, 0.1);
+  }
+
+  .meal-item-context {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--color-mute);
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--color-canvas-soft);
+    border-left: 2px solid var(--color-hairline);
+    border-radius: 2px;
+  }
 </style>
 
 <script>
   import { authService } from '../../services/auth.service';
   import { dashboardService } from '../../services/dashboard.service';
   import { weightService } from '../../services/weight.service';
+  import { nutritionService } from '../../services/nutrition.service';
   import { showAuthNotification } from '../../utils/auth-client';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
+  import type { MealType } from '../../types/nutrition';
 
   async function initializeDashboard() {
     const gateView = document.getElementById('auth-required-view');
@@ -997,12 +1245,17 @@ const homeUrl = getAppUrl();
       const pausasVal = document.getElementById('metric-pausas-val');
       const repeticionVal = document.getElementById('metric-repeticion-val');
       const alimentacionFooter = document.getElementById('metric-alimentacion-footer');
+      const mealCtaWrap = document.getElementById('metric-meal-cta-wrap');
 
       if (summary.nutrition.hasMealsToday && summary.nutrition.mealsCount > 0) {
-        if (comidasVal) comidasVal.textContent = String(summary.nutrition.mealsCount);
-        if (comidasUnit) {
-          comidasUnit.textContent = summary.nutrition.mealsCount === 1 ? 'comida registrada' : 'comidas registradas';
+        if (comidasVal) {
+          comidasVal.textContent = String(summary.nutrition.mealsCount);
+          comidasVal.classList.remove('metric-empty');
         }
+        if (comidasUnit) {
+          comidasUnit.textContent = summary.nutrition.mealsCount === 1 ? 'comida hoy' : 'comidas hoy';
+        }
+        if (mealCtaWrap) mealCtaWrap.style.display = 'none';
 
         if (saciedadBadge) {
           if (summary.nutrition.averageSatietyLevel != null) {
@@ -1025,8 +1278,12 @@ const homeUrl = getAppUrl();
         }
       } else {
         // Estado real: Sin comidas registradas hoy
-        if (comidasVal) comidasVal.textContent = '0';
-        if (comidasUnit) comidasUnit.textContent = 'comidas registradas';
+        if (comidasVal) {
+          comidasVal.textContent = '0';
+          comidasVal.classList.add('metric-empty');
+        }
+        if (comidasUnit) comidasUnit.textContent = 'comidas hoy';
+        if (mealCtaWrap) mealCtaWrap.style.display = 'block';
         if (saciedadBadge) {
           saciedadBadge.className = 'satiety-badge satiety-badge--empty';
           saciedadBadge.textContent = 'Sin registros de saciedad hoy';
@@ -1166,10 +1423,328 @@ const homeUrl = getAppUrl();
       }
     });
 
-    // Otros botones de acción rápida
-    document.getElementById('action-comida')?.addEventListener('click', () => {
-      showAuthNotification('Módulo de registro de alimentación en desarrollo.', 'info');
+    // Función auxiliar para escapar texto en el renderizado
+    const escapeHtml = (str: string) => {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    };
+
+    // Función para consultar y renderizar el listado de comidas del día
+    const loadAndRenderTodayMeals = async () => {
+      const emptyState = document.getElementById('meals-empty-state');
+      const itemsList = document.getElementById('meals-items-list');
+      const subtitle = document.getElementById('meals-count-subtitle');
+
+      try {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const meals = await nutritionService.getMeals({ limit: 20 }, token);
+
+        const now = new Date();
+        const todaysMeals = meals.filter((m) => {
+          if (m.healthDay?.localDate) return m.healthDay.localDate === todayStr;
+          const d = new Date(m.occurredAt);
+          return (
+            d.getFullYear() === now.getFullYear() &&
+            d.getMonth() === now.getMonth() &&
+            d.getDate() === now.getDate()
+          );
+        });
+
+        if (subtitle) {
+          subtitle.textContent = `${todaysMeals.length} ${todaysMeals.length === 1 ? 'registro' : 'registros'} hoy`;
+        }
+
+        if (todaysMeals.length === 0) {
+          if (emptyState) emptyState.style.display = 'flex';
+          if (itemsList) {
+            itemsList.style.display = 'none';
+            itemsList.innerHTML = '';
+          }
+          return;
+        }
+
+        if (emptyState) emptyState.style.display = 'none';
+        if (itemsList) {
+          itemsList.style.display = 'flex';
+          itemsList.innerHTML = todaysMeals
+            .map((meal) => {
+              const typeLabels: Record<string, { label: string; icon: string }> = {
+                breakfast: { label: 'Desayuno', icon: '🌅' },
+                lunch: { label: 'Comida', icon: '☀️' },
+                dinner: { label: 'Cena', icon: '🌙' },
+                snack: { label: 'Colación', icon: '🍎' },
+                other: { label: 'Otro', icon: '🍽️' },
+              };
+              const meta = typeLabels[meal.mealType] || { label: meal.mealType, icon: '🍽️' };
+              const timeStr = new Date(meal.occurredAt).toLocaleTimeString('es-MX', {
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
+              return `
+                <div class="meal-item-card">
+                  <div class="meal-item-top">
+                    <div class="meal-item-header">
+                      <span class="meal-item-icon">${meta.icon}</span>
+                      <span class="meal-item-type">${meta.label}</span>
+                    </div>
+                    <div class="meal-item-actions">
+                      <span class="meal-item-time">${timeStr}</span>
+                      <button
+                        type="button"
+                        class="btn-delete-meal"
+                        data-meal-id="${meal.id}"
+                        title="Eliminar comida"
+                        aria-label="Eliminar comida del registro"
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <p class="meal-item-desc">${escapeHtml(meal.description)}</p>
+                  <div class="meal-item-tags">
+                    <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${meal.hungerBefore}/10</span>
+                    <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${meal.satietyAfter}/10</span>
+                    ${meal.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
+                    ${meal.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ✓</span>' : ''}
+                  </div>
+                  ${meal.extraEatingContext ? `<div class="meal-item-context">💭 "${escapeHtml(meal.extraEatingContext)}"</div>` : ''}
+                </div>
+              `;
+            })
+            .join('');
+
+          // Asignar listeners a botones de eliminar
+          itemsList.querySelectorAll('.btn-delete-meal').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+              const target = e.currentTarget as HTMLElement;
+              const mealId = target.dataset.mealId;
+              if (!mealId) return;
+
+              if (!confirm('¿Deseas eliminar este registro de comida?')) return;
+
+              target.setAttribute('disabled', 'true');
+              try {
+                await nutritionService.deleteMeal(mealId, token);
+                showAuthNotification('Comida eliminada exitosamente', 'info');
+                const freshSummary = await dashboardService.getSummary(token);
+                renderMetrics(freshSummary);
+                await loadAndRenderTodayMeals();
+              } catch (err: unknown) {
+                const errorMsg =
+                  err instanceof Error
+                    ? err.message
+                    : 'Error al eliminar la comida';
+                showAuthNotification(errorMsg, 'error');
+                target.removeAttribute('disabled');
+              }
+            });
+          });
+        }
+      } catch (err) {
+        console.warn('Error cargando comidas de hoy:', err);
+      }
+    };
+
+    // Cargar comidas de hoy en el inicio
+    loadAndRenderTodayMeals();
+
+    // 4. Modal de registro de comida y saciedad
+    const mealModal = document.getElementById('meal-modal') as HTMLDialogElement | null;
+    const mealForm = document.getElementById('meal-form') as HTMLFormElement | null;
+    const mealDateInput = document.getElementById('input-meal-date') as HTMLInputElement | null;
+    const mealDescInput = document.getElementById('input-meal-desc') as HTMLTextAreaElement | null;
+    const hungerRange = document.getElementById('input-hunger-level') as HTMLInputElement | null;
+    const hungerNum = document.getElementById('hunger-level-number');
+    const hungerBadge = document.getElementById('hunger-level-badge');
+    const satietyRange = document.getElementById('input-satiety-level') as HTMLInputElement | null;
+    const satietyNum = document.getElementById('satiety-level-number');
+    const satietyBadge = document.getElementById('satiety-level-badge');
+    const checkWantedMore = document.getElementById('check-wanted-more') as HTMLInputElement | null;
+    const wrapMoreQuestions = document.getElementById('wrap-more-questions');
+    const checkPausedBefore = document.getElementById('check-paused-before') as HTMLInputElement | null;
+    const extraContextInput = document.getElementById('input-extra-context') as HTMLInputElement | null;
+    const mealErrorBanner = document.getElementById('meal-form-error');
+    const submitMealBtn = document.getElementById('btn-submit-meal') as HTMLButtonElement | null;
+    const submitMealText = document.getElementById('btn-submit-meal-text');
+
+    const updateHungerUI = (val: number) => {
+      if (hungerNum) hungerNum.textContent = String(val);
+      if (hungerBadge) {
+        if (val <= 2) hungerBadge.textContent = 'Sin hambre';
+        else if (val <= 4) hungerBadge.textContent = 'Hambre leve';
+        else if (val <= 6) hungerBadge.textContent = 'Hambre moderada';
+        else if (val <= 8) hungerBadge.textContent = 'Hambre intensa';
+        else hungerBadge.textContent = 'Hambre voraz / urgente';
+      }
+    };
+
+    const updateSatietyUI = (val: number) => {
+      if (satietyNum) satietyNum.textContent = String(val);
+      if (satietyBadge) {
+        if (val <= 2) {
+          satietyBadge.className = 'level-badge';
+          satietyBadge.textContent = 'Sigo con hambre';
+        } else if (val <= 4) {
+          satietyBadge.className = 'level-badge';
+          satietyBadge.textContent = 'Apenas satisfecho';
+        } else if (val <= 6) {
+          satietyBadge.className = 'level-badge level-badge--success';
+          satietyBadge.textContent = 'Satisfecho ligero';
+        } else if (val <= 8) {
+          satietyBadge.className = 'level-badge level-badge--success';
+          satietyBadge.textContent = 'Satisfecho pleno';
+        } else {
+          satietyBadge.className = 'level-badge';
+          satietyBadge.textContent = 'Excesivamente lleno';
+        }
+      }
+    };
+
+    hungerRange?.addEventListener('input', (e) => {
+      updateHungerUI(parseInt((e.target as HTMLInputElement).value, 10));
     });
+
+    satietyRange?.addEventListener('input', (e) => {
+      updateSatietyUI(parseInt((e.target as HTMLInputElement).value, 10));
+    });
+
+    checkWantedMore?.addEventListener('change', () => {
+      if (wrapMoreQuestions) {
+        wrapMoreQuestions.style.display = checkWantedMore.checked ? 'flex' : 'none';
+      }
+    });
+
+    const openMealModal = () => {
+      if (!mealModal) return;
+      if (mealErrorBanner) {
+        mealErrorBanner.style.display = 'none';
+        mealErrorBanner.textContent = '';
+      }
+      if (mealDescInput) mealDescInput.value = '';
+      if (hungerRange) hungerRange.value = '5';
+      updateHungerUI(5);
+      if (satietyRange) satietyRange.value = '7';
+      updateSatietyUI(7);
+      if (checkWantedMore) checkWantedMore.checked = false;
+      if (checkPausedBefore) checkPausedBefore.checked = false;
+      if (extraContextInput) extraContextInput.value = '';
+      if (wrapMoreQuestions) wrapMoreQuestions.style.display = 'none';
+
+      // Reset meal type to lunch by default
+      const defaultTypeRadio = mealModal.querySelector('input[name="mealType"][value="lunch"]') as HTMLInputElement | null;
+      if (defaultTypeRadio) defaultTypeRadio.checked = true;
+
+      if (mealDateInput) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        mealDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      mealModal.showModal();
+      setTimeout(() => mealDescInput?.focus(), 50);
+    };
+
+    const closeMealModal = () => {
+      if (mealModal && mealModal.open) {
+        mealModal.close();
+      }
+    };
+
+    document.getElementById('action-comida')?.addEventListener('click', openMealModal);
+    document.getElementById('btn-add-meal-card')?.addEventListener('click', openMealModal);
+    document.getElementById('btn-card-register-meal')?.addEventListener('click', openMealModal);
+    document.getElementById('btn-header-add-meal')?.addEventListener('click', openMealModal);
+    document.getElementById('btn-close-meal-modal')?.addEventListener('click', closeMealModal);
+    document.getElementById('btn-cancel-meal')?.addEventListener('click', closeMealModal);
+
+    mealModal?.addEventListener('click', (e) => {
+      if (e.target === mealModal) closeMealModal();
+    });
+
+    mealForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!mealDescInput) return;
+
+      const description = mealDescInput.value.trim();
+      if (!description || description.length < 2) {
+        if (mealErrorBanner) {
+          mealErrorBanner.textContent = 'Por favor describe los alimentos o porciones consumidas.';
+          mealErrorBanner.style.display = 'block';
+        }
+        mealDescInput.focus();
+        return;
+      }
+
+      const selectedTypeInput = mealModal?.querySelector('input[name="mealType"]:checked') as HTMLInputElement | null;
+      const mealType = (selectedTypeInput?.value || 'lunch') as MealType;
+      const hungerBefore = hungerRange ? parseInt(hungerRange.value, 10) : 5;
+      const satietyAfter = satietyRange ? parseInt(satietyRange.value, 10) : 7;
+      const wantedMore = checkWantedMore ? checkWantedMore.checked : false;
+      const pausedBefore = wantedMore ? (checkPausedBefore ? checkPausedBefore.checked : false) : null;
+      const extraContext = (wantedMore && extraContextInput && extraContextInput.value.trim()) ? extraContextInput.value.trim() : null;
+
+      let occurredAt: string | undefined = undefined;
+      if (mealDateInput && mealDateInput.value) {
+        try {
+          const parsed = new Date(mealDateInput.value);
+          if (!isNaN(parsed.getTime())) occurredAt = parsed.toISOString();
+        } catch {
+          // Dejar undefined para que el backend asigne 'now'
+        }
+      }
+
+      if (submitMealBtn) submitMealBtn.disabled = true;
+      if (submitMealText) submitMealText.textContent = 'Guardando...';
+      if (mealErrorBanner) mealErrorBanner.style.display = 'none';
+
+      try {
+        await nutritionService.createMeal(
+          {
+            mealType,
+            description,
+            hungerBefore,
+            satietyAfter,
+            occurredAt,
+            wantedMoreEvenIfFull: wantedMore,
+            pausedBeforeMore: pausedBefore,
+            extraEatingContext: extraContext,
+          },
+          token
+        );
+
+        showAuthNotification('¡Comida registrada exitosamente!', 'success');
+        closeMealModal();
+
+        // Actualizar dashboard y listado de comidas inmediatamente
+        const freshSummary = await dashboardService.getSummary(token);
+        renderMetrics(freshSummary);
+        await loadAndRenderTodayMeals();
+      } catch (err: unknown) {
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : 'Error al registrar la comida';
+        if (mealErrorBanner) {
+          mealErrorBanner.textContent = errorMsg;
+          mealErrorBanner.style.display = 'block';
+        }
+        showAuthNotification(errorMsg, 'error');
+      } finally {
+        if (submitMealBtn) submitMealBtn.disabled = false;
+        if (submitMealText) submitMealText.textContent = 'Guardar comida';
+      }
+    });
+
+    // Otros botones de acción rápida
     document.getElementById('action-actividad')?.addEventListener('click', () => {
       showAuthNotification('Módulo de registro de actividad física en desarrollo.', 'info');
     });
