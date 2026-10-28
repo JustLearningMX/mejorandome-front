@@ -12,7 +12,7 @@ const homeUrl = getAppUrl();
 <MainLayout title="Tu espacio personal" description="Panel de control personal para el seguimiento de peso, alimentación y actividad física.">
   <Header isDashboard={true} />
 
-  <main class="dashboard-container">
+  <main class="dashboard-container" id="dashboard">
     <!-- Estado 1: No autenticado (Guardia visual para visitantes sin sesión) -->
     <section id="auth-required-view" class="auth-gate-card" style="display: none;">
       <div class="auth-gate-badge">
@@ -76,7 +76,7 @@ const homeUrl = getAppUrl();
       <!-- Métricas Clave y Resumen de Estado (Datos reales del backend / Sin datos dummy) -->
       <section class="metrics-grid">
         <!-- Tarjeta: Peso Corporal -->
-        <article class="metric-card" id="card-peso">
+        <article class="metric-card" id="peso">
           <div class="metric-card-header">
             <div>
               <span class="caption text-mute">Seguimiento</span>
@@ -116,7 +116,7 @@ const homeUrl = getAppUrl();
         </article>
 
         <!-- Tarjeta: Actividad Física (Pasos y Ejercicio) -->
-        <article class="metric-card" id="card-actividad">
+        <article class="metric-card" id="actividad">
           <div class="metric-card-header">
             <div>
               <span class="caption text-mute">Actividad física</span>
@@ -166,7 +166,7 @@ const homeUrl = getAppUrl();
         </article>
 
         <!-- Tarjeta: Alimentación y Saciedad -->
-        <article class="metric-card" id="card-alimentacion">
+        <article class="metric-card" id="alimentacion">
           <div class="metric-card-header">
             <div>
               <span class="caption text-mute">Patrones</span>
@@ -541,6 +541,13 @@ const homeUrl = getAppUrl();
     }
   }
 
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg) var(--space-4xl);
+    scroll-margin-top: 80px;
+  }
+
   .metric-card {
     padding: var(--space-xl);
     background-color: var(--color-canvas-soft);
@@ -549,6 +556,13 @@ const homeUrl = getAppUrl();
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+    scroll-margin-top: 80px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .metric-card:target {
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 1px var(--color-mute);
   }
 
   .metric-card-header {
