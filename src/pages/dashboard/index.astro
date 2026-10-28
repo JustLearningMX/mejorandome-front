@@ -3,6 +3,7 @@ import MainLayout from '../../layouts/MainLayout.astro';
 import Header from '../../components/ui/Header.astro';
 import GoogleButton from '../../components/ui/GoogleButton.astro';
 import MealModal from '../../components/nutrition/MealModal.astro';
+import ActivityModal from '../../components/activity/ActivityModal.astro';
 import { getAppUrl } from '../../utils/paths';
 
 const homeUrl = getAppUrl();
@@ -121,7 +122,21 @@ const homeUrl = getAppUrl();
               <span class="caption text-mute">Actividad física</span>
               <h2 class="metric-card-title">Pasos y Ejercicio</h2>
             </div>
-            <span class="metric-tag">Hoy</span>
+            <div class="metric-header-actions">
+              <span class="metric-tag">Hoy</span>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-activity-card"
+                title="Registrar pasos o ejercicio"
+                aria-label="Registrar pasos o ejercicio"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="metric-value-wrap">
             <span class="metric-number" id="metric-pasos-val">0</span>
@@ -139,6 +154,11 @@ const homeUrl = getAppUrl();
               <span class="caption text-mute">Ejercicio</span>
               <span class="body-sm text-body-strong" id="metric-ejercicio-min">0 min</span>
             </div>
+          </div>
+          <div id="metric-activity-cta-wrap" class="metric-cta-wrap">
+            <button type="button" class="btn-card-cta" id="btn-card-register-activity">
+              + Registrar pasos o ejercicio
+            </button>
           </div>
           <div class="metric-footer">
             <span class="caption text-mute" id="metric-actividad-footer">Sin actividad registrada el día de hoy</span>
@@ -290,6 +310,9 @@ const homeUrl = getAppUrl();
 
     <!-- Dialog modal interactivo para Registrar Comida y Saciedad -->
     <MealModal />
+
+    <!-- Dialog modal interactivo para Registrar Actividad Física (Pasos y Ejercicio) -->
+    <ActivityModal />
   </main>
 </MainLayout>
 
@@ -1104,10 +1127,12 @@ const homeUrl = getAppUrl();
   import { dashboardService } from '../../services/dashboard.service';
   import { weightService } from '../../services/weight.service';
   import { nutritionService } from '../../services/nutrition.service';
+  import { activityService } from '../../services/activity.service';
   import { showAuthNotification } from '../../utils/auth-client';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
   import type { MealType } from '../../types/nutrition';
+  import type { ExerciseType, ExerciseIntensity } from '../../types/activity';
 
   async function initializeDashboard() {
     const gateView = document.getElementById('auth-required-view');
@@ -1217,13 +1242,18 @@ const homeUrl = getAppUrl();
       const pasosGoal = document.getElementById('metric-pasos-goal');
       const ejercicioMin = document.getElementById('metric-ejercicio-min');
       const actividadFooter = document.getElementById('metric-actividad-footer');
+      const activityCtaWrap = document.getElementById('metric-activity-cta-wrap');
 
-      if (summary.activity.hasActivityToday && summary.activity.steps > 0) {
+      const hasAnyActivity = summary.activity.hasActivityToday || summary.activity.steps > 0 || summary.activity.exerciseMinutes > 0;
+
+      if (hasAnyActivity) {
         if (pasosVal) pasosVal.textContent = summary.activity.steps.toLocaleString();
-        const pct = Math.min(100, Math.round((summary.activity.steps / summary.activity.stepsGoal) * 100));
+        const goal = summary.activity.stepsGoal || 10000;
+        const pct = Math.min(100, Math.round((summary.activity.steps / goal) * 100));
         if (pasosProgress) pasosProgress.style.width = `${pct}%`;
-        if (pasosGoal) pasosGoal.textContent = `${summary.activity.stepsGoal.toLocaleString()} pasos`;
+        if (pasosGoal) pasosGoal.textContent = `${goal.toLocaleString()} pasos`;
         if (ejercicioMin) ejercicioMin.textContent = `${summary.activity.exerciseMinutes} min`;
+        if (activityCtaWrap) activityCtaWrap.style.display = 'none';
         if (actividadFooter) {
           actividadFooter.textContent = summary.activity.weeklyAverageSteps != null
             ? `Promedio semanal: ${summary.activity.weeklyAverageSteps.toLocaleString()} pasos / día`
@@ -1233,8 +1263,9 @@ const homeUrl = getAppUrl();
         // Estado real: Sin actividad registrada hoy
         if (pasosVal) pasosVal.textContent = '0';
         if (pasosProgress) pasosProgress.style.width = '0%';
-        if (pasosGoal) pasosGoal.textContent = '10,000 pasos';
+        if (pasosGoal) pasosGoal.textContent = `${(summary.activity.stepsGoal || 10000).toLocaleString()} pasos`;
         if (ejercicioMin) ejercicioMin.textContent = '0 min';
+        if (activityCtaWrap) activityCtaWrap.style.display = 'block';
         if (actividadFooter) actividadFooter.textContent = 'Sin actividad registrada el día de hoy';
       }
 
@@ -1744,9 +1775,220 @@ const homeUrl = getAppUrl();
       }
     });
 
-    // Otros botones de acción rápida
-    document.getElementById('action-actividad')?.addEventListener('click', () => {
-      showAuthNotification('Módulo de registro de actividad física en desarrollo.', 'info');
+    // 5. Modal de registro de actividad física (Pasos y Ejercicio)
+    const activityModal = document.getElementById('activity-modal') as HTMLDialogElement | null;
+    const tabBtnSteps = document.getElementById('tab-btn-steps');
+    const tabBtnExercise = document.getElementById('tab-btn-exercise');
+    const paneSteps = document.getElementById('pane-steps');
+    const paneExercise = document.getElementById('pane-exercise');
+
+    const stepsForm = document.getElementById('steps-form') as HTMLFormElement | null;
+    const stepsInput = document.getElementById('input-steps-count') as HTMLInputElement | null;
+    const stepsDateInput = document.getElementById('input-steps-date') as HTMLInputElement | null;
+    const stepsBar = document.getElementById('preview-steps-bar');
+    const stepsPct = document.getElementById('preview-steps-pct');
+    const stepsErrorBanner = document.getElementById('steps-form-error');
+    const stepsSubmitBtn = document.getElementById('btn-submit-steps') as HTMLButtonElement | null;
+    const stepsSubmitBtnText = document.getElementById('btn-submit-steps-text');
+
+    const exerciseForm = document.getElementById('exercise-form') as HTMLFormElement | null;
+    const exerciseDurationInput = document.getElementById('input-exercise-duration') as HTMLInputElement | null;
+    const exerciseOccurredInput = document.getElementById('input-exercise-occurred') as HTMLInputElement | null;
+    const exerciseCaloriesInput = document.getElementById('input-exercise-calories') as HTMLInputElement | null;
+    const exerciseNotesInput = document.getElementById('input-exercise-notes') as HTMLTextAreaElement | null;
+    const exerciseErrorBanner = document.getElementById('exercise-form-error');
+    const exerciseSubmitBtn = document.getElementById('btn-submit-exercise') as HTMLButtonElement | null;
+    const exerciseSubmitBtnText = document.getElementById('btn-submit-exercise-text');
+
+    function switchActivityTab(tab: 'steps' | 'exercise') {
+      if (tab === 'steps') {
+        tabBtnSteps?.classList.add('is-active');
+        tabBtnSteps?.setAttribute('aria-selected', 'true');
+        tabBtnExercise?.classList.remove('is-active');
+        tabBtnExercise?.setAttribute('aria-selected', 'false');
+        if (paneSteps) paneSteps.style.display = 'flex';
+        if (paneExercise) paneExercise.style.display = 'none';
+      } else {
+        tabBtnExercise?.classList.add('is-active');
+        tabBtnExercise?.setAttribute('aria-selected', 'true');
+        tabBtnSteps?.classList.remove('is-active');
+        tabBtnSteps?.setAttribute('aria-selected', 'false');
+        if (paneExercise) paneExercise.style.display = 'flex';
+        if (paneSteps) paneSteps.style.display = 'none';
+      }
+    }
+
+    function updateStepsPreview() {
+      const count = parseInt(stepsInput?.value || '0', 10) || 0;
+      const goal = 10000;
+      const pct = Math.min(150, Math.round((count / goal) * 100));
+      if (stepsBar) stepsBar.style.width = `${Math.min(100, pct)}%`;
+      if (stepsPct) stepsPct.textContent = `${pct}% de tu meta diaria (${count.toLocaleString()} / ${goal.toLocaleString()})`;
+    }
+
+    stepsInput?.addEventListener('input', updateStepsPreview);
+
+    function openActivityModal(defaultTab: 'steps' | 'exercise' = 'steps') {
+      switchActivityTab(defaultTab);
+      if (stepsErrorBanner) stepsErrorBanner.style.display = 'none';
+      if (exerciseErrorBanner) exerciseErrorBanner.style.display = 'none';
+
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      if (stepsDateInput && !stepsDateInput.value) {
+        stepsDateInput.value = todayStr;
+      }
+
+      const tzOffset = now.getTimezoneOffset() * 60000;
+      const localIsoTime = new Date(now.getTime() - tzOffset).toISOString().slice(0, 16);
+      if (exerciseOccurredInput && !exerciseOccurredInput.value) {
+        exerciseOccurredInput.value = localIsoTime;
+      }
+
+      updateStepsPreview();
+      activityModal?.showModal();
+    }
+
+    function closeActivityModal() {
+      activityModal?.close();
+    }
+
+    tabBtnSteps?.addEventListener('click', () => switchActivityTab('steps'));
+    tabBtnExercise?.addEventListener('click', () => switchActivityTab('exercise'));
+
+    document.getElementById('action-actividad')?.addEventListener('click', () => openActivityModal('steps'));
+    document.getElementById('btn-add-activity-card')?.addEventListener('click', () => openActivityModal('steps'));
+    document.getElementById('btn-card-register-activity')?.addEventListener('click', () => openActivityModal('steps'));
+    document.getElementById('btn-close-activity-modal')?.addEventListener('click', closeActivityModal);
+    document.getElementById('btn-cancel-steps')?.addEventListener('click', closeActivityModal);
+    document.getElementById('btn-cancel-exercise')?.addEventListener('click', closeActivityModal);
+
+    activityModal?.addEventListener('click', (e) => {
+      if (e.target === activityModal) closeActivityModal();
+    });
+
+    // Atajos de duración
+    document.querySelectorAll('.quick-chip-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const mins = (e.currentTarget as HTMLElement).getAttribute('data-minutes');
+        if (mins && exerciseDurationInput) {
+          exerciseDurationInput.value = mins;
+        }
+      });
+    });
+
+    // Guardar Pasos
+    stepsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = authService.getStoredToken();
+      if (!token) {
+        showAuthNotification('Debes iniciar sesión para registrar pasos', 'error');
+        return;
+      }
+
+      const stepsVal = parseInt(stepsInput?.value || '', 10);
+      if (isNaN(stepsVal) || stepsVal < 0) {
+        if (stepsErrorBanner) {
+          stepsErrorBanner.textContent = 'Por favor ingresa un total de pasos válido (mayor o igual a 0).';
+          stepsErrorBanner.style.display = 'block';
+        }
+        return;
+      }
+
+      try {
+        if (stepsSubmitBtn) stepsSubmitBtn.disabled = true;
+        if (stepsSubmitBtnText) stepsSubmitBtnText.textContent = 'Guardando...';
+
+        await activityService.recordSteps(
+          {
+            steps: stepsVal,
+            localDate: stepsDateInput?.value || undefined,
+          },
+          token
+        );
+
+        showAuthNotification('¡Pasos registrados exitosamente!', 'success');
+        closeActivityModal();
+
+        // Actualizar dashboard inmediatamente
+        const freshSummary = await dashboardService.getSummary(token);
+        renderMetrics(freshSummary);
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : 'Error al registrar los pasos';
+        if (stepsErrorBanner) {
+          stepsErrorBanner.textContent = errorMsg;
+          stepsErrorBanner.style.display = 'block';
+        }
+        showAuthNotification(errorMsg, 'error');
+      } finally {
+        if (stepsSubmitBtn) stepsSubmitBtn.disabled = false;
+        if (stepsSubmitBtnText) stepsSubmitBtnText.textContent = 'Guardar pasos';
+      }
+    });
+
+    // Guardar Ejercicio
+    exerciseForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = authService.getStoredToken();
+      if (!token) {
+        showAuthNotification('Debes iniciar sesión para registrar ejercicio', 'error');
+        return;
+      }
+
+      const durationVal = parseInt(exerciseDurationInput?.value || '', 10);
+      if (isNaN(durationVal) || durationVal <= 0) {
+        if (exerciseErrorBanner) {
+          exerciseErrorBanner.textContent = 'Por favor ingresa una duración en minutos válida (mayor a 0).';
+          exerciseErrorBanner.style.display = 'block';
+        }
+        return;
+      }
+
+      const formData = new FormData(exerciseForm);
+      const exerciseType = (formData.get('exerciseType') as ExerciseType) || 'walking';
+      const intensity = (formData.get('intensity') as ExerciseIntensity) || undefined;
+      const occurredVal = exerciseOccurredInput?.value ? new Date(exerciseOccurredInput.value).toISOString() : undefined;
+      const caloriesVal = exerciseCaloriesInput?.value ? parseInt(exerciseCaloriesInput.value, 10) : undefined;
+      const notesVal = exerciseNotesInput?.value?.trim() || undefined;
+
+      try {
+        if (exerciseSubmitBtn) exerciseSubmitBtn.disabled = true;
+        if (exerciseSubmitBtnText) exerciseSubmitBtnText.textContent = 'Guardando...';
+
+        await activityService.recordExercise(
+          {
+            exerciseType,
+            durationMinutes: durationVal,
+            intensity,
+            occurredAt: occurredVal,
+            caloriesBurned: caloriesVal,
+            notes: notesVal,
+          },
+          token
+        );
+
+        showAuthNotification('¡Sesión de ejercicio guardada exitosamente!', 'success');
+        closeActivityModal();
+
+        // Resetear campos opcionales
+        if (exerciseDurationInput) exerciseDurationInput.value = '';
+        if (exerciseCaloriesInput) exerciseCaloriesInput.value = '';
+        if (exerciseNotesInput) exerciseNotesInput.value = '';
+
+        // Actualizar dashboard inmediatamente
+        const freshSummary = await dashboardService.getSummary(token);
+        renderMetrics(freshSummary);
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : 'Error al registrar el ejercicio';
+        if (exerciseErrorBanner) {
+          exerciseErrorBanner.textContent = errorMsg;
+          exerciseErrorBanner.style.display = 'block';
+        }
+        showAuthNotification(errorMsg, 'error');
+      } finally {
+        if (exerciseSubmitBtn) exerciseSubmitBtn.disabled = false;
+        if (exerciseSubmitBtnText) exerciseSubmitBtnText.textContent = 'Guardar sesión';
+      }
     });
   }
 

@@ -1,7 +1,8 @@
 import { apiRequest } from './api.client';
 import { weightService } from './weight.service';
 import { nutritionService } from './nutrition.service';
-import type { DashboardSummary, NutritionSummary } from '../types/dashboard';
+import { activityService } from './activity.service';
+import type { DashboardSummary, NutritionSummary, ActivitySummary } from '../types/dashboard';
 import type { MealResponse } from '../types/nutrition';
 
 function computeNutritionSummary(meals: MealResponse[]): NutritionSummary {
@@ -69,7 +70,7 @@ export const dashboardService = {
   /**
    * Obtiene el resumen de métricas del usuario autenticado para el dashboard.
    * Consulta prioritariamente el endpoint de resumen o directamente los módulos
-   * específicos (como /api/weight y /api/nutrition/meals) para mostrar información real.
+   * específicos (como /api/weight, /api/nutrition/meals y /api/activity/summary) para mostrar información real.
    */
   async getSummary(token?: string | null): Promise<DashboardSummary> {
     const emptySummary: DashboardSummary = {
@@ -126,21 +127,42 @@ export const dashboardService = {
         }
       }
 
+      let activityData: ActivitySummary = {
+        ...emptySummary.activity,
+        ...(response.activity || {}),
+      };
+
+      // Si el endpoint de summary no tiene actividad real o aún no la incluye
+      if (!response.activity || (!response.activity.hasActivityToday && response.activity.steps === 0 && response.activity.exerciseMinutes === 0)) {
+        try {
+          const actSummary = await activityService.getActivitySummary(token);
+          if (actSummary) {
+            activityData = {
+              steps: actSummary.today.steps,
+              stepsGoal: actSummary.today.stepsGoal,
+              exerciseMinutes: actSummary.today.exerciseMinutes,
+              weeklyAverageSteps: actSummary.week.weeklyAverageSteps,
+              hasActivityToday: actSummary.today.hasActivityToday,
+            };
+          }
+        } catch {
+          // Ignorar fallback si falla
+        }
+      }
+
       return {
         weight: {
           ...emptySummary.weight,
           ...(response.weight || {}),
         },
-        activity: {
-          ...emptySummary.activity,
-          ...(response.activity || {}),
-        },
+        activity: activityData,
         nutrition: nutritionData,
       };
     } catch {
-      // Fallback inteligente: consultar directamente los módulos de peso y comidas
+      // Fallback inteligente: consultar directamente los módulos de peso, comidas y actividad
       let weightSummary = emptySummary.weight;
       let nutritionSummary = emptySummary.nutrition;
+      let activitySummary = emptySummary.activity;
 
       try {
         const weightHistory = await weightService.getWeightHistory(30, token);
@@ -202,9 +224,25 @@ export const dashboardService = {
         // En caso de que no haya respuesta de /api/nutrition/meals
       }
 
+      try {
+        const actSummary = await activityService.getActivitySummary(token);
+        if (actSummary) {
+          activitySummary = {
+            steps: actSummary.today.steps,
+            stepsGoal: actSummary.today.stepsGoal,
+            exerciseMinutes: actSummary.today.exerciseMinutes,
+            weeklyAverageSteps: actSummary.week.weeklyAverageSteps,
+            hasActivityToday: actSummary.today.hasActivityToday,
+          };
+        }
+      } catch {
+        // En caso de que no haya respuesta de /api/activity/summary
+      }
+
       return {
         ...emptySummary,
         weight: weightSummary,
+        activity: activitySummary,
         nutrition: nutritionSummary,
       };
     }
