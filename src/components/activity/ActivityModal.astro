@@ -1,0 +1,701 @@
+---
+import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
+---
+
+<dialog id="activity-modal" class="app-modal activity-modal" aria-labelledby="activity-modal-title">
+  <div class="app-modal-content activity-modal-content">
+    <!-- Header -->
+    <div class="app-modal-header">
+      <div class="app-modal-title-wrap">
+        <span class="app-modal-icon" aria-hidden="true">🏃</span>
+        <div>
+          <h2 id="activity-modal-title" class="app-modal-title">Registrar actividad física</h2>
+          <span class="caption text-mute">Pasos diarios de Apple Health y sesiones de ejercicio</span>
+        </div>
+      </div>
+      <button type="button" class="btn-dialog-close" id="btn-close-activity-modal" aria-label="Cerrar ventana de registro">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Segmented Tab Switcher -->
+    <div class="activity-tabs" role="tablist" aria-label="Tipo de registro de actividad">
+      <button
+        type="button"
+        role="tab"
+        id="tab-btn-steps"
+        class="tab-btn is-active"
+        aria-selected="true"
+        aria-controls="pane-steps"
+      >
+        <span class="tab-icon">👟</span>
+        <span>Pasos del día</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-btn-exercise"
+        class="tab-btn"
+        aria-selected="false"
+        aria-controls="pane-exercise"
+      >
+        <span class="tab-icon">⚡</span>
+        <span>Sesión de ejercicio</span>
+      </button>
+    </div>
+
+    <!-- Panel 1: Registro de Pasos Diarios -->
+    <div id="pane-steps" class="tab-pane is-active" role="tabpanel" aria-labelledby="tab-btn-steps">
+      <form id="steps-form" class="app-modal-form" novalidate>
+        <div id="steps-form-error" class="form-error-banner" style="display: none;" role="alert"></div>
+
+        <div class="form-field">
+          <label for="input-steps-count" class="form-label">
+            Pasos acumulados del día <span class="required-star">*</span>
+          </label>
+          <div class="input-with-unit">
+            <input
+              type="number"
+              id="input-steps-count"
+              name="steps"
+              min="0"
+              max="150000"
+              step="1"
+              class="form-input form-input--lg"
+              placeholder="Ej. 8450"
+              required
+            />
+            <span class="input-unit-label">pasos</span>
+          </div>
+          <span class="caption text-mute form-help">
+            Introduce el total acumulado que marca la app Salud de tu iPhone. Si ya registraste hoy, se actualizará el total.
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="input-steps-date" class="form-label">
+            Fecha correspondiente
+          </label>
+          <input
+            type="date"
+            id="input-steps-date"
+            name="localDate"
+            class="form-input"
+          />
+          <span class="caption text-mute form-help">Por defecto corresponde a la fecha de hoy.</span>
+        </div>
+
+        <!-- Vista previa de porcentaje de meta -->
+        <div class="steps-progress-preview" id="steps-progress-preview">
+          <div class="preview-header">
+            <span class="caption text-mute">Progreso hacia tu meta</span>
+            <span class="body-sm text-body-strong" id="preview-steps-goal-text">Meta: 10,000 pasos</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="preview-steps-bar" style="width: 0%;"></div>
+          </div>
+          <div class="preview-footer">
+            <span class="caption" id="preview-steps-pct">0% completado</span>
+          </div>
+        </div>
+
+        <div class="app-modal-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel-steps">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit" id="btn-submit-steps">
+            <span id="btn-submit-steps-text">Guardar pasos</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Panel 2: Registro de Sesión de Ejercicio -->
+    <div id="pane-exercise" class="tab-pane" role="tabpanel" aria-labelledby="tab-btn-exercise" style="display: none;">
+      <form id="exercise-form" class="app-modal-form" novalidate>
+        <div id="exercise-form-error" class="form-error-banner" style="display: none;" role="alert"></div>
+
+        <!-- 1. Tipo de Ejercicio -->
+        <div class="form-field">
+          <label class="form-label">
+            Tipo de ejercicio / Disciplina <span class="required-star">*</span>
+          </label>
+          <div class="exercise-type-selector" role="radiogroup" aria-label="Seleccionar tipo de ejercicio">
+            {EXERCISE_TYPES.map((type, idx) => (
+              <label class="exercise-type-chip">
+                <input
+                  type="radio"
+                  name="exerciseType"
+                  value={type.value}
+                  checked={idx === 0}
+                  class="sr-only exercise-type-input"
+                />
+                <span class="chip-content">
+                  <span class="chip-icon">{type.icon}</span>
+                  <span class="chip-label">{type.label}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 2. Duración en Minutos -->
+        <div class="form-field">
+          <label for="input-exercise-duration" class="form-label">
+            Duración <span class="required-star">*</span>
+          </label>
+          <div class="input-with-unit">
+            <input
+              type="number"
+              id="input-exercise-duration"
+              name="durationMinutes"
+              min="1"
+              max="720"
+              step="1"
+              class="form-input"
+              placeholder="Ej. 45"
+              required
+            />
+            <span class="input-unit-label">minutos</span>
+          </div>
+          <!-- Atajos rápidos de duración -->
+          <div class="duration-quick-chips">
+            <button type="button" class="quick-chip-btn" data-minutes="15">15 min</button>
+            <button type="button" class="quick-chip-btn" data-minutes="30">30 min</button>
+            <button type="button" class="quick-chip-btn" data-minutes="45">45 min</button>
+            <button type="button" class="quick-chip-btn" data-minutes="60">60 min</button>
+          </div>
+        </div>
+
+        <!-- 3. Nivel de Intensidad -->
+        <div class="form-field">
+          <label class="form-label">
+            Intensidad percibida
+          </label>
+          <div class="intensity-selector" role="radiogroup" aria-label="Seleccionar intensidad">
+            {EXERCISE_INTENSITIES.map((intensity, idx) => (
+              <label class="intensity-chip">
+                <input
+                  type="radio"
+                  name="intensity"
+                  value={intensity.value}
+                  checked={idx === 1}
+                  class="sr-only intensity-input"
+                />
+                <span class="intensity-chip-content">
+                  <span class="intensity-chip-label">{intensity.label}</span>
+                  <span class="intensity-chip-desc">{intensity.description}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 4. Fecha y Hora -->
+        <div class="form-field">
+          <label for="input-exercise-occurred" class="form-label">
+            Fecha y hora de la sesión
+          </label>
+          <input
+            type="datetime-local"
+            id="input-exercise-occurred"
+            name="occurredAt"
+            class="form-input"
+          />
+          <span class="caption text-mute form-help">Opcional. Si se deja en blanco se guardará la hora actual.</span>
+        </div>
+
+        <!-- 5. Calorías Estimadas -->
+        <div class="form-field">
+          <label for="input-exercise-calories" class="form-label">
+            Calorías estimadas
+          </label>
+          <div class="input-with-unit">
+            <input
+              type="number"
+              id="input-exercise-calories"
+              name="caloriesBurned"
+              min="0"
+              max="10000"
+              step="1"
+              class="form-input"
+              placeholder="Ej. 250"
+            />
+            <span class="input-unit-label">kcal</span>
+          </div>
+          <span class="caption text-mute form-help">Opcional, si tu reloj o app te indica el gasto calórico aproximado.</span>
+        </div>
+
+        <!-- 6. Notas u observaciones -->
+        <div class="form-field">
+          <label for="input-exercise-notes" class="form-label">
+            Notas u observaciones
+          </label>
+          <textarea
+            id="input-exercise-notes"
+            name="notes"
+            rows="2"
+            maxlength="500"
+            class="form-input form-textarea"
+            placeholder="Ej. Rutina de pierna, caminata en parque con pendientes..."
+          ></textarea>
+        </div>
+
+        <div class="app-modal-actions">
+          <button type="button" class="btn-cancel" id="btn-cancel-exercise">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit" id="btn-submit-exercise">
+            <span id="btn-submit-exercise-text">Guardar sesión</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Dialog y Centrado en pantalla */
+  dialog.activity-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    padding: 0;
+    width: 92%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hairline) transparent;
+  }
+
+  dialog.activity-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  dialog.activity-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  dialog.activity-modal::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: var(--rounded-pill);
+  }
+
+  dialog.activity-modal::-webkit-scrollbar-thumb:hover {
+    background: var(--color-mute);
+  }
+
+  dialog.activity-modal::backdrop {
+    background-color: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .activity-modal-content {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    background-color: var(--color-canvas);
+    width: 100%;
+  }
+
+  .app-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .app-modal-icon {
+    font-size: 24px;
+  }
+
+  .app-modal-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.2;
+  }
+
+  .btn-dialog-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-dialog-close:hover {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  /* Segmented Tab Switcher */
+  .activity-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    background-color: var(--color-canvas-soft);
+    padding: 4px;
+    border-radius: var(--rounded-sm);
+    border: 1px solid var(--color-hairline);
+  }
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: transparent;
+    border: none;
+    border-radius: var(--rounded-xs);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab-btn:hover {
+    color: var(--color-ink);
+  }
+
+  .tab-btn.is-active {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-hairline);
+  }
+
+  .tab-icon {
+    font-size: 15px;
+  }
+
+  .tab-pane {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tab-pane.is-active {
+    display: flex;
+  }
+
+  .app-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body-strong);
+  }
+
+  .required-star {
+    color: #f87171;
+  }
+
+  .input-with-unit {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-with-unit .form-input {
+    padding-right: 70px;
+  }
+
+  .input-unit-label {
+    position: absolute;
+    right: var(--space-md);
+    font-size: 13px;
+    color: var(--color-mute);
+    pointer-events: none;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    color: var(--color-ink);
+    font-size: 14px;
+    font-family: var(--font-sans);
+    color-scheme: dark;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .form-input--lg {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
+  }
+
+  .form-help {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .form-error-banner {
+    padding: var(--space-xs) var(--space-md);
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--rounded-sm);
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* Progress Preview */
+  .steps-progress-preview {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .preview-footer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  /* Selector de tipos de ejercicio */
+  .exercise-type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+  }
+
+  @media (max-width: 480px) {
+    .exercise-type-selector {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .exercise-type-chip {
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+  }
+
+  .chip-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--space-sm) var(--space-xs);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .chip-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .chip-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-body);
+  }
+
+  .exercise-type-input:checked + .chip-content {
+    background-color: var(--color-canvas-soft);
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 1px var(--color-mute);
+  }
+
+  .exercise-type-input:checked + .chip-content .chip-label {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  /* Quick Duration Chips */
+  .duration-quick-chips {
+    display: flex;
+    gap: var(--space-xs);
+    margin-top: 4px;
+  }
+
+  .quick-chip-btn {
+    padding: 3px 8px;
+    background: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-pill);
+    color: var(--color-mute);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quick-chip-btn:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  /* Intensity Selector */
+  .intensity-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .intensity-chip {
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+  }
+
+  .intensity-chip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-sm);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    transition: all 0.15s ease;
+  }
+
+  .intensity-chip-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-body);
+  }
+
+  .intensity-chip-desc {
+    font-size: 10px;
+    color: var(--color-mute);
+    line-height: 1.3;
+  }
+
+  .intensity-input:checked + .intensity-chip-content {
+    background-color: var(--color-canvas-soft);
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 1px var(--color-mute);
+  }
+
+  .intensity-input:checked + .intensity-chip-content .intensity-chip-label {
+    color: var(--color-ink);
+  }
+
+  /* Acciones */
+  .app-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .btn-cancel {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-cancel:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .btn-submit {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.92;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Visually Hidden Helper */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
