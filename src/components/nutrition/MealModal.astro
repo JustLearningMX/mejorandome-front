@@ -1,0 +1,629 @@
+---
+import { MEAL_TYPES } from '../../types/nutrition';
+---
+
+<dialog id="meal-modal" class="app-modal meal-modal" aria-labelledby="meal-modal-title">
+  <div class="app-modal-content meal-modal-content">
+    <div class="app-modal-header">
+      <div class="app-modal-title-wrap">
+        <span class="app-modal-icon" aria-hidden="true">🍽️</span>
+        <div>
+          <h2 id="meal-modal-title" class="app-modal-title">Registrar comida y saciedad</h2>
+          <span class="caption text-mute">Seguimiento de hábitos, saciedad y patrones conductuales</span>
+        </div>
+      </div>
+      <button type="button" class="btn-dialog-close" id="btn-close-meal-modal" aria-label="Cerrar ventana de registro">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form id="meal-form" class="app-modal-form" novalidate>
+      <div id="meal-form-error" class="form-error-banner" style="display: none;" role="alert"></div>
+
+      <!-- 1. Tipo de comida (Selector de botones segmentados) -->
+      <div class="form-field">
+        <label class="form-label">
+          Momento del día / Tipo de comida <span class="required-star">*</span>
+        </label>
+        <div class="meal-type-selector" role="radiogroup" aria-label="Seleccionar tipo de comida">
+          {MEAL_TYPES.map((type, idx) => (
+            <label class="meal-type-chip">
+              <input
+                type="radio"
+                name="mealType"
+                value={type.value}
+                checked={idx === 1} /* Comida/Lunch por defecto */
+                class="sr-only meal-type-input"
+              />
+              <span class="chip-content">
+                <span class="chip-icon">{type.icon}</span>
+                <span class="chip-label">{type.label}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <!-- 2. Fecha y hora del consumo -->
+      <div class="form-field">
+        <label for="input-meal-date" class="form-label">
+          Fecha y hora de la comida
+        </label>
+        <input
+          type="datetime-local"
+          id="input-meal-date"
+          name="occurredAt"
+          class="form-input"
+        />
+        <span class="caption text-mute form-help">Opcional. Si se deja en blanco, se guardará el momento actual.</span>
+      </div>
+
+      <!-- 3. Descripción y porciones -->
+      <div class="form-field">
+        <label for="input-meal-desc" class="form-label">
+          Alimentos y porciones consumidas <span class="required-star">*</span>
+        </label>
+        <textarea
+          id="input-meal-desc"
+          name="description"
+          rows="3"
+          class="form-input form-textarea"
+          placeholder="Ej. Pechuga de pollo asada con 1 taza de arroz integral y ensalada de espinacas..."
+          required
+        ></textarea>
+        <span class="caption text-mute form-help">Registro libre de ingredientes, porciones o preparación.</span>
+      </div>
+
+      <!-- 4. Escala de Hambre previa (1 a 10) -->
+      <div class="form-field slider-field">
+        <div class="slider-header">
+          <label for="input-hunger-level" class="form-label">
+            Hambre antes de comer <span class="required-star">*</span>
+          </label>
+          <div class="level-indicator">
+            <span class="level-number" id="hunger-level-number">5</span>
+            <span class="level-badge" id="hunger-level-badge">Hambre moderada</span>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="input-hunger-level"
+          name="hungerBefore"
+          min="1"
+          max="10"
+          value="5"
+          step="1"
+          class="level-range"
+        />
+        <div class="range-labels">
+          <span class="caption text-mute">1: Nada de hambre</span>
+          <span class="caption text-mute">5: Normal</span>
+          <span class="caption text-mute">10: Voraz / Urgente</span>
+        </div>
+      </div>
+
+      <!-- 5. Escala de Saciedad al terminar (1 a 10) -->
+      <div class="form-field slider-field">
+        <div class="slider-header">
+          <label for="input-satiety-level" class="form-label">
+            Saciedad al terminar de comer <span class="required-star">*</span>
+          </label>
+          <div class="level-indicator">
+            <span class="level-number" id="satiety-level-number">7</span>
+            <span class="level-badge level-badge--success" id="satiety-level-badge">Satisfecho pleno</span>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="input-satiety-level"
+          name="satietyAfter"
+          min="1"
+          max="10"
+          value="7"
+          step="1"
+          class="level-range"
+        />
+        <div class="range-labels">
+          <span class="caption text-mute">1: Sigo con hambre</span>
+          <span class="caption text-mute">5: Cómodo</span>
+          <span class="caption text-mute">10: Excesivamente lleno</span>
+        </div>
+      </div>
+
+      <!-- 6. Patrones conductuales: Deseo de repetir -->
+      <div class="behavior-section">
+        <label class="behavior-toggle-card">
+          <div class="toggle-card-checkbox">
+            <input
+              type="checkbox"
+              id="check-wanted-more"
+              name="wantedMoreEvenIfFull"
+              class="custom-checkbox"
+            />
+          </div>
+          <div class="toggle-card-content">
+            <span class="toggle-card-title">¿Sentiste deseo o antojo de repetir por gusto?</span>
+            <span class="caption text-mute">Aun habiendo alcanzado un nivel satisfactorio de plenitud física.</span>
+          </div>
+        </label>
+
+        <!-- Subpreguntas condicionales (visibles sólo si se marcó el deseo de repetir) -->
+        <div id="wrap-more-questions" class="more-questions-wrap" style="display: none;">
+          <label class="behavior-toggle-card behavior-toggle-card--nested">
+            <div class="toggle-card-checkbox">
+              <input
+                type="checkbox"
+                id="check-paused-before"
+                name="pausedBeforeMore"
+                class="custom-checkbox"
+              />
+            </div>
+            <div class="toggle-card-content">
+              <span class="toggle-card-title">¿Hiciste una pausa consciente antes de decidir?</span>
+              <span class="caption text-mute">Tomarse unos minutos ayuda a distinguir el apetito hedónico de la necesidad física.</span>
+            </div>
+          </label>
+
+          <div class="form-field">
+            <label for="input-extra-context" class="form-label">
+              Situación, emoción o detonante identificado
+            </label>
+            <input
+              type="text"
+              id="input-extra-context"
+              name="extraEatingContext"
+              class="form-input"
+              placeholder="Ej. Estrés por trabajo, comida social, aburrimiento, sabor irresistible..."
+            />
+            <span class="caption text-mute form-help">Identificar la emoción o detonante es clave para reconocer hábitos automáticos.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="app-modal-actions">
+        <button type="button" class="btn-cancel" id="btn-cancel-meal">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit" id="btn-submit-meal">
+          <span id="btn-submit-meal-text">Guardar comida</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  /* Dialog y Centrado en pantalla */
+  dialog.meal-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    padding: 0;
+    width: 92%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hairline) transparent;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: var(--rounded-pill);
+  }
+
+  dialog.meal-modal::-webkit-scrollbar-thumb:hover {
+    background: var(--color-mute);
+  }
+
+  dialog.meal-modal::backdrop {
+    background-color: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .meal-modal-content {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    background-color: var(--color-canvas);
+    width: 100%;
+  }
+
+  .app-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .app-modal-icon {
+    font-size: 24px;
+  }
+
+  .app-modal-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.2;
+  }
+
+  .btn-dialog-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-dialog-close:hover {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .app-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body-strong);
+  }
+
+  .required-star {
+    color: #f87171;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    color: var(--color-ink);
+    font-size: 14px;
+    font-family: var(--font-sans);
+    color-scheme: dark;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
+  }
+
+  .form-help {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .form-error-banner {
+    padding: var(--space-xs) var(--space-md);
+    background-color: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--rounded-sm);
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .app-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .btn-cancel {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body);
+    background-color: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-cancel:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .btn-submit {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--rounded-sm);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.92;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Selector de tipos de comida */
+  .meal-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+  }
+
+  @media (min-width: 640px) {
+    .meal-type-selector {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  .meal-type-chip {
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+  }
+
+  .chip-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--space-sm) var(--space-xs);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .chip-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .chip-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-body);
+  }
+
+  .meal-type-input:checked + .chip-content {
+    background-color: var(--color-canvas-soft);
+    border-color: var(--color-mute);
+    box-shadow: 0 0 0 1px var(--color-mute);
+  }
+
+  .meal-type-input:checked + .chip-content .chip-label {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .meal-type-chip:hover .chip-content {
+    border-color: var(--color-mute);
+  }
+
+  /* Textarea */
+  .form-textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+  }
+
+  /* Sliders de Hambre y Saciedad */
+  .slider-field {
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-md);
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .level-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .level-number {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: 2px 8px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .level-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--rounded-pill);
+    background-color: var(--color-canvas-soft);
+    color: var(--color-body);
+    border: 1px solid var(--color-hairline);
+  }
+
+  .level-badge--success {
+    background-color: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #86efac;
+  }
+
+  .level-range {
+    width: 100%;
+    height: 6px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--color-hairline);
+    border-radius: 3px;
+    outline: none;
+    margin: var(--space-sm) 0 var(--space-xs);
+    cursor: pointer;
+  }
+
+  .level-range::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--rounded-full);
+    background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--color-canvas);
+    transition: transform 0.1s ease;
+  }
+
+  .level-range::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+
+  .level-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--rounded-full);
+    background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--color-canvas);
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--color-mute);
+  }
+
+  /* Sección de conducta y saciedad */
+  .behavior-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .behavior-toggle-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .behavior-toggle-card:hover {
+    border-color: var(--color-mute);
+  }
+
+  .behavior-toggle-card--nested {
+    background-color: var(--color-canvas-soft);
+  }
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+  }
+
+  .toggle-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .toggle-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-body-strong);
+  }
+
+  .more-questions-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-left: var(--space-lg);
+    border-left: 2px solid var(--color-hairline);
+    margin-left: var(--space-xs);
+  }
+
+  /* Visually Hidden Helper */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
