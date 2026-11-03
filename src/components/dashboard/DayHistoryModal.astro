@@ -1,0 +1,800 @@
+---
+/**
+ * Componente modal para explorar el historial diario de salud (HealthDay Journey).
+ * Permite navegar día a día o seleccionar fechas pasadas y ver el desglose
+ * holístico de Comidas, Pasos/Ejercicios y Peso de esa fecha específica.
+ */
+---
+
+<dialog id="day-history-modal" class="app-modal day-history-modal" aria-labelledby="day-history-modal-title">
+  <div class="app-modal-content day-history-modal-content">
+    <!-- Header principal -->
+    <div class="app-modal-header">
+      <div class="app-modal-title-wrap">
+        <span class="app-modal-icon" aria-hidden="true">📅</span>
+        <div>
+          <h2 id="day-history-modal-title" class="app-modal-title">Historial diario</h2>
+          <span class="caption text-mute">Explora tus registros día por día</span>
+        </div>
+      </div>
+      <button type="button" class="btn-dialog-close" id="btn-close-day-history" aria-label="Cerrar historial">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navegador de fecha minimalista -->
+    <div class="day-nav-bar">
+      <button
+        type="button"
+        id="history-btn-prev"
+        class="day-nav-arrow"
+        title="Día anterior"
+        aria-label="Ir al día anterior"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="day-nav-center">
+        <label class="day-nav-date-wrap" for="history-date-picker-input">
+          <span class="day-nav-icon">🗓️</span>
+          <span id="history-date-display" class="day-nav-label">Hoy, 3 de nov.</span>
+          <span class="day-nav-caret" aria-hidden="true">▾</span>
+          <input
+            type="date"
+            id="history-date-picker-input"
+            class="history-native-date-input"
+            aria-label="Seleccionar fecha del calendario"
+          />
+        </label>
+
+        <button
+          type="button"
+          id="history-btn-today"
+          class="day-nav-today-btn"
+          style="display: none;"
+          title="Regresar a hoy"
+        >
+          Volver a hoy
+        </button>
+      </div>
+
+      <button
+        type="button"
+        id="history-btn-next"
+        class="day-nav-arrow"
+        title="Día siguiente"
+        aria-label="Ir al día siguiente"
+        disabled
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Selector de pestañas temáticas -->
+    <div class="history-tabs-bar" role="tablist" aria-label="Secciones del historial">
+      <button
+        type="button"
+        role="tab"
+        id="tab-history-overview"
+        class="history-tab is-active"
+        aria-selected="true"
+        aria-controls="pane-history-overview"
+        data-history-tab="overview"
+      >
+        <span>📊 Resumen</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-history-meals"
+        class="history-tab"
+        aria-selected="false"
+        aria-controls="pane-history-meals"
+        data-history-tab="meals"
+      >
+        <span>🍽️ Comidas</span>
+        <span class="tab-count-badge" id="history-count-meals">0</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-history-activity"
+        class="history-tab"
+        aria-selected="false"
+        aria-controls="pane-history-activity"
+        data-history-tab="activity"
+      >
+        <span>🏃 Actividad</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-history-weight"
+        class="history-tab"
+        aria-selected="false"
+        aria-controls="pane-history-weight"
+        data-history-tab="weight"
+      >
+        <span>⚖️ Peso</span>
+      </button>
+    </div>
+
+    <!-- Contenedor con spinner / loader sutil -->
+    <div id="history-loading-indicator" class="history-loading-overlay" style="display: none;">
+      <div class="history-spinner"></div>
+      <span class="caption text-mute">Cargando registros...</span>
+    </div>
+
+    <!-- Paneles de contenido -->
+    <div class="history-panes-wrap" id="history-panes-wrap">
+      <!-- 1. PANE: RESUMEN DEL DÍA -->
+      <section
+        id="pane-history-overview"
+        class="history-pane is-active"
+        role="tabpanel"
+        aria-labelledby="tab-history-overview"
+      >
+        <div class="overview-grid">
+          <!-- Tarjeta resumen Comidas -->
+          <article class="overview-card" id="overview-card-meals">
+            <div class="overview-card-top">
+              <span class="caption text-mute">Alimentación</span>
+              <span class="overview-icon">🍽️</span>
+            </div>
+            <div class="overview-main-metric">
+              <span class="overview-number" id="overview-meals-val">0</span>
+              <span class="overview-unit">comidas</span>
+            </div>
+            <p class="overview-subtext" id="overview-satiety-subtext">Sin comidas registradas</p>
+          </article>
+
+          <!-- Tarjeta resumen Pasos -->
+          <article class="overview-card" id="overview-card-activity">
+            <div class="overview-card-top">
+              <span class="caption text-mute">Pasos y Ejercicio</span>
+              <span class="overview-icon">🏃</span>
+            </div>
+            <div class="overview-main-metric">
+              <span class="overview-number" id="overview-steps-val">0</span>
+              <span class="overview-unit">pasos</span>
+            </div>
+            <p class="overview-subtext" id="overview-activity-subtext">0 min de ejercicio</p>
+          </article>
+
+          <!-- Tarjeta resumen Peso -->
+          <article class="overview-card" id="overview-card-weight">
+            <div class="overview-card-top">
+              <span class="caption text-mute">Peso corporal</span>
+              <span class="overview-icon">⚖️</span>
+            </div>
+            <div class="overview-main-metric">
+              <span class="overview-number" id="overview-weight-val">--</span>
+              <span class="overview-unit" id="overview-weight-unit">kg</span>
+            </div>
+            <p class="overview-subtext" id="overview-weight-subtext">Sin medición registrada</p>
+          </article>
+        </div>
+
+        <!-- Banner motivacional o empty state integral -->
+        <div class="overview-status-banner" id="overview-status-banner">
+          <span class="overview-status-icon" id="overview-banner-icon">🌱</span>
+          <div class="overview-status-info">
+            <h4 class="overview-status-title" id="overview-banner-title">Jornada de salud</h4>
+            <p class="caption text-body" id="overview-banner-desc">Registra tus hábitos diarios para identificar patrones de saciedad y movimiento.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. PANE: COMIDAS Y SACIEDAD -->
+      <section
+        id="pane-history-meals"
+        class="history-pane"
+        role="tabpanel"
+        aria-labelledby="tab-history-meals"
+        style="display: none;"
+      >
+        <!-- Resumen rápido de la fecha -->
+        <div class="pane-stats-bar" id="meals-pane-stats" style="display: none;">
+          <div class="pane-stat-item">
+            <span class="caption text-mute">Total</span>
+            <span class="body-sm text-body-strong" id="meals-stat-total">0 comidas</span>
+          </div>
+          <div class="pane-stat-item">
+            <span class="caption text-mute">Saciedad media</span>
+            <span class="body-sm text-body-strong" id="meals-stat-satiety">--</span>
+          </div>
+          <div class="pane-stat-item">
+            <span class="caption text-mute">Pausas conscientes</span>
+            <span class="body-sm text-body-strong" id="meals-stat-pauses">0</span>
+          </div>
+          <div class="pane-stat-item">
+            <span class="caption text-mute">Deseo de repetir</span>
+            <span class="body-sm text-body-strong" id="meals-stat-repeats">0</span>
+          </div>
+        </div>
+
+        <div id="history-meals-empty" class="history-empty-state">
+          <span class="empty-icon" aria-hidden="true">🥗</span>
+          <p class="body-sm text-body">No hay comidas registradas en esta fecha.</p>
+          <span class="caption text-mute">Puedes usar el botón "Registrar comida" del dashboard para añadir capturas de cualquier día.</span>
+        </div>
+
+        <div id="history-meals-list" class="history-items-list" style="display: none;"></div>
+      </section>
+
+      <!-- 3. PANE: ACTIVIDAD FÍSICA -->
+      <section
+        id="pane-history-activity"
+        class="history-pane"
+        role="tabpanel"
+        aria-labelledby="tab-history-activity"
+        style="display: none;"
+      >
+        <!-- Tarjeta de pasos diarios de esa fecha -->
+        <article class="activity-history-card">
+          <div class="activity-history-header">
+            <span class="caption text-mute">Pasos acumulados</span>
+            <span class="metric-tag" id="activity-steps-pct-tag">0% meta</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number" id="activity-steps-number">0</span>
+            <span class="metric-unit">pasos</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="activity-steps-progress" style="width: 0%;"></div>
+          </div>
+          <div class="metric-split">
+            <div class="split-col">
+              <span class="caption text-mute">Meta diaria</span>
+              <span class="body-sm text-body-strong" id="activity-steps-goal-label">10,000 pasos</span>
+            </div>
+            <div class="split-col">
+              <span class="caption text-mute">Ejercicio total</span>
+              <span class="body-sm text-body-strong" id="activity-exercise-total-label">0 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Listado de sesiones de ejercicio del día -->
+        <div class="exercise-section-header">
+          <h4 class="caption text-mute text-uppercase">Sesiones de ejercicio registradas</h4>
+          <span class="caption text-mute" id="activity-exercise-count-label">0 sesiones</span>
+        </div>
+
+        <div id="history-exercise-empty" class="history-empty-state">
+          <span class="empty-icon" aria-hidden="true">🏃</span>
+          <p class="body-sm text-body">No hay sesiones de ejercicio registradas este día.</p>
+        </div>
+
+        <div id="history-exercise-list" class="history-items-list" style="display: none;"></div>
+      </section>
+
+      <!-- 4. PANE: PESO CORPORAL -->
+      <section
+        id="pane-history-weight"
+        class="history-pane"
+        role="tabpanel"
+        aria-labelledby="tab-history-weight"
+        style="display: none;"
+      >
+        <div class="weight-history-card">
+          <div class="weight-history-header">
+            <span class="caption text-mute">Medición de peso en este día</span>
+            <span class="metric-tag" id="weight-history-tag">Sin registro</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number metric-empty" id="weight-history-number">--</span>
+            <span class="metric-unit">kg</span>
+          </div>
+          <div class="metric-trend-wrap" id="weight-history-trend-wrap">
+            <span class="metric-empty-notice" id="weight-history-notice">No se tomó ninguna medición de peso en esta fecha.</span>
+          </div>
+        </div>
+
+        <!-- Historial contextual reciente (últimas mediciones para referencia) -->
+        <div class="recent-weights-block">
+          <h4 class="caption text-mute text-uppercase">Mediciones cercanas en el historial</h4>
+          <div id="weight-recent-list" class="weight-recent-list">
+            <span class="caption text-mute">Cargando mediciones recientes...</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .day-history-modal {
+    max-width: 580px;
+    width: 94%;
+  }
+
+  .day-history-modal-content {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  /* --------------------------------------------------------------------------
+     Navegador de Fechas Minimalista
+     -------------------------------------------------------------------------- */
+  .day-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .day-nav-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--rounded-sm);
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .day-nav-arrow:hover:not(:disabled) {
+    background-color: #443e3a;
+    border-color: var(--color-hairline);
+  }
+
+  .day-nav-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .day-nav-center {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1;
+    justify-content: center;
+  }
+
+  .day-nav-date-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--rounded-sm);
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .day-nav-date-wrap:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-hairline);
+  }
+
+  .day-nav-icon {
+    font-size: 13px;
+  }
+
+  .day-nav-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+    letter-spacing: -0.2px;
+  }
+
+  .day-nav-caret {
+    font-size: 10px;
+    color: var(--color-mute);
+  }
+
+  /* Input nativo oculto pero clickable sobre la fecha */
+  .history-native-date-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .day-nav-today-btn {
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--rounded-pill);
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  .day-nav-today-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* --------------------------------------------------------------------------
+     Tabs de Navegación del Historial
+     -------------------------------------------------------------------------- */
+  .history-tabs-bar {
+    display: flex;
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .history-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-mute);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--rounded-xs);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .history-tab:hover {
+    color: var(--color-body-strong);
+  }
+
+  .history-tab.is-active {
+    color: var(--color-ink);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .tab-count-badge {
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: var(--rounded-pill);
+    background-color: var(--color-hairline);
+    color: var(--color-ink);
+  }
+
+  /* --------------------------------------------------------------------------
+     Loader sutil
+     -------------------------------------------------------------------------- */
+  .history-loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+  }
+
+  .history-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-hairline);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: history-spin 0.6s linear infinite;
+  }
+
+  @keyframes history-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     Paneles de Contenido
+     -------------------------------------------------------------------------- */
+  .history-panes-wrap {
+    min-height: 260px;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .history-pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    animation: fadeInPane 0.15s ease;
+  }
+
+  @keyframes fadeInPane {
+    from {
+      opacity: 0;
+      transform: translateY(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 1. Overview Grid */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .overview-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .overview-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .overview-icon {
+    font-size: 14px;
+  }
+
+  .overview-main-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .overview-number {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-ink);
+    letter-spacing: -0.5px;
+  }
+
+  .overview-number.metric-empty {
+    color: var(--color-mute);
+  }
+
+  .overview-unit {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .overview-subtext {
+    font-size: 11px;
+    color: var(--color-body);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .overview-status-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-md);
+  }
+
+  .overview-status-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .overview-status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .overview-status-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+    margin: 0;
+  }
+
+  .overview-status-desc {
+    margin: 0;
+  }
+
+  /* 2. Comidas Stats Bar */
+  .pane-stats-bar {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-xs);
+  }
+
+  .pane-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  /* Empty State */
+  .history-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    background-color: rgba(255, 255, 255, 0.015);
+    border: 1px dashed var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    gap: var(--space-xs);
+  }
+
+  .empty-icon {
+    font-size: 24px;
+    margin-bottom: var(--space-xs);
+  }
+
+  /* Items List (Comidas & Ejercicios) */
+  .history-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .history-meal-card,
+  .history-exercise-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-sm) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .history-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .history-item-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .history-item-time {
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+
+  .history-item-desc {
+    font-size: 13px;
+    color: var(--color-ink);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .history-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .history-item-context {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--color-mute);
+    padding-left: var(--space-xs);
+    border-left: 2px solid var(--color-hairline);
+    margin-top: 2px;
+  }
+
+  /* 3. Actividad */
+  .activity-history-card,
+  .weight-history-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .activity-history-header,
+  .weight-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .exercise-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-xs);
+  }
+
+  .text-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* 4. Peso */
+  .recent-weights-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
+  }
+
+  .weight-recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .weight-recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-xs);
+    font-size: 12px;
+  }
+
+  .weight-recent-item.is-current-day {
+    border-color: var(--color-mute);
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .weight-recent-date {
+    color: var(--color-body);
+  }
+
+  .weight-recent-val {
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  @media (max-width: 540px) {
+    .overview-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pane-stats-bar {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+

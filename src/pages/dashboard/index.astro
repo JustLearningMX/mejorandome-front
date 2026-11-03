@@ -4,6 +4,7 @@ import Header from '../../components/ui/Header.astro';
 import GoogleButton from '../../components/ui/GoogleButton.astro';
 import MealModal from '../../components/nutrition/MealModal.astro';
 import ActivityModal from '../../components/activity/ActivityModal.astro';
+import DayHistoryModal from '../../components/dashboard/DayHistoryModal.astro';
 import { getAppUrl } from '../../utils/paths';
 
 const homeUrl = getAppUrl();
@@ -86,6 +87,21 @@ const homeUrl = getAppUrl();
               <span class="metric-tag" id="metric-peso-tag">Sin registro</span>
               <button
                 type="button"
+                class="btn-metric-history"
+                id="btn-history-weight-card"
+                title="Consultar historial de peso"
+                aria-label="Consultar historial de peso"
+                data-history-initial="weight"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </button>
+              <button
+                type="button"
                 class="btn-metric-add"
                 id="btn-add-weight-card"
                 title="Registrar nuevo peso"
@@ -124,6 +140,21 @@ const homeUrl = getAppUrl();
             </div>
             <div class="metric-header-actions">
               <span class="metric-tag">Hoy</span>
+              <button
+                type="button"
+                class="btn-metric-history"
+                id="btn-history-activity-card"
+                title="Consultar historial de actividad"
+                aria-label="Consultar historial de actividad"
+                data-history-initial="activity"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </button>
               <button
                 type="button"
                 class="btn-metric-add"
@@ -176,6 +207,21 @@ const homeUrl = getAppUrl();
               <span class="metric-tag" id="metric-alimentacion-tag">Hoy</span>
               <button
                 type="button"
+                class="btn-metric-history"
+                id="btn-history-meal-card"
+                title="Consultar historial de comidas"
+                aria-label="Consultar historial de comidas"
+                data-history-initial="meals"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </button>
+              <button
+                type="button"
                 class="btn-metric-add"
                 id="btn-add-meal-card"
                 title="Registrar nueva comida"
@@ -224,9 +270,14 @@ const homeUrl = getAppUrl();
             <h3 class="meals-log-title">Comidas del día</h3>
             <span class="caption text-mute" id="meals-count-subtitle">0 registros hoy</span>
           </div>
-          <button type="button" class="btn-action-sm" id="btn-header-add-meal">
-            <span class="action-icon">➕</span> Registrar comida
-          </button>
+          <div class="meals-log-actions">
+            <button type="button" class="btn-action-sm btn-ghost-sm" id="btn-history-meals-section" data-history-initial="meals" title="Consultar historial por fecha">
+              <span class="action-icon">📅</span> Historial
+            </button>
+            <button type="button" class="btn-action-sm" id="btn-header-add-meal">
+              <span class="action-icon">➕</span> Registrar comida
+            </button>
+          </div>
         </div>
 
         <div id="meals-list-container" class="meals-list-container">
@@ -313,6 +364,9 @@ const homeUrl = getAppUrl();
 
     <!-- Dialog modal interactivo para Registrar Actividad Física (Pasos y Ejercicio) -->
     <ActivityModal />
+
+    <!-- Dialog modal interactivo para Consultar Historial Diario (HealthDay Journey) -->
+    <DayHistoryModal />
   </main>
 </MainLayout>
 
@@ -591,6 +645,32 @@ const homeUrl = getAppUrl();
     border: 1px solid var(--color-hairline);
     border-radius: var(--rounded-xs);
     color: var(--color-mute);
+  }
+
+  .btn-metric-history {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--rounded-xs);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    color: var(--color-mute);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-metric-history:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: #443e3a;
+  }
+
+  .meals-log-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
   }
 
   .btn-metric-add {
@@ -1142,7 +1222,13 @@ const homeUrl = getAppUrl();
   import { weightService } from '../../services/weight.service';
   import { nutritionService } from '../../services/nutrition.service';
   import { activityService } from '../../services/activity.service';
-  import { getLocalDateString, getLocalDateTimeInputString } from '../../utils/date';
+  import {
+    getLocalDateString,
+    getLocalDateTimeInputString,
+    shiftLocalDate,
+    formatLocalDateDisplay,
+    isFutureLocalDate,
+  } from '../../utils/date';
   import { showAuthNotification } from '../../utils/auth-client';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
@@ -1155,6 +1241,12 @@ const homeUrl = getAppUrl();
 
     const token = authService.getStoredToken();
     const storedUser = authService.getStoredUser();
+
+    // Caché en memoria para el explorador de historial
+    const historyDayCache: Record<string, any> = {};
+    const invalidateTodayHistoryCache = () => {
+      delete historyDayCache[getLocalDateString()];
+    };
 
     if (!token) {
       if (gateView) gateView.style.display = 'flex';
@@ -1446,6 +1538,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente con la nueva medición
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg =
           err instanceof Error
@@ -1567,6 +1660,7 @@ const homeUrl = getAppUrl();
                 showAuthNotification('Comida eliminada exitosamente', 'info');
                 const freshSummary = await dashboardService.getSummary(token);
                 renderMetrics(freshSummary);
+        invalidateTodayHistoryCache();
                 await loadAndRenderTodayMeals();
               } catch (err: unknown) {
                 const errorMsg =
@@ -1755,6 +1849,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard y listado de comidas inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+        invalidateTodayHistoryCache();
         await loadAndRenderTodayMeals();
       } catch (err: unknown) {
         const errorMsg =
@@ -1908,6 +2003,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar los pasos';
         if (stepsErrorBanner) {
@@ -1973,6 +2069,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar el ejercicio';
         if (exerciseErrorBanner) {
@@ -1985,6 +2082,429 @@ const homeUrl = getAppUrl();
         if (exerciseSubmitBtnText) exerciseSubmitBtnText.textContent = 'Guardar sesión';
       }
     });
+
+    // =========================================================================
+    // 6. Modal de Historial Diario (HealthDay Journey)
+    // =========================================================================
+    const historyModal = document.getElementById('day-history-modal') as HTMLDialogElement | null;
+    const historyBtnClose = document.getElementById('btn-close-day-history');
+    const historyBtnPrev = document.getElementById('history-btn-prev') as HTMLButtonElement | null;
+    const historyBtnNext = document.getElementById('history-btn-next') as HTMLButtonElement | null;
+    const historyBtnToday = document.getElementById('history-btn-today');
+    const historyDateDisplay = document.getElementById('history-date-display');
+    const historyDatePicker = document.getElementById('history-date-picker-input') as HTMLInputElement | null;
+    const historyLoader = document.getElementById('history-loading-indicator');
+    const historyPanesWrap = document.getElementById('history-panes-wrap');
+
+    const historyTabs = document.querySelectorAll<HTMLButtonElement>('.history-tab');
+    const historyPanes: Record<string, HTMLElement | null> = {
+      overview: document.getElementById('pane-history-overview'),
+      meals: document.getElementById('pane-history-meals'),
+      activity: document.getElementById('pane-history-activity'),
+      weight: document.getElementById('pane-history-weight'),
+    };
+
+    let selectedHistoryDate = getLocalDateString();
+    let currentHistoryTab: 'overview' | 'meals' | 'activity' | 'weight' = 'overview';
+
+    // Caché en memoria compartido arriba en initializeDashboard
+
+    function switchHistoryTab(tabName: 'overview' | 'meals' | 'activity' | 'weight') {
+      currentHistoryTab = tabName;
+      historyTabs.forEach((tab) => {
+        const isCurrent = tab.dataset.historyTab === tabName;
+        tab.classList.toggle('is-active', isCurrent);
+        tab.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
+      });
+
+      Object.entries(historyPanes).forEach(([key, paneEl]) => {
+        if (!paneEl) return;
+        const isCurrent = key === tabName;
+        paneEl.style.display = isCurrent ? 'flex' : 'none';
+        paneEl.classList.toggle('is-active', isCurrent);
+      });
+    }
+
+    historyTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.historyTab as 'overview' | 'meals' | 'activity' | 'weight';
+        if (targetTab) switchHistoryTab(targetTab);
+      });
+    });
+
+    async function loadHistoryDay(localDate: string) {
+      selectedHistoryDate = localDate;
+      const todayStr = getLocalDateString();
+      const dateInfo = formatLocalDateDisplay(localDate);
+
+      if (historyDateDisplay) {
+        historyDateDisplay.textContent = dateInfo.label;
+        historyDateDisplay.title = dateInfo.full;
+      }
+      if (historyDatePicker) {
+        historyDatePicker.value = localDate;
+        historyDatePicker.max = todayStr;
+      }
+
+      if (historyBtnNext) {
+        historyBtnNext.disabled = localDate >= todayStr;
+      }
+      if (historyBtnToday) {
+        historyBtnToday.style.display = dateInfo.isToday ? 'none' : 'inline-block';
+      }
+
+      if (historyLoader) historyLoader.style.display = 'flex';
+      if (historyPanesWrap) historyPanesWrap.style.opacity = '0.35';
+
+      let dayData = historyDayCache[localDate];
+
+      if (!dayData) {
+        try {
+          const [mealsRes, stepsRes, exercisesRes, weightsRes] = await Promise.all([
+            nutritionService.getMeals({ localDate, limit: 50 }, token),
+            activityService.getStepsHistory({ startDate: localDate, endDate: localDate, limit: 1 }, token),
+            activityService.getExercises({ localDate, limit: 50 }, token),
+            weightService.getWeightHistory(50, token),
+          ]);
+
+          const daySteps = (stepsRes?.items && stepsRes.items.length > 0)
+            ? (stepsRes.items[0].steps || 0)
+            : 0;
+
+          const dayStepsGoal = (stepsRes?.items && stepsRes.items.length > 0)
+            ? (stepsRes.items[0].goal || 10000)
+            : 10000;
+
+          const dayWeights = (weightsRes || []).filter((w) => {
+            if (w.healthDay?.localDate) return w.healthDay.localDate === localDate;
+            return getLocalDateString(new Date(w.occurredAt)) === localDate;
+          });
+
+          dayData = {
+            meals: mealsRes || [],
+            steps: daySteps,
+            stepsGoal: dayStepsGoal,
+            exercises: exercisesRes || [],
+            weights: dayWeights,
+          };
+
+          historyDayCache[localDate] = dayData;
+        } catch (err) {
+          console.warn('Error al cargar datos del día en historial:', err);
+          dayData = { meals: [], steps: 0, stepsGoal: 10000, exercises: [], weights: [] };
+        }
+      }
+
+      if (historyLoader) historyLoader.style.display = 'none';
+      if (historyPanesWrap) historyPanesWrap.style.opacity = '1';
+
+      renderHistoryData(localDate, dayData);
+    }
+
+    function renderHistoryData(localDate: string, data: {
+      meals: any[];
+      steps: number;
+      stepsGoal: number;
+      exercises: any[];
+      weights: any[];
+    }) {
+      const { meals, steps, stepsGoal, exercises, weights } = data;
+      const totalExerciseMinutes = exercises.reduce((acc, ex) => acc + (ex.durationMinutes || 0), 0);
+
+      const badgeCountMeals = document.getElementById('history-count-meals');
+      if (badgeCountMeals) badgeCountMeals.textContent = String(meals.length);
+
+      // 1. Overview
+      const overviewMealsVal = document.getElementById('overview-meals-val');
+      const overviewSatietySub = document.getElementById('overview-satiety-subtext');
+      const overviewStepsVal = document.getElementById('overview-steps-val');
+      const overviewActivitySub = document.getElementById('overview-activity-subtext');
+      const overviewWeightVal = document.getElementById('overview-weight-val');
+      const overviewWeightSub = document.getElementById('overview-weight-subtext');
+      const overviewBannerTitle = document.getElementById('overview-banner-title');
+      const overviewBannerDesc = document.getElementById('overview-banner-desc');
+      const overviewBannerIcon = document.getElementById('overview-banner-icon');
+
+      if (overviewMealsVal) overviewMealsVal.textContent = String(meals.length);
+      if (overviewSatietySub) {
+        if (meals.length > 0) {
+          const totalSat = meals.reduce((acc, m) => acc + (Number(m.satietyAfter) || 0), 0);
+          const avgSat = Math.round((totalSat / meals.length) * 10) / 10;
+          overviewSatietySub.textContent = `Saciedad media: ${avgSat}/10`;
+        } else {
+          overviewSatietySub.textContent = 'Sin comidas registradas';
+        }
+      }
+
+      if (overviewStepsVal) overviewStepsVal.textContent = steps.toLocaleString();
+      if (overviewActivitySub) {
+        overviewActivitySub.textContent = totalExerciseMinutes > 0
+          ? `${totalExerciseMinutes} min (${exercises.length} sesión${exercises.length === 1 ? '' : 'es'})`
+          : '0 min de ejercicio';
+      }
+
+      if (weights.length > 0) {
+        const latestWeight = weights[0];
+        if (overviewWeightVal) {
+          overviewWeightVal.textContent = Number(latestWeight.weightKg).toFixed(1);
+          overviewWeightVal.classList.remove('metric-empty');
+        }
+        if (overviewWeightSub) {
+          const time = new Date(latestWeight.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+          overviewWeightSub.textContent = `Medición a las ${time}`;
+        }
+      } else {
+        if (overviewWeightVal) {
+          overviewWeightVal.textContent = '--';
+          overviewWeightVal.classList.add('metric-empty');
+        }
+        if (overviewWeightSub) overviewWeightSub.textContent = 'Sin medición este día';
+      }
+
+      const hasAny = meals.length > 0 || steps > 0 || totalExerciseMinutes > 0 || weights.length > 0;
+      if (overviewBannerTitle && overviewBannerDesc && overviewBannerIcon) {
+        if (hasAny) {
+          overviewBannerIcon.textContent = '✨';
+          overviewBannerTitle.textContent = 'Día con actividad registrada';
+          overviewBannerDesc.textContent = `Registraste ${meals.length} comida(s), ${steps.toLocaleString()} pasos y ${weights.length} medición(es) de peso.`;
+        } else {
+          overviewBannerIcon.textContent = '🌱';
+          overviewBannerTitle.textContent = 'Sin registros en esta fecha';
+          overviewBannerDesc.textContent = 'No hay capturas registradas en este día. Puedes navegar hacia atrás para ver tus registros previos.';
+        }
+      }
+
+      // 2. Meals
+      const mealsStatsBar = document.getElementById('meals-pane-stats');
+      const mealsEmpty = document.getElementById('history-meals-empty');
+      const mealsList = document.getElementById('history-meals-list');
+      const mealsStatTotal = document.getElementById('meals-stat-total');
+      const mealsStatSatiety = document.getElementById('meals-stat-satiety');
+      const mealsStatPauses = document.getElementById('meals-stat-pauses');
+      const mealsStatRepeats = document.getElementById('meals-stat-repeats');
+
+      if (meals.length > 0) {
+        if (mealsStatsBar) mealsStatsBar.style.display = 'flex';
+        if (mealsEmpty) mealsEmpty.style.display = 'none';
+        if (mealsList) {
+          mealsList.style.display = 'flex';
+          const typeLabels: Record<string, { label: string; icon: string }> = {
+            breakfast: { label: 'Desayuno', icon: '🌅' },
+            lunch: { label: 'Comida', icon: '☀️' },
+            dinner: { label: 'Cena', icon: '🌙' },
+            snack: { label: 'Colación', icon: '🍎' },
+            other: { label: 'Otro', icon: '🍽️' },
+          };
+
+          const totalSat = meals.reduce((acc, m) => acc + (Number(m.satietyAfter) || 0), 0);
+          const avgSat = Math.round((totalSat / meals.length) * 10) / 10;
+          const consciousPauses = meals.filter((m) => m.pausedBeforeMore === true).length;
+          const repeated = meals.filter((m) => m.wantedMoreEvenIfFull === true).length;
+
+          if (mealsStatTotal) mealsStatTotal.textContent = `${meals.length} comida${meals.length === 1 ? '' : 's'}`;
+          if (mealsStatSatiety) mealsStatSatiety.textContent = `${avgSat} / 10`;
+          if (mealsStatPauses) mealsStatPauses.textContent = String(consciousPauses);
+          if (mealsStatRepeats) mealsStatRepeats.textContent = `${repeated} vez${repeated === 1 ? '' : 'es'}`;
+
+          mealsList.innerHTML = meals.map((m) => {
+            const meta = typeLabels[m.mealType] || { label: m.mealType, icon: '🍽️' };
+            const timeStr = new Date(m.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+            return `
+              <div class="history-meal-card">
+                <div class="history-item-top">
+                  <span class="history-item-badge">${meta.icon} ${meta.label}</span>
+                  <span class="history-item-time">${timeStr}</span>
+                </div>
+                <p class="history-item-desc">${escapeHtml(m.description || '')}</p>
+                <div class="history-item-tags">
+                  <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${m.hungerBefore}/10</span>
+                  <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${m.satietyAfter}/10</span>
+                  ${m.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
+                  ${m.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ✓</span>' : ''}
+                </div>
+                ${m.extraEatingContext ? `<div class="history-item-context">💭 "${escapeHtml(m.extraEatingContext)}"</div>` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+      } else {
+        if (mealsStatsBar) mealsStatsBar.style.display = 'none';
+        if (mealsEmpty) mealsEmpty.style.display = 'flex';
+        if (mealsList) {
+          mealsList.style.display = 'none';
+          mealsList.innerHTML = '';
+        }
+      }
+
+      // 3. Activity
+      const actStepsNum = document.getElementById('activity-steps-number');
+      const actStepsPctTag = document.getElementById('activity-steps-pct-tag');
+      const actStepsProgress = document.getElementById('activity-steps-progress');
+      const actStepsGoalLabel = document.getElementById('activity-steps-goal-label');
+      const actExerciseTotalLabel = document.getElementById('activity-exercise-total-label');
+      const actExerciseCountLabel = document.getElementById('activity-exercise-count-label');
+      const actExerciseEmpty = document.getElementById('history-exercise-empty');
+      const actExerciseList = document.getElementById('history-exercise-list');
+
+      const pct = stepsGoal > 0 ? Math.min(100, Math.round((steps / stepsGoal) * 100)) : 0;
+      if (actStepsNum) actStepsNum.textContent = steps.toLocaleString();
+      if (actStepsPctTag) actStepsPctTag.textContent = `${pct}% meta`;
+      if (actStepsProgress) actStepsProgress.style.width = `${pct}%`;
+      if (actStepsGoalLabel) actStepsGoalLabel.textContent = `${stepsGoal.toLocaleString()} pasos`;
+      if (actExerciseTotalLabel) actExerciseTotalLabel.textContent = `${totalExerciseMinutes} min`;
+      if (actExerciseCountLabel) actExerciseCountLabel.textContent = `${exercises.length} sesión${exercises.length === 1 ? '' : 'es'}`;
+
+      if (exercises.length > 0) {
+        if (actExerciseEmpty) actExerciseEmpty.style.display = 'none';
+        if (actExerciseList) {
+          actExerciseList.style.display = 'flex';
+          const exTypeLabels: Record<string, { label: string; icon: string }> = {
+            walking: { label: 'Caminata', icon: '🚶' },
+            running: { label: 'Carrera', icon: '🏃' },
+            cycling: { label: 'Ciclismo', icon: '🚴' },
+            swimming: { label: 'Natación', icon: '🏊' },
+            gym: { label: 'Gimnasio / Pesas', icon: '🏋️' },
+            yoga: { label: 'Yoga / Estiramiento', icon: '🧘' },
+            other: { label: 'Otro ejercicio', icon: '⚡' },
+          };
+
+          actExerciseList.innerHTML = exercises.map((ex) => {
+            const meta = exTypeLabels[ex.exerciseType] || { label: ex.exerciseType, icon: '⚡' };
+            const timeStr = ex.occurredAt
+              ? new Date(ex.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+              : '--:--';
+            return `
+              <div class="history-exercise-card">
+                <div class="history-item-top">
+                  <span class="history-item-badge">${meta.icon} ${meta.label}</span>
+                  <span class="history-item-time">${timeStr}</span>
+                </div>
+                <div class="history-item-tags">
+                  <span class="meal-tag-pill meal-tag-pill--pause">⏱️ ${ex.durationMinutes} minutos</span>
+                  ${ex.intensity ? `<span class="meal-tag-pill">Intensidad: ${escapeHtml(ex.intensity)}</span>` : ''}
+                  ${ex.caloriesBurned ? `<span class="meal-tag-pill">🔥 ${ex.caloriesBurned} kcal</span>` : ''}
+                </div>
+                ${ex.notes ? `<p class="history-item-desc">${escapeHtml(ex.notes)}</p>` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+      } else {
+        if (actExerciseEmpty) actExerciseEmpty.style.display = 'flex';
+        if (actExerciseList) {
+          actExerciseList.style.display = 'none';
+          actExerciseList.innerHTML = '';
+        }
+      }
+
+      // 4. Weight
+      const weightNum = document.getElementById('weight-history-number');
+      const weightTag = document.getElementById('weight-history-tag');
+      const weightTrendWrap = document.getElementById('weight-history-trend-wrap');
+      const weightRecentList = document.getElementById('weight-recent-list');
+
+      if (weights.length > 0) {
+        const latest = weights[0];
+        const val = Number(latest.weightKg);
+        if (weightNum) {
+          weightNum.textContent = val.toFixed(1);
+          weightNum.classList.remove('metric-empty');
+        }
+        if (weightTag) weightTag.textContent = 'Registrado';
+        if (weightTrendWrap) {
+          const time = new Date(latest.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+          weightTrendWrap.innerHTML = `<span class="caption text-body">Medición capturada a las ${time}</span>`;
+        }
+      } else {
+        if (weightNum) {
+          weightNum.textContent = '--';
+          weightNum.classList.add('metric-empty');
+        }
+        if (weightTag) weightTag.textContent = 'Sin registro';
+        if (weightTrendWrap) {
+          weightTrendWrap.innerHTML = '<span class="metric-empty-notice">No se tomó ninguna medición de peso en esta fecha.</span>';
+        }
+      }
+
+      if (weightRecentList) {
+        weightService.getWeightHistory(5, token).then((recentList) => {
+          if (!recentList || recentList.length === 0) {
+            weightRecentList.innerHTML = '<span class="caption text-mute">Sin registros en el historial.</span>';
+            return;
+          }
+          weightRecentList.innerHTML = recentList.map((rw) => {
+            const rDate = rw.healthDay?.localDate || getLocalDateString(new Date(rw.occurredAt));
+            const isSelected = rDate === localDate;
+            const dObj = new Date(rw.occurredAt);
+            const dateFmt = dObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+            return `
+              <div class="weight-recent-item ${isSelected ? 'is-current-day' : ''}">
+                <span class="weight-recent-date">${dateFmt} ${isSelected ? '(este día)' : ''}</span>
+                <span class="weight-recent-val">${Number(rw.weightKg).toFixed(1)} kg</span>
+              </div>
+            `;
+          }).join('');
+        }).catch(() => {
+          weightRecentList.innerHTML = '<span class="caption text-mute">No se pudieron cargar mediciones previas.</span>';
+        });
+      }
+    }
+
+    function openHistoryModal(initialTab: 'overview' | 'meals' | 'activity' | 'weight' = 'overview') {
+      if (!historyModal) return;
+      selectedHistoryDate = getLocalDateString();
+      switchHistoryTab(initialTab);
+      loadHistoryDay(selectedHistoryDate);
+      historyModal.showModal();
+    }
+
+    function closeHistoryModal() {
+      if (historyModal && historyModal.open) {
+        historyModal.close();
+      }
+    }
+
+    // Botones disparadores
+    document.querySelectorAll<HTMLElement>('[data-history-initial]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = (btn.dataset.historyInitial || 'overview') as 'overview' | 'meals' | 'activity' | 'weight';
+        openHistoryModal(tab);
+      });
+    });
+
+    historyBtnClose?.addEventListener('click', closeHistoryModal);
+    historyModal?.addEventListener('click', (e) => {
+      if (e.target === historyModal) closeHistoryModal();
+    });
+
+    historyBtnPrev?.addEventListener('click', () => {
+      const prevDate = shiftLocalDate(selectedHistoryDate, -1);
+      loadHistoryDay(prevDate);
+    });
+
+    historyBtnNext?.addEventListener('click', () => {
+      if (historyBtnNext.disabled) return;
+      const nextDate = shiftLocalDate(selectedHistoryDate, 1);
+      if (!isFutureLocalDate(nextDate)) {
+        loadHistoryDay(nextDate);
+      }
+    });
+
+    historyBtnToday?.addEventListener('click', () => {
+      loadHistoryDay(getLocalDateString());
+    });
+
+    historyDatePicker?.addEventListener('change', (e) => {
+      const val = (e.target as HTMLInputElement).value;
+      if (val && !isFutureLocalDate(val)) {
+        loadHistoryDay(val);
+      }
+    });
+
+    // Invalidador de caché del historial al guardar nuevos registros
+    const originalWeightSubmit = weightForm?.onsubmit;
+    // Invalidador de caché declarado al inicio de initializeDashboard
+
   }
 
   if (document.readyState === 'loading') {
