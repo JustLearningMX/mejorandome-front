@@ -2,6 +2,7 @@ import { apiRequest } from './api.client';
 import { weightService } from './weight.service';
 import { nutritionService } from './nutrition.service';
 import { activityService } from './activity.service';
+import { getLocalDateString } from '../utils/date';
 import type { DashboardSummary, NutritionSummary, ActivitySummary } from '../types/dashboard';
 import type { MealResponse } from '../types/nutrition';
 
@@ -17,19 +18,13 @@ function computeNutritionSummary(meals: MealResponse[]): NutritionSummary {
     };
   }
 
-  const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayStr = getLocalDateString();
 
   const todaysMeals = meals.filter((m) => {
     if (m.healthDay?.localDate) {
       return m.healthDay.localDate === todayStr;
     }
-    const d = new Date(m.occurredAt);
-    return (
-      d.getFullYear() === now.getFullYear() &&
-      d.getMonth() === now.getMonth() &&
-      d.getDate() === now.getDate()
-    );
+    return getLocalDateString(new Date(m.occurredAt)) === todayStr;
   });
 
   const mealsCount = todaysMeals.length;

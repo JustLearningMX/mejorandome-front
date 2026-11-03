@@ -1142,6 +1142,7 @@ const homeUrl = getAppUrl();
   import { weightService } from '../../services/weight.service';
   import { nutritionService } from '../../services/nutrition.service';
   import { activityService } from '../../services/activity.service';
+  import { getLocalDateString, getLocalDateTimeInputString } from '../../utils/date';
   import { showAuthNotification } from '../../utils/auth-client';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
@@ -1376,13 +1377,7 @@ const homeUrl = getAppUrl();
         weightInput.value = '';
       }
       if (dateInput) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        dateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        dateInput.value = getLocalDateTimeInputString();
       }
       weightModal.showModal();
       setTimeout(() => weightInput?.focus(), 50);
@@ -1482,18 +1477,12 @@ const homeUrl = getAppUrl();
       const subtitle = document.getElementById('meals-count-subtitle');
 
       try {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const meals = await nutritionService.getMeals({ limit: 20 }, token);
+        const todayStr = getLocalDateString();
+        const meals = await nutritionService.getMeals({ limit: 30 }, token);
 
-        const now = new Date();
         const todaysMeals = meals.filter((m) => {
           if (m.healthDay?.localDate) return m.healthDay.localDate === todayStr;
-          const d = new Date(m.occurredAt);
-          return (
-            d.getFullYear() === now.getFullYear() &&
-            d.getMonth() === now.getMonth() &&
-            d.getDate() === now.getDate()
-          );
+          return getLocalDateString(new Date(m.occurredAt)) === todayStr;
         });
 
         if (subtitle) {
@@ -1685,13 +1674,7 @@ const homeUrl = getAppUrl();
       if (defaultTypeRadio) defaultTypeRadio.checked = true;
 
       if (mealDateInput) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        mealDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        mealDateInput.value = getLocalDateTimeInputString();
       }
 
       mealModal.showModal();
@@ -1847,15 +1830,13 @@ const homeUrl = getAppUrl();
       if (stepsErrorBanner) stepsErrorBanner.style.display = 'none';
       if (exerciseErrorBanner) exerciseErrorBanner.style.display = 'none';
 
-      const now = new Date();
-      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      if (stepsDateInput && !stepsDateInput.value) {
+      const todayStr = getLocalDateString();
+      if (stepsDateInput) {
         stepsDateInput.value = todayStr;
       }
 
-      const tzOffset = now.getTimezoneOffset() * 60000;
-      const localIsoTime = new Date(now.getTime() - tzOffset).toISOString().slice(0, 16);
-      if (exerciseOccurredInput && !exerciseOccurredInput.value) {
+      const localIsoTime = getLocalDateTimeInputString();
+      if (exerciseOccurredInput) {
         exerciseOccurredInput.value = localIsoTime;
       }
 
