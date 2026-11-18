@@ -651,6 +651,14 @@ const dashboardUrl = getAppUrl('dashboard');
     font-family: var(--font-mono);
   }
 
+  @media (max-width: 767px) {
+    .user-display-name,
+    .btn-connection-status,
+    .btn-logout {
+      display: none;
+    }
+  }
+
   @media (pointer: coarse) {
     .btn-connection-status,
     .nav-hamburger {

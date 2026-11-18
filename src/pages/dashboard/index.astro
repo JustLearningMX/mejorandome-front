@@ -208,6 +208,7 @@ const homeUrl = getAppUrl();
               <span class="body-sm text-body-strong" id="metric-repeticion-val">0 veces</span>
             </div>
           </div>
+          <div id="metric-meals-week" class="metric-chart" hidden></div>
           <div id="metric-meal-cta-wrap" class="metric-cta-wrap">
             <button type="button" class="btn-card-cta" id="btn-card-register-meal">
               + Registrar primera comida
@@ -386,6 +387,39 @@ const homeUrl = getAppUrl();
   .week-bar.is-today .week-bar-label {
     color: var(--color-ink);
     font-weight: 500;
+  }
+
+  .week-satiety-title {
+    margin-bottom: var(--space-xs);
+  }
+
+  .satiety-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 32px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-ink);
+    background-color: var(--color-canvas);
+    border: 1px dashed var(--color-hairline);
+    border-radius: var(--rounded-xs);
+  }
+
+  .satiety-cell--low {
+    background-color: color-mix(in srgb, var(--color-warning) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-warning) 40%, transparent);
+  }
+
+  .satiety-cell--ok {
+    background-color: color-mix(in srgb, var(--color-success) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-success) 40%, transparent);
+  }
+
+  .satiety-cell--high {
+    background-color: color-mix(in srgb, var(--color-danger) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-danger) 40%, transparent);
   }
 
   /* Estado de carga de métricas */
@@ -728,7 +762,7 @@ const homeUrl = getAppUrl();
   }
 
   .metric-trend--up {
-    color: var(--color-danger);
+    color: var(--color-warning);
   }
 
   .progress-bar-bg {
@@ -1030,7 +1064,7 @@ const homeUrl = getAppUrl();
   import type { IconName } from '../../utils/icons';
   import { MEAL_TYPES } from '../../types/nutrition';
   import { EXERCISE_TYPES } from '../../types/activity';
-  import { buildSparkline, buildWeekBars, latestWeightPerDay } from '../../utils/chart';
+  import { buildSparkline, buildWeekBars, buildWeekSatiety, latestWeightPerDay } from '../../utils/chart';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
   import type { MealType } from '../../types/nutrition';
@@ -1224,10 +1258,10 @@ const homeUrl = getAppUrl();
           pausasVal.textContent = `${summary.nutrition.consciousPausesCount} de ${summary.nutrition.mealsCount}`;
         }
         if (repeticionVal) {
-          repeticionVal.textContent = `${summary.nutrition.repeatedMealsCount} veces`;
+          repeticionVal.textContent = `${summary.nutrition.repeatedMealsCount} ${summary.nutrition.repeatedMealsCount === 1 ? "vez" : "veces"}`;
         }
         if (alimentacionFooter) {
-          alimentacionFooter.textContent = `${summary.nutrition.mealsCount} registro(s) completado(s) hoy`;
+          alimentacionFooter.textContent = `${summary.nutrition.mealsCount} ${summary.nutrition.mealsCount === 1 ? "registro completado" : "registros completados"} hoy`;
         }
       } else {
         // Estado real: Sin comidas registradas hoy
@@ -1299,14 +1333,47 @@ const homeUrl = getAppUrl();
       `;
     };
 
+    const renderWeekSatiety = (meals: Awaited<ReturnType<typeof nutritionService.getMeals>>) => {
+      const container = document.getElementById('metric-meals-week');
+      if (!container) return;
+
+      const cells = buildWeekSatiety(meals ?? []);
+      if (!cells.some((cell) => cell.average !== null)) {
+        container.hidden = true;
+        container.innerHTML = '';
+        return;
+      }
+
+      const label = `Saciedad promedio de los últimos 7 días: ${cells
+        .map((cell) => `${cell.localDate} ${cell.average ?? 'sin registros'}`)
+        .join(', ')}`;
+      container.hidden = false;
+      container.innerHTML = `
+        <p class="caption text-mute week-satiety-title">Saciedad promedio · 7 días</p>
+        <div class="week-bars" role="img" aria-label="${label}">
+          ${cells
+            .map(
+              (cell) => `
+            <div class="week-bar ${cell.isToday ? 'is-today' : ''}">
+              <span class="satiety-cell ${cell.band ? `satiety-cell--${cell.band}` : ''}">${cell.average === null ? '' : Math.round(cell.average)}</span>
+              <span class="week-bar-label">${cell.dayLabel}</span>
+            </div>`
+            )
+            .join('')}
+        </div>
+      `;
+    };
+
     const refreshTrendCharts = async () => {
       const today = getLocalDateString();
-      const [weights, steps] = await Promise.all([
+      const [weights, steps, meals] = await Promise.all([
         weightService.getWeightHistory(30, token),
         activityService.getStepsHistory({ startDate: shiftLocalDate(today, -6), endDate: today, limit: 7 }, token),
+        nutritionService.getMeals({ limit: 60 }, token),
       ]);
       renderWeightChart(weights);
       renderWeekBars(steps);
+      renderWeekSatiety(meals);
     };
 
     // Consultar datos reales de dashboard desde el backend

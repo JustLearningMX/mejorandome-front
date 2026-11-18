@@ -1,5 +1,6 @@
 import type { WeightMeasurementResponse } from '../types/weight';
 import type { StepsHistoryItem } from '../types/activity';
+import type { MealResponse } from '../types/nutrition';
 import { getLocalDateString, shiftLocalDate } from './date';
 
 export interface SparklineGeometry {
@@ -15,6 +16,17 @@ export interface WeekBar {
   goalReached: boolean;
   isToday: boolean;
   dayLabel: string;
+}
+
+export type SatietyBand = 'low' | 'ok' | 'high';
+
+export interface WeekSatietyCell {
+  localDate: string;
+  dayLabel: string;
+  average: number | null;
+  mealsCount: number;
+  band: SatietyBand | null;
+  isToday: boolean;
 }
 
 const WEEKDAY_INITIALS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
@@ -57,6 +69,34 @@ export function buildSparkline(
   const areaPoints = `${format({ x: first.x, y: height })} ${linePoints} ${format({ x: last.x, y: height })}`;
 
   return { linePoints, areaPoints, lastPoint: last };
+}
+
+function satietyBand(average: number): SatietyBand {
+  if (average <= 4) return 'low';
+  if (average <= 8) return 'ok';
+  return 'high';
+}
+
+export function buildWeekSatiety(meals: MealResponse[], daysCount = 7): WeekSatietyCell[] {
+  const today = getLocalDateString();
+
+  return Array.from({ length: daysCount }, (_, index) => {
+    const localDate = shiftLocalDate(today, index - (daysCount - 1));
+    const dayMeals = meals.filter((meal) => meal.healthDay?.localDate === localDate);
+    const [year, month, day] = localDate.split('-').map(Number);
+    const average = dayMeals.length
+      ? Math.round((dayMeals.reduce((sum, meal) => sum + Number(meal.satietyAfter), 0) / dayMeals.length) * 10) / 10
+      : null;
+
+    return {
+      localDate,
+      dayLabel: WEEKDAY_INITIALS[new Date(year, month - 1, day).getDay()],
+      average,
+      mealsCount: dayMeals.length,
+      band: average === null ? null : satietyBand(average),
+      isToday: localDate === today,
+    };
+  });
 }
 
 export function buildWeekBars(
