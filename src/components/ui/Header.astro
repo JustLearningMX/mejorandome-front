@@ -76,7 +76,7 @@ const dashboardUrl = getAppUrl('dashboard');
       </button>
     </div>
 
-    <button class="nav-hamburger" id="nav-toggle" aria-label="Abrir menú" type="button">
+    <button class="nav-hamburger" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" type="button">
       <span></span>
       <span></span>
       <span></span>
@@ -399,6 +399,13 @@ const dashboardUrl = getAppUrl('dashboard');
   /* Menú Móvil */
   .mobile-menu {
     display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
     flex-direction: column;
     gap: var(--space-xs);
     padding: var(--space-md) var(--space-lg);
@@ -666,6 +673,18 @@ const dashboardUrl = getAppUrl('dashboard');
     font-family: var(--font-mono);
   }
 
+  @media (pointer: coarse) {
+    .btn-connection-status,
+    .nav-hamburger {
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .btn-logout {
+      min-height: 44px;
+    }
+  }
+
   @media (min-width: 768px) {
     .nav-links {
       display: flex;
@@ -765,12 +784,14 @@ const dashboardUrl = getAppUrl('dashboard');
     toggle?.addEventListener('click', () => {
       toggle.classList.toggle('active');
       menu?.classList.toggle('open');
+      toggle.setAttribute("aria-expanded", String(menu?.classList.contains("open") ?? false));
     });
 
     document.querySelectorAll('.mobile-link').forEach((link) => {
       link.addEventListener('click', () => {
         toggle?.classList.remove('active');
         menu?.classList.remove('open');
+        toggle?.setAttribute('aria-expanded', 'false');
       });
     });
 

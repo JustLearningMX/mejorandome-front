@@ -1,0 +1,24 @@
+---
+---
+
+<dialog id="confirm-dialog" class="app-modal confirm-dialog" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
+  <form method="dialog" class="app-modal-content">
+    <h2 id="confirm-dialog-title" class="app-modal-title">Confirmar acción</h2>
+    <p id="confirm-dialog-message" class="body-sm text-body"></p>
+    <div class="app-modal-actions">
+      <button type="submit" value="cancel" class="btn-cancel" id="confirm-dialog-cancel">Cancelar</button>
+      <button type="submit" value="confirm" class="btn-submit btn-submit--danger" id="confirm-dialog-accept">Eliminar</button>
+    </div>
+  </form>
+</dialog>
+
+<style is:global>
+  .confirm-dialog {
+    max-width: 400px;
+  }
+
+  .btn-submit--danger {
+    background-color: var(--color-danger);
+    color: var(--color-on-danger);
+  }
+</style>

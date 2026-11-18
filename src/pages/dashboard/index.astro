@@ -5,6 +5,7 @@ import GoogleButton from '../../components/ui/GoogleButton.astro';
 import MealModal from '../../components/nutrition/MealModal.astro';
 import ActivityModal from '../../components/activity/ActivityModal.astro';
 import DayHistoryModal from '../../components/dashboard/DayHistoryModal.astro';
+import ConfirmDialog from '../../components/ui/ConfirmDialog.astro';
 import { getAppUrl } from '../../utils/paths';
 
 const homeUrl = getAppUrl();
@@ -367,16 +368,12 @@ const homeUrl = getAppUrl();
 
     <!-- Dialog modal interactivo para Consultar Historial Diario (HealthDay Journey) -->
     <DayHistoryModal />
+
+    <ConfirmDialog />
   </main>
 </MainLayout>
 
-<style>
-  .dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--space-2xl) var(--space-lg) var(--space-4xl);
-  }
-
+<style is:global>
   /* Guardia para visitantes sin login */
   .auth-gate-card {
     max-width: 520px;
@@ -822,116 +819,6 @@ const homeUrl = getAppUrl();
     border-top: 1px solid var(--color-hairline);
   }
 
-  /* Estilos para Modal de Registro (Design System Warp-inspired) */
-  .app-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-md);
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
-    padding: 0;
-    width: 92%;
-    max-width: 440px;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-  }
-
-  .app-modal::backdrop {
-    background-color: rgba(18, 16, 14, 0.75);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-
-  .app-modal-content {
-    padding: var(--space-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-  }
-
-  .app-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .app-modal-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  .app-modal-icon {
-    font-size: 24px;
-  }
-
-  .app-modal-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--color-ink);
-    line-height: 1.2;
-  }
-
-  .btn-dialog-close {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-mute);
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    transition: color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .btn-dialog-close:hover {
-    color: var(--color-ink);
-    background-color: var(--color-canvas-soft);
-  }
-
-  .app-modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-  }
-
-  .form-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-body-strong);
-  }
-
-  .required-star {
-    color: #f87171;
-  }
-
-  .form-input {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-sm);
-    color: var(--color-ink);
-    font-size: 14px;
-    font-family: var(--font-sans);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: var(--color-mute);
-    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
-  }
-
   .input-with-suffix {
     position: relative;
     display: flex;
@@ -951,67 +838,6 @@ const homeUrl = getAppUrl();
     font-weight: 500;
     color: var(--color-mute);
     pointer-events: none;
-  }
-
-  .form-help {
-    font-size: 11px;
-    color: var(--color-mute);
-  }
-
-  .form-error-banner {
-    padding: var(--space-xs) var(--space-md);
-    background-color: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: var(--rounded-sm);
-    color: #fca5a5;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .app-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
-  }
-
-  .btn-cancel {
-    padding: var(--space-sm) var(--space-md);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-body);
-    background-color: transparent;
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .btn-cancel:hover {
-    color: var(--color-ink);
-    border-color: var(--color-mute);
-    background-color: var(--color-canvas-soft);
-  }
-
-  .btn-submit {
-    padding: var(--space-sm) var(--space-lg);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-on-primary);
-    background-color: var(--color-primary);
-    border: 1px solid transparent;
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    transition: opacity 0.15s ease, transform 0.1s ease;
-  }
-
-  .btn-submit:hover {
-    opacity: 0.92;
-  }
-
-  .btn-submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 
   /* Sección de comidas del día */
@@ -1230,6 +1056,7 @@ const homeUrl = getAppUrl();
     isFutureLocalDate,
   } from '../../utils/date';
   import { showAuthNotification } from '../../utils/auth-client';
+  import { confirmAction } from '../../utils/confirm-dialog';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
   import type { MealType } from '../../types/nutrition';
@@ -1652,7 +1479,7 @@ const homeUrl = getAppUrl();
               const mealId = target.dataset.mealId;
               if (!mealId) return;
 
-              if (!confirm('¿Deseas eliminar este registro de comida?')) return;
+              if (!(await confirmAction({ message: '¿Deseas eliminar este registro de comida? Esta acción no se puede deshacer.' }))) return;
 
               target.setAttribute('disabled', 'true');
               try {

@@ -10,6 +10,9 @@
   --color-canvas: #2b2622;
   --color-canvas-soft: #383330;
   --color-hairline: #3f3a36;
+  --color-border-strong: #80796f;
+  --color-danger: #f87171;
+  --color-on-danger: #2b2622;
 
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -53,6 +56,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -331,7 +335,7 @@ select {
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-canvas-soft);
-  border: 1px solid var(--color-hairline);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--rounded-sm);
   color: var(--color-ink);
   font-size: 14px;
@@ -341,9 +345,8 @@ select {
 }
 
 .form-input:focus {
-  outline: none;
   border-color: var(--color-mute);
-  box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
+
 }
 
 .form-help {
@@ -377,7 +380,7 @@ select {
   font-weight: 500;
   color: var(--color-body);
   background-color: transparent;
-  border: 1px solid var(--color-hairline);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--rounded-sm);
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
@@ -408,5 +411,28 @@ select {
 .btn-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Accesibilidad: foco visible y áreas táctiles
+   ========================================================================== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.form-input:focus-visible {
+  outline-offset: 0;
+}
+
+@media (pointer: coarse) {
+  .btn-dialog-close,
+  .btn-metric-history,
+  .btn-metric-add,
+  .btn-delete-meal,
+  .day-nav-arrow {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
