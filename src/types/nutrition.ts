@@ -38,7 +38,10 @@ export interface QueryMealsParams {
   mealType?: MealType;
 }
 
-$1IconName;
+export interface MealTypeOption {
+  value: MealType;
+  label: string;
+  icon: IconName;
 }
 
 export const MEAL_TYPES: MealTypeOption[] = [

@@ -1508,7 +1508,7 @@ const homeUrl = getAppUrl();
                     <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${meal.hungerBefore}/10</span>
                     <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${meal.satietyAfter}/10</span>
                     ${meal.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
-                    ${meal.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>' : ''}
+                    ${meal.pausedBeforeMore ? `<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>` : ''}
                   </div>
                   ${meal.extraEatingContext ? `<div class="meal-item-context">${iconSvg('message', 12)} "${escapeHtml(meal.extraEatingContext)}"</div>` : ''}
                 </div>
@@ -2191,7 +2191,7 @@ const homeUrl = getAppUrl();
                   <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${m.hungerBefore}/10</span>
                   <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${m.satietyAfter}/10</span>
                   ${m.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
-                  ${m.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>' : ''}
+                  ${m.pausedBeforeMore ? `<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>` : ''}
                 </div>
                 ${m.extraEatingContext ? `<div class="history-item-context">${iconSvg('message', 12)} "${escapeHtml(m.extraEatingContext)}"</div>` : ''}
               </div>

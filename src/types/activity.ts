@@ -110,7 +110,10 @@ export interface UpdateStepsGoalRequest {
   stepsGoal: number;
 }
 
-$1IconName;
+export interface ExerciseTypeOption {
+  value: ExerciseType;
+  label: string;
+  icon: IconName;
 }
 
 export const EXERCISE_TYPES: ExerciseTypeOption[] = [
