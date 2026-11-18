@@ -1024,7 +1024,7 @@ const homeUrl = getAppUrl();
     formatLocalDateDisplay,
     isFutureLocalDate,
   } from '../../utils/date';
-  import { showAuthNotification } from '../../utils/auth-client';
+  import { showToast } from '../../utils/toast';
   import { confirmAction } from '../../utils/confirm-dialog';
   import { iconSvg } from '../../utils/icons';
   import type { IconName } from '../../utils/icons';
@@ -1409,7 +1409,7 @@ const homeUrl = getAppUrl();
           token
         );
 
-        showAuthNotification(`¡Medición de ${weightVal.toFixed(1)} kg guardada exitosamente!`, 'success');
+        showToast(`¡Medición de ${weightVal.toFixed(1)} kg guardada exitosamente!`, 'success');
         closeWeightModal();
 
         // Actualizar dashboard inmediatamente con la nueva medición
@@ -1427,7 +1427,7 @@ const homeUrl = getAppUrl();
           errorBanner.textContent = errorMsg;
           errorBanner.style.display = 'block';
         }
-        showAuthNotification(errorMsg, 'error');
+        showToast(errorMsg, 'error');
       } finally {
         if (submitBtn) submitBtn.disabled = false;
         if (submitBtnText) submitBtnText.textContent = 'Guardar medición';
@@ -1528,7 +1528,7 @@ const homeUrl = getAppUrl();
               target.setAttribute('disabled', 'true');
               try {
                 await nutritionService.deleteMeal(mealId, token);
-                showAuthNotification('Comida eliminada exitosamente', 'info');
+                showToast('Comida eliminada exitosamente', 'info');
                 const freshSummary = await dashboardService.getSummary(token);
                 renderMetrics(freshSummary);
                 void refreshTrendCharts();
@@ -1539,7 +1539,7 @@ const homeUrl = getAppUrl();
                   err instanceof Error
                     ? err.message
                     : 'Error al eliminar la comida';
-                showAuthNotification(errorMsg, 'error');
+                showToast(errorMsg, 'error');
                 target.removeAttribute('disabled');
               }
             });
@@ -1719,7 +1719,7 @@ const homeUrl = getAppUrl();
           token
         );
 
-        showAuthNotification('¡Comida registrada exitosamente!', 'success');
+        showToast('¡Comida registrada exitosamente!', 'success');
         closeMealModal();
 
         // Actualizar dashboard y listado de comidas inmediatamente
@@ -1737,7 +1737,7 @@ const homeUrl = getAppUrl();
           mealErrorBanner.textContent = errorMsg;
           mealErrorBanner.style.display = 'block';
         }
-        showAuthNotification(errorMsg, 'error');
+        showToast(errorMsg, 'error');
       } finally {
         if (submitMealBtn) submitMealBtn.disabled = false;
         if (submitMealText) submitMealText.textContent = 'Guardar comida';
@@ -1848,7 +1848,7 @@ const homeUrl = getAppUrl();
       e.preventDefault();
       const token = authService.getStoredToken();
       if (!token) {
-        showAuthNotification('Debes iniciar sesión para registrar pasos', 'error');
+        showToast('Debes iniciar sesión para registrar pasos', 'error');
         return;
       }
 
@@ -1873,7 +1873,7 @@ const homeUrl = getAppUrl();
           token
         );
 
-        showAuthNotification('¡Pasos registrados exitosamente!', 'success');
+        showToast('¡Pasos registrados exitosamente!', 'success');
         closeActivityModal();
 
         // Actualizar dashboard inmediatamente
@@ -1887,7 +1887,7 @@ const homeUrl = getAppUrl();
           stepsErrorBanner.textContent = errorMsg;
           stepsErrorBanner.style.display = 'block';
         }
-        showAuthNotification(errorMsg, 'error');
+        showToast(errorMsg, 'error');
       } finally {
         if (stepsSubmitBtn) stepsSubmitBtn.disabled = false;
         if (stepsSubmitBtnText) stepsSubmitBtnText.textContent = 'Guardar pasos';
@@ -1899,7 +1899,7 @@ const homeUrl = getAppUrl();
       e.preventDefault();
       const token = authService.getStoredToken();
       if (!token) {
-        showAuthNotification('Debes iniciar sesión para registrar ejercicio', 'error');
+        showToast('Debes iniciar sesión para registrar ejercicio', 'error');
         return;
       }
 
@@ -1935,7 +1935,7 @@ const homeUrl = getAppUrl();
           token
         );
 
-        showAuthNotification('¡Sesión de ejercicio guardada exitosamente!', 'success');
+        showToast('¡Sesión de ejercicio guardada exitosamente!', 'success');
         closeActivityModal();
 
         // Resetear campos opcionales
@@ -1954,7 +1954,7 @@ const homeUrl = getAppUrl();
           exerciseErrorBanner.textContent = errorMsg;
           exerciseErrorBanner.style.display = 'block';
         }
-        showAuthNotification(errorMsg, 'error');
+        showToast(errorMsg, 'error');
       } finally {
         if (exerciseSubmitBtn) exerciseSubmitBtn.disabled = false;
         if (exerciseSubmitBtnText) exerciseSubmitBtnText.textContent = 'Guardar sesión';

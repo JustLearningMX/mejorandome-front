@@ -24,7 +24,7 @@ const dashboardUrl = getAppUrl('dashboard');
   <nav class="nav-links">
     {isDashboard ? (
       <>
-        <a href="#dashboard" class="nav-link active">Dashboard</a>
+        <a href="#dashboard" class="nav-link active" aria-current="location">Dashboard</a>
         <a href="#peso" class="nav-link">Peso</a>
         <a href="#actividad" class="nav-link">Actividad</a>
         <a href="#alimentacion" class="nav-link">Alimentación</a>
@@ -87,7 +87,7 @@ const dashboardUrl = getAppUrl('dashboard');
 <nav class="mobile-menu" id="mobile-menu">
   {isDashboard ? (
     <>
-      <a href="#dashboard" class="mobile-link active">Dashboard</a>
+      <a href="#dashboard" class="mobile-link active" aria-current="location">Dashboard</a>
       <a href="#peso" class="mobile-link">Peso</a>
       <a href="#actividad" class="mobile-link">Actividad</a>
       <a href="#alimentacion" class="mobile-link">Alimentación</a>
@@ -151,15 +151,16 @@ const dashboardUrl = getAppUrl('dashboard');
 
     <div class="connection-status-pill-wrap">
       <span class="pill-badge pill-badge--connected" id="dialog-api-status-badge">
-        <span class="badge-dot"></span> API Conectada
+        <span class="badge-dot"></span> Conectado
       </span>
     </div>
 
     <p class="body-sm text-body connection-dialog-desc">
-      Tu sesión está protegida mediante tokens JWT criptográficos validados por el backend NestJS (<code class="code-font">/api/auth/me</code>).
+      Comprobamos que la aplicación pueda comunicarse con el servidor para guardar tus registros.
     </p>
 
-    <!-- Componentes de la card en vertical -->
+    <details class="connection-details">
+      <summary>Detalles técnicos</summary>
     <div class="connection-vertical-stack">
       <div class="detail-box-vertical">
         <div class="detail-box-top">
@@ -188,6 +189,7 @@ const dashboardUrl = getAppUrl('dashboard');
         </div>
       </div>
     </div>
+    </details>
   </div>
 </dialog>
 
@@ -634,6 +636,17 @@ const dashboardUrl = getAppUrl('dashboard');
     position: static;
   }
 
+  .connection-details summary {
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--color-mute);
+    padding: var(--space-xs) 0;
+  }
+
+  .connection-details[open] summary {
+    margin-bottom: var(--space-sm);
+  }
+
   .code-font {
     font-family: var(--font-mono);
   }
@@ -722,10 +735,10 @@ const dashboardUrl = getAppUrl('dashboard');
       if (dialogDot) dialogDot.classList.remove('offline');
       if (badge) {
         badge.classList.remove('offline');
-        badge.innerHTML = '<span class="badge-dot"></span> API Conectada';
+        badge.innerHTML = '<span class="badge-dot"></span> Conectado';
       }
       if (statusText) {
-        statusText.textContent = 'En línea con backend';
+        statusText.textContent = 'Conectado con el servidor';
         statusText.style.color = 'var(--color-success)';
       }
     } catch {
@@ -733,10 +746,10 @@ const dashboardUrl = getAppUrl('dashboard');
       if (dialogDot) dialogDot.classList.add('offline');
       if (badge) {
         badge.classList.add('offline');
-        badge.innerHTML = '<span class="badge-dot"></span> Modo local';
+        badge.innerHTML = '<span class="badge-dot"></span> Sin conexión';
       }
       if (statusText) {
-        statusText.textContent = 'Sin respuesta de API (modo local)';
+        statusText.textContent = 'Sin respuesta del servidor';
         statusText.style.color = 'var(--color-mute)';
       }
     }
@@ -768,8 +781,10 @@ const dashboardUrl = getAppUrl('dashboard');
           document.querySelectorAll('.nav-link, .mobile-link').forEach((l) => {
             if (l.getAttribute('href') === href) {
               l.classList.add('active');
+              l.setAttribute('aria-current', 'location');
             } else if (l.getAttribute('href')?.startsWith('#')) {
               l.classList.remove('active');
+              l.removeAttribute('aria-current');
             }
           });
         }

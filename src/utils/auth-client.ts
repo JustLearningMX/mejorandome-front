@@ -1,3 +1,4 @@
+import { showToast } from './toast';
 import { authService } from '../services/auth.service';
 import { getAppUrl } from './paths';
 
@@ -33,35 +34,17 @@ declare global {
 
 let isInitialized = false;
 
-export function showAuthNotification(message: string, type: 'info' | 'error' | 'success' = 'info'): void {
-  let toast = document.getElementById('auth-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'auth-toast';
-    toast.className = 'auth-toast';
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.setAttribute('data-type', type);
-  toast.classList.add('visible');
-
-  setTimeout(() => {
-    toast?.classList.remove('visible');
-  }, 4500);
-}
-
 export async function handleGoogleCredential(credential: string): Promise<void> {
   try {
-    showAuthNotification('Autenticando con el servidor...', 'info');
+    showToast('Autenticando con el servidor...', 'info');
     const result = await authService.loginWithGoogle(credential);
-    showAuthNotification(`¡Bienvenido, ${result.user.name}!`, 'success');
+    showToast(`¡Bienvenido, ${result.user.name}!`, 'success');
     setTimeout(() => {
       window.location.href = getAppUrl('dashboard');
     }, 500);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error al iniciar sesión';
-    showAuthNotification(message, 'error');
+    showToast(message, 'error');
     console.error('Fallo en autenticación con Google:', error);
   }
 }
@@ -133,7 +116,7 @@ export function initGoogleAuth(): void {
 
     btn.addEventListener('click', () => {
       if (!clientId) {
-        showAuthNotification(
+        showToast(
           'Configura PUBLIC_GOOGLE_CLIENT_ID en .env para autenticar con Google.',
           'info'
         );
@@ -143,7 +126,7 @@ export function initGoogleAuth(): void {
       if (window.google?.accounts?.id) {
         window.google.accounts.id.prompt();
       } else {
-        showAuthNotification('Cargando servicio de Google, intenta de nuevo...', 'info');
+        showToast('Cargando servicio de Google, intenta de nuevo...', 'info');
       }
     });
   });
@@ -211,7 +194,7 @@ export function updateAuthUI(): void {
 
     btn.addEventListener('click', () => {
       authService.clearSession();
-      showAuthNotification('Sesión finalizada', 'info');
+      showToast('Sesión finalizada', 'info');
       setTimeout(() => {
         window.location.href = getAppUrl();
       }, 300);
