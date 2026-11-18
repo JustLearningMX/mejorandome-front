@@ -1,13 +1,14 @@
 ---
+import Icon from '../ui/Icon.astro';
 import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
 ---
 
-<dialog id="activity-modal" class="app-modal activity-modal" aria-labelledby="activity-modal-title">
+<dialog id="activity-modal" class="app-modal app-modal--wide activity-modal" aria-labelledby="activity-modal-title">
   <div class="app-modal-content activity-modal-content">
     <!-- Header -->
     <div class="app-modal-header">
       <div class="app-modal-title-wrap">
-        <span class="app-modal-icon" aria-hidden="true">🏃</span>
+        <span class="app-modal-icon" aria-hidden="true"><Icon name="activity" size={24} /></span>
         <div>
           <h2 id="activity-modal-title" class="app-modal-title">Registrar actividad física</h2>
           <span class="caption text-mute">Pasos diarios de Apple Health y sesiones de ejercicio</span>
@@ -31,7 +32,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
         aria-selected="true"
         aria-controls="pane-steps"
       >
-        <span class="tab-icon">👟</span>
+        <span class="tab-icon"><Icon name="footsteps" size={16} /></span>
         <span>Pasos del día</span>
       </button>
       <button
@@ -42,7 +43,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
         aria-selected="false"
         aria-controls="pane-exercise"
       >
-        <span class="tab-icon">⚡</span>
+        <span class="tab-icon"><Icon name="zap" size={16} /></span>
         <span>Sesión de ejercicio</span>
       </button>
     </div>
@@ -134,7 +135,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
                   class="sr-only exercise-type-input"
                 />
                 <span class="chip-content">
-                  <span class="chip-icon">{type.icon}</span>
+                  <span class="chip-icon"><Icon name={type.icon} size={20} /></span>
                   <span class="chip-label">{type.label}</span>
                 </span>
               </label>
@@ -258,50 +259,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
 </dialog>
 
 <style>
-  /* Dialog y Centrado en pantalla */
-  dialog.activity-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-md);
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
-    padding: 0;
-    width: 92%;
-    max-width: 580px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75);
-    z-index: 1000;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-hairline) transparent;
-  }
-
-  dialog.activity-modal::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  dialog.activity-modal::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  dialog.activity-modal::-webkit-scrollbar-thumb {
-    background: var(--color-hairline);
-    border-radius: var(--rounded-pill);
-  }
-
-  dialog.activity-modal::-webkit-scrollbar-thumb:hover {
-    background: var(--color-mute);
-  }
-
-  dialog.activity-modal::backdrop {
-    background-color: rgba(18, 16, 14, 0.75);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
 
   .activity-modal-content {
     padding: var(--space-xl);
@@ -310,48 +267,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     gap: var(--space-lg);
     background-color: var(--color-canvas);
     width: 100%;
-  }
-
-  .app-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .app-modal-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  .app-modal-icon {
-    font-size: 24px;
-  }
-
-  .app-modal-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--color-ink);
-    line-height: 1.2;
-  }
-
-  .btn-dialog-close {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-mute);
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    transition: color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .btn-dialog-close:hover {
-    color: var(--color-ink);
-    background-color: var(--color-canvas-soft);
   }
 
   /* Segmented Tab Switcher */
@@ -405,28 +320,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     display: flex;
   }
 
-  .app-modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-  }
-
-  .form-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-body-strong);
-  }
-
-  .required-star {
-    color: #f87171;
-  }
-
   .input-with-unit {
     position: relative;
     display: flex;
@@ -445,19 +338,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     pointer-events: none;
   }
 
-  .form-input {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-sm);
-    color: var(--color-ink);
-    font-size: 14px;
-    font-family: var(--font-sans);
-    color-scheme: dark;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
   .form-input--lg {
     font-size: 18px;
     font-weight: 500;
@@ -467,27 +347,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
   .form-textarea {
     resize: vertical;
     min-height: 60px;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: var(--color-mute);
-    box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.1);
-  }
-
-  .form-help {
-    font-size: 11px;
-    color: var(--color-mute);
-  }
-
-  .form-error-banner {
-    padding: var(--space-xs) var(--space-md);
-    background-color: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: var(--rounded-sm);
-    color: #fca5a5;
-    font-size: 13px;
-    line-height: 1.4;
   }
 
   /* Progress Preview */
@@ -541,7 +400,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     gap: 4px;
     padding: var(--space-sm) var(--space-xs);
     background-color: var(--color-canvas);
-    border: 1px solid var(--color-hairline);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--rounded-sm);
     text-align: center;
     transition: all 0.15s ease;
@@ -579,7 +438,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
   .quick-chip-btn {
     padding: 3px 8px;
     background: transparent;
-    border: 1px solid var(--color-hairline);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--rounded-pill);
     color: var(--color-mute);
     font-size: 11px;
@@ -612,7 +471,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     gap: 2px;
     padding: var(--space-sm);
     background-color: var(--color-canvas);
-    border: 1px solid var(--color-hairline);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--rounded-sm);
     transition: all 0.15s ease;
   }
@@ -640,62 +499,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
   }
 
   /* Acciones */
-  .app-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
-  }
-
-  .btn-cancel {
-    padding: var(--space-sm) var(--space-md);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-body);
-    background-color: transparent;
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .btn-cancel:hover {
-    color: var(--color-ink);
-    border-color: var(--color-mute);
-    background-color: var(--color-canvas-soft);
-  }
-
-  .btn-submit {
-    padding: var(--space-sm) var(--space-lg);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-on-primary);
-    background-color: var(--color-primary);
-    border: 1px solid transparent;
-    border-radius: var(--rounded-sm);
-    cursor: pointer;
-    transition: opacity 0.15s ease, transform 0.1s ease;
-  }
-
-  .btn-submit:hover {
-    opacity: 0.92;
-  }
-
-  .btn-submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 
   /* Visually Hidden Helper */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
 </style>

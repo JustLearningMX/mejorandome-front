@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/ui/Icon.astro';
 import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/ui/Header.astro';
 import GoogleButton from '../components/ui/GoogleButton.astro';
@@ -27,7 +28,7 @@ const dashboardUrl = getAppUrl('dashboard');
             <GoogleButton variant="hero" text="Comenzar con Google" />
             <a href="#funcionalidades" class="btn-ghost">Explorar</a>
           </div>
-          <div data-auth-user class="hero-auth-slot" style="display: none;">
+          <div data-auth-user class="hero-auth-slot">
             <a href={dashboardUrl} class="btn-primary">Ir a mi espacio</a>
             <a href="#funcionalidades" class="btn-ghost">Explorar</a>
           </div>
@@ -39,6 +40,7 @@ const dashboardUrl = getAppUrl('dashboard');
             <div class="mock-dot"></div>
             <div class="mock-dot"></div>
             <div class="mock-dot"></div>
+            <span class="mock-badge caption text-mute">Ejemplo ilustrativo</span>
           </div>
           <div class="mock-body">
             <div class="mock-stat">
@@ -71,17 +73,17 @@ const dashboardUrl = getAppUrl('dashboard');
             </div>
             <div class="mock-mini-stats">
               <div class="mock-mini">
-                <span class="mock-mini-icon">🏃</span>
+                <span class="mock-mini-icon"><Icon name="activity" size={18} /></span>
                 <span class="mock-mini-val">8,420</span>
                 <span class="mock-mini-label">pasos</span>
               </div>
               <div class="mock-mini">
-                <span class="mock-mini-icon">🔥</span>
+                <span class="mock-mini-icon"><Icon name="flame" size={18} /></span>
                 <span class="mock-mini-val">45</span>
                 <span class="mock-mini-label">min ejercicio</span>
               </div>
               <div class="mock-mini">
-                <span class="mock-mini-icon">🍽️</span>
+                <span class="mock-mini-icon"><Icon name="utensils" size={18} /></span>
                 <span class="mock-mini-val">3</span>
                 <span class="mock-mini-label">comidas</span>
               </div>
@@ -109,6 +111,11 @@ const dashboardUrl = getAppUrl('dashboard');
             Registra tu peso diario y visualiza tu evolución con gráficas claras.
             Consulta promedios semanales e identifica tendencias.
           </p>
+          <div class="feature-preview" aria-hidden="true">
+            <svg viewBox="0 0 160 40" class="preview-line">
+              <polyline points="0,30 20,27 40,29 60,22 80,24 100,17 120,19 140,12 160,8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
         </article>
         <article class="feature-card">
           <div class="feature-icon">
@@ -124,6 +131,11 @@ const dashboardUrl = getAppUrl('dashboard');
             Registra comidas, porciones, hambre y saciedad.
             Identifica si comes por necesidad o por impulso emocional.
           </p>
+          <div class="feature-preview preview-scale" aria-hidden="true">
+            {Array.from({ length: 10 }, (_, index) => (
+              <span class:list={['preview-scale-cell', { 'is-on': index === 6 }]}>{index + 1}</span>
+            ))}
+          </div>
         </article>
         <article class="feature-card">
           <div class="feature-icon">
@@ -136,6 +148,11 @@ const dashboardUrl = getAppUrl('dashboard');
             Registra ejercicio, duración y pasos diarios.
             Consulta tu historial y observa cómo te mantienes activo.
           </p>
+          <div class="feature-preview preview-bars" aria-hidden="true">
+            {[40, 70, 55, 100, 30, 85, 60].map((height) => (
+              <span class="preview-bar" style={`height: ${height}%`}></span>
+            ))}
+          </div>
         </article>
         <article class="feature-card">
           <div class="feature-icon">
@@ -150,6 +167,10 @@ const dashboardUrl = getAppUrl('dashboard');
             Compara periodos, analiza promedios y descubre patrones
             en tu alimentación, peso y actividad.
           </p>
+          <div class="feature-preview preview-compare" aria-hidden="true">
+            <div class="preview-compare-row"><span class="caption text-mute">Esta semana</span><span class="preview-compare-bar" style="width: 82%"></span></div>
+            <div class="preview-compare-row"><span class="caption text-mute">Anterior</span><span class="preview-compare-bar preview-compare-bar--muted" style="width: 60%"></span></div>
+          </div>
         </article>
       </div>
     </section>
@@ -207,7 +228,7 @@ const dashboardUrl = getAppUrl('dashboard');
         <div data-auth-guest class="cta-auth-group">
           <GoogleButton variant="cta" text="Iniciar sesión con Google" />
         </div>
-        <div data-auth-user class="cta-auth-group" style="display: none;">
+        <div data-auth-user class="cta-auth-group">
           <a href={dashboardUrl} class="btn-primary btn-primary--lg">Ir a mi dashboard</a>
         </div>
         <p class="caption text-mute cta-note">
@@ -226,6 +247,11 @@ const dashboardUrl = getAppUrl('dashboard');
         </svg>
         <span class="body-sm text-body">Mejorándome</span>
       </div>
+      <nav class="footer-links" aria-label="Pie de página">
+        <a href="#funcionalidades" class="caption text-mute">Funcionalidades</a>
+        <a href="#como-funciona" class="caption text-mute">Cómo funciona</a>
+        <a href="#comenzar" class="caption text-mute">Comenzar</a>
+      </nav>
       <p class="caption text-mute">
         Herramienta personal de seguimiento. No sustituye una evaluación médica profesional.
       </p>
@@ -352,6 +378,10 @@ const dashboardUrl = getAppUrl('dashboard');
     border-bottom: 1px solid var(--color-hairline);
   }
 
+  .mock-badge {
+    margin-left: auto;
+  }
+
   .mock-dot {
     width: 8px;
     height: 8px;
@@ -398,7 +428,7 @@ const dashboardUrl = getAppUrl('dashboard');
   }
 
   .mock-trend--down {
-    color: #8ecfa0;
+    color: var(--color-success);
   }
 
   .mock-chart {
@@ -484,6 +514,85 @@ const dashboardUrl = getAppUrl('dashboard');
     border-color: var(--color-mute);
   }
 
+  .feature-preview {
+    margin-top: auto;
+    padding-top: var(--space-lg);
+    color: var(--color-body);
+  }
+
+  .preview-line {
+    width: 100%;
+    height: 40px;
+  }
+
+  .preview-scale {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .preview-scale-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-mute);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-sm);
+  }
+
+  .preview-scale-cell.is-on {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  .preview-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-xs);
+    height: 56px;
+    padding-top: var(--space-lg);
+  }
+
+  .preview-bar {
+    flex: 1;
+    min-height: 2px;
+    background-color: var(--color-mute);
+    border-radius: var(--rounded-xs);
+  }
+
+  .preview-bar:nth-child(4) {
+    background-color: var(--color-primary);
+  }
+
+  .preview-compare {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .preview-compare-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .preview-compare-bar {
+    display: block;
+    height: 8px;
+    background-color: var(--color-primary);
+    border-radius: var(--rounded-full);
+  }
+
+  .preview-compare-bar--muted {
+    background-color: var(--color-mute);
+  }
+
   .feature-icon {
     color: var(--color-primary);
     margin-bottom: var(--space-xs);
@@ -505,7 +614,7 @@ const dashboardUrl = getAppUrl('dashboard');
   .step-number {
     font-family: var(--font-mono);
     font-size: 32px;
-    color: var(--color-hairline);
+    color: var(--color-mute);
     letter-spacing: -1px;
     display: block;
     margin-bottom: var(--space-sm);
@@ -546,6 +655,16 @@ const dashboardUrl = getAppUrl('dashboard');
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+
+  .footer-links a:hover {
+    color: var(--color-ink);
   }
 
   .footer-brand {

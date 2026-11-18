@@ -1,3 +1,5 @@
+import type { IconName } from '../utils/icons';
+
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
 export interface CreateMealRequest {
@@ -39,13 +41,13 @@ export interface QueryMealsParams {
 export interface MealTypeOption {
   value: MealType;
   label: string;
-  icon: string;
+  icon: IconName;
 }
 
 export const MEAL_TYPES: MealTypeOption[] = [
-  { value: 'breakfast', label: 'Desayuno', icon: '🌅' },
-  { value: 'lunch', label: 'Comida', icon: '☀️' },
-  { value: 'dinner', label: 'Cena', icon: '🌙' },
-  { value: 'snack', label: 'Colación', icon: '🍎' },
-  { value: 'other', label: 'Otro', icon: '🍽️' },
+  { value: 'breakfast', label: 'Desayuno', icon: 'sunrise' },
+  { value: 'lunch', label: 'Comida', icon: 'sun' },
+  { value: 'dinner', label: 'Cena', icon: 'moon' },
+  { value: 'snack', label: 'Colación', icon: 'apple' },
+  { value: 'other', label: 'Otro', icon: 'utensils' },
 ];
