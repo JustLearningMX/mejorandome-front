@@ -1085,8 +1085,10 @@ const homeUrl = getAppUrl();
 
     // Caché en memoria para el explorador de historial
     const historyDayCache: Record<string, any> = {};
-    const invalidateTodayHistoryCache = () => {
-      delete historyDayCache[getLocalDateString()];
+    let historyCacheVersion = 0;
+    const invalidateHistoryCache = () => {
+      historyCacheVersion += 1;
+      Object.keys(historyDayCache).forEach((key) => delete historyDayCache[key]);
     };
 
     if (!token) {
@@ -1476,6 +1478,7 @@ const homeUrl = getAppUrl();
           token
         );
 
+        invalidateHistoryCache();
         showToast(`¡Medición de ${weightVal.toFixed(1)} kg guardada exitosamente!`, 'success');
         closeWeightModal();
 
@@ -1483,7 +1486,6 @@ const homeUrl = getAppUrl();
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
                 void refreshTrendCharts();
-        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg =
           err instanceof Error
@@ -1595,11 +1597,11 @@ const homeUrl = getAppUrl();
               target.setAttribute('disabled', 'true');
               try {
                 await nutritionService.deleteMeal(mealId, token);
+                invalidateHistoryCache();
                 showToast('Comida eliminada exitosamente', 'info');
                 const freshSummary = await dashboardService.getSummary(token);
                 renderMetrics(freshSummary);
                 void refreshTrendCharts();
-        invalidateTodayHistoryCache();
                 await loadAndRenderTodayMeals();
               } catch (err: unknown) {
                 const errorMsg =
@@ -1786,6 +1788,7 @@ const homeUrl = getAppUrl();
           token
         );
 
+        invalidateHistoryCache();
         showToast('¡Comida registrada exitosamente!', 'success');
         closeMealModal();
 
@@ -1793,7 +1796,6 @@ const homeUrl = getAppUrl();
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
                 void refreshTrendCharts();
-        invalidateTodayHistoryCache();
         await loadAndRenderTodayMeals();
       } catch (err: unknown) {
         const errorMsg =
@@ -1940,6 +1942,7 @@ const homeUrl = getAppUrl();
           token
         );
 
+        invalidateHistoryCache();
         showToast('¡Pasos registrados exitosamente!', 'success');
         closeActivityModal();
 
@@ -1947,7 +1950,6 @@ const homeUrl = getAppUrl();
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
                 void refreshTrendCharts();
-        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar los pasos';
         if (stepsErrorBanner) {
@@ -2002,6 +2004,7 @@ const homeUrl = getAppUrl();
           token
         );
 
+        invalidateHistoryCache();
         showToast('¡Sesión de ejercicio guardada exitosamente!', 'success');
         closeActivityModal();
 
@@ -2014,7 +2017,6 @@ const homeUrl = getAppUrl();
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
                 void refreshTrendCharts();
-        invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar el ejercicio';
         if (exerciseErrorBanner) {
@@ -2104,6 +2106,7 @@ const homeUrl = getAppUrl();
       let dayData = historyDayCache[localDate];
 
       if (!dayData) {
+        const requestVersion = historyCacheVersion;
         try {
           const [mealsRes, stepsRes, exercisesRes, weightsRes] = await Promise.all([
             nutritionService.getMeals({ localDate, limit: 50 }, token),
@@ -2133,7 +2136,7 @@ const homeUrl = getAppUrl();
             weights: dayWeights,
           };
 
-          historyDayCache[localDate] = dayData;
+          if (requestVersion === historyCacheVersion) historyDayCache[localDate] = dayData;
         } catch (err) {
           console.warn('Error al cargar datos del día en historial:', err);
           dayData = { meals: [], steps: 0, stepsGoal: 10000, exercises: [], weights: [] };
@@ -2380,6 +2383,7 @@ const homeUrl = getAppUrl();
 
     function openHistoryModal(initialTab: 'overview' | 'meals' | 'activity' | 'weight' = 'overview') {
       if (!historyModal) return;
+      invalidateHistoryCache();
       selectedHistoryDate = getLocalDateString();
       switchHistoryTab(initialTab);
       loadHistoryDay(selectedHistoryDate);
