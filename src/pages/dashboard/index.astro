@@ -16,7 +16,7 @@ const homeUrl = getAppUrl();
 
   <main class="dashboard-container" id="dashboard">
     <!-- Estado 1: No autenticado (Guardia visual para visitantes sin sesión) -->
-    <section id="auth-required-view" class="auth-gate-card" style="display: none;">
+    <section id="auth-required-view" class="auth-gate-card">
       <div class="auth-gate-badge">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -34,7 +34,7 @@ const homeUrl = getAppUrl();
     </section>
 
     <!-- Estado 2: Vista de Usuario Autenticado -->
-    <section id="dashboard-view" class="dashboard-content" style="display: none;">
+    <section id="dashboard-view" class="dashboard-content">
       <!-- Hero de bienvenida del usuario -->
       <header class="user-hero-card">
         <div class="user-hero-main">
@@ -76,7 +76,7 @@ const homeUrl = getAppUrl();
       </div>
 
       <!-- Métricas Clave y Resumen de Estado (Datos reales del backend / Sin datos dummy) -->
-      <section class="metrics-grid">
+      <section class="metrics-grid" data-loading="true">
         <!-- Tarjeta: Peso Corporal -->
         <article class="metric-card" id="peso">
           <div class="metric-card-header">
@@ -374,6 +374,49 @@ const homeUrl = getAppUrl();
 </MainLayout>
 
 <style is:global>
+  #auth-required-view,
+  #dashboard-view {
+    display: none;
+  }
+
+  html:not([data-session="user"]) #auth-required-view {
+    display: flex;
+  }
+
+  html[data-session="user"] #dashboard-view {
+    display: flex;
+  }
+
+  /* Estado de carga de métricas */
+  .metrics-grid[data-loading="true"] :is(.metric-number, .metric-unit, .metric-split .body-sm, .metric-footer .caption, .satiety-badge, .metric-empty-notice, .metric-tag) {
+    color: transparent;
+    border-color: transparent;
+    background: linear-gradient(90deg, var(--color-wash-md), var(--color-wash-lg), var(--color-wash-md)) 0 0 / 200% 100%;
+    border-radius: var(--rounded-sm);
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .metrics-grid[data-loading="true"] .progress-bar-fill {
+    width: 0 !important;
+  }
+
+  @keyframes skeleton-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .metrics-grid[data-loading="true"] * {
+      animation: none !important;
+    }
+  }
+
   /* Guardia para visitantes sin login */
   .auth-gate-card {
     max-width: 520px;
@@ -1267,6 +1310,8 @@ const homeUrl = getAppUrl();
       renderMetrics(summary);
     } catch (err) {
       console.warn('Error al obtener datos reales de dashboard:', err);
+    } finally {
+      document.querySelector('.metrics-grid')?.removeAttribute('data-loading');
     }
 
     // Sincronizar usuario fresco de la API

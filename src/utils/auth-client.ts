@@ -156,6 +156,8 @@ export function updateAuthUI(): void {
   const user = authService.getStoredUser();
   const token = authService.getStoredToken();
   const isLoggedIn = Boolean(token && user);
+  document.documentElement.dataset.session = isLoggedIn ? 'user' : 'guest';
+  document.documentElement.dataset.session = isLoggedIn ? 'user' : 'guest';
 
   document.querySelectorAll<HTMLElement>('[data-auth-guest]').forEach((el) => {
     el.style.display = isLoggedIn ? 'none' : '';

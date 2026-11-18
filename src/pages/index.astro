@@ -27,7 +27,7 @@ const dashboardUrl = getAppUrl('dashboard');
             <GoogleButton variant="hero" text="Comenzar con Google" />
             <a href="#funcionalidades" class="btn-ghost">Explorar</a>
           </div>
-          <div data-auth-user class="hero-auth-slot" style="display: none;">
+          <div data-auth-user class="hero-auth-slot">
             <a href={dashboardUrl} class="btn-primary">Ir a mi espacio</a>
             <a href="#funcionalidades" class="btn-ghost">Explorar</a>
           </div>
@@ -207,7 +207,7 @@ const dashboardUrl = getAppUrl('dashboard');
         <div data-auth-guest class="cta-auth-group">
           <GoogleButton variant="cta" text="Iniciar sesión con Google" />
         </div>
-        <div data-auth-user class="cta-auth-group" style="display: none;">
+        <div data-auth-user class="cta-auth-group">
           <a href={dashboardUrl} class="btn-primary btn-primary--lg">Ir a mi dashboard</a>
         </div>
         <p class="caption text-mute cta-note">

@@ -22,7 +22,16 @@ const faviconUrl = getAppUrl('favicon.svg');
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={faviconUrl} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#2b2622" />
     <title>{title} — Mejorándome</title>
+    <script is:inline>
+      try {
+        const hasSession = localStorage.getItem('accessToken') && localStorage.getItem('user');
+        document.documentElement.dataset.session = hasSession ? 'user' : 'guest';
+      } catch {
+        document.documentElement.dataset.session = 'guest';
+      }
+    </script>
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>

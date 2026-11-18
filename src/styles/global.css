@@ -176,6 +176,11 @@ select {
   line-height: 16px;
 }
 
+html[data-session="user"] [data-auth-guest],
+html:not([data-session="user"]) [data-auth-user] {
+  display: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

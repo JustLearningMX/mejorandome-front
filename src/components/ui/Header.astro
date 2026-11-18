@@ -45,7 +45,7 @@ const dashboardUrl = getAppUrl('dashboard');
     </div>
 
     <!-- Estado: Autenticado -->
-    <div class="auth-user-slot" data-auth-user style="display: none;">
+    <div class="auth-user-slot" data-auth-user>
       <a href={dashboardUrl} class="user-badge" title="Ir a tu espacio">
         <span class="user-avatar" data-user-avatar-wrap>
           <img class="user-avatar-img" data-user-photo src="" alt="" style="display: none;" />
@@ -104,7 +104,7 @@ const dashboardUrl = getAppUrl('dashboard');
     <div data-auth-guest class="mobile-guest-actions">
       <GoogleButton variant="hero" text="Iniciar sesión con Google" />
     </div>
-    <div data-auth-user class="mobile-user-actions" style="display: none;">
+    <div data-auth-user class="mobile-user-actions">
       <a href={dashboardUrl} class="mobile-user-card">
         <span class="user-avatar" data-user-avatar-wrap>
           <img class="user-avatar-img" data-user-photo src="" alt="" style="display: none;" />
