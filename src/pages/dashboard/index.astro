@@ -90,6 +90,18 @@ const homeUrl = getAppUrl();
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </button>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-weight-card"
+                title="Registrar nuevo peso"
+                aria-label="Registrar nueva medición de peso"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
             </div>
           </div>
           <div class="metric-value-wrap">
@@ -132,6 +144,18 @@ const homeUrl = getAppUrl();
                   <line x1="16" y1="2" x2="16" y2="6"/>
                   <line x1="8" y1="2" x2="8" y2="6"/>
                   <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-activity-card"
+                title="Registrar pasos o ejercicio"
+                aria-label="Registrar pasos o ejercicio"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               </button>
             </div>
@@ -186,6 +210,18 @@ const homeUrl = getAppUrl();
                   <line x1="16" y1="2" x2="16" y2="6"/>
                   <line x1="8" y1="2" x2="8" y2="6"/>
                   <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn-metric-add"
+                id="btn-add-meal-card"
+                title="Registrar nueva comida"
+                aria-label="Registrar nueva comida y nivel de saciedad"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               </button>
             </div>
@@ -672,6 +708,26 @@ const homeUrl = getAppUrl();
     color: var(--color-mute);
     cursor: pointer;
     transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-metric-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--rounded-xs);
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    color: var(--color-mute);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .btn-metric-add:hover {
+    color: var(--color-ink);
+    border-color: var(--color-mute);
+    background-color: var(--color-hover);
   }
 
   .btn-metric-history:hover {
@@ -1429,6 +1485,7 @@ const homeUrl = getAppUrl();
     };
 
     document.getElementById('action-peso')?.addEventListener('click', openWeightModal);
+    document.getElementById('btn-add-weight-card')?.addEventListener('click', openWeightModal);
     document.getElementById('btn-card-register-peso')?.addEventListener('click', openWeightModal);
     document.getElementById('btn-close-weight-modal')?.addEventListener('click', closeWeightModal);
     document.getElementById('btn-cancel-weight')?.addEventListener('click', closeWeightModal);
@@ -1729,6 +1786,7 @@ const homeUrl = getAppUrl();
     };
 
     document.getElementById('action-comida')?.addEventListener('click', openMealModal);
+    document.getElementById('btn-add-meal-card')?.addEventListener('click', openMealModal);
     document.getElementById('btn-card-register-meal')?.addEventListener('click', openMealModal);
     document.getElementById('btn-close-meal-modal')?.addEventListener('click', closeMealModal);
     document.getElementById('btn-cancel-meal')?.addEventListener('click', closeMealModal);
@@ -1893,6 +1951,7 @@ const homeUrl = getAppUrl();
     tabBtnExercise?.addEventListener('click', () => switchActivityTab('exercise'));
 
     document.getElementById('action-actividad')?.addEventListener('click', () => openActivityModal('steps'));
+    document.getElementById('btn-add-activity-card')?.addEventListener('click', () => openActivityModal('steps'));
     document.getElementById('btn-card-register-activity')?.addEventListener('click', () => openActivityModal('steps'));
     document.getElementById('btn-close-activity-modal')?.addEventListener('click', closeActivityModal);
     document.getElementById('btn-cancel-steps')?.addEventListener('click', closeActivityModal);
