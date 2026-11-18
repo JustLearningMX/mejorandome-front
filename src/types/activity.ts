@@ -1,3 +1,5 @@
+import type { IconName } from '../utils/icons';
+
 export type ExerciseType =
   | 'walking'
   | 'running'
@@ -108,21 +110,18 @@ export interface UpdateStepsGoalRequest {
   stepsGoal: number;
 }
 
-export interface ExerciseTypeOption {
-  value: ExerciseType;
-  label: string;
-  icon: string;
+$1IconName;
 }
 
 export const EXERCISE_TYPES: ExerciseTypeOption[] = [
-  { value: 'walking', label: 'Caminata', icon: '🚶' },
-  { value: 'running', label: 'Carrera / Trote', icon: '🏃' },
-  { value: 'strength_training', label: 'Fuerza / Pesas', icon: '🏋️' },
-  { value: 'cycling', label: 'Ciclismo', icon: '🚴' },
-  { value: 'swimming', label: 'Natación', icon: '🏊' },
-  { value: 'yoga', label: 'Yoga / Estiramiento', icon: '🧘' },
-  { value: 'hiit', label: 'HIIT / Funcional', icon: '⚡' },
-  { value: 'sports', label: 'Deportes', icon: '⚽' },
+  { value: 'walking', label: 'Caminata', icon: 'footsteps' },
+  { value: 'running', label: 'Carrera / Trote', icon: 'activity' },
+  { value: 'strength_training', label: 'Fuerza / Pesas', icon: 'dumbbell' },
+  { value: 'cycling', label: 'Ciclismo', icon: 'bike' },
+  { value: 'swimming', label: 'Natación', icon: 'waves' },
+  { value: 'yoga', label: 'Yoga / Estiramiento', icon: 'lotus' },
+  { value: 'hiit', label: 'HIIT / Funcional', icon: 'zap' },
+  { value: 'sports', label: 'Deportes', icon: 'ball' },
   { value: 'other', label: 'Otro ejercicio', icon: '⏱️' },
 ];
 

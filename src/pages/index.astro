@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/ui/Icon.astro';
 import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/ui/Header.astro';
 import GoogleButton from '../components/ui/GoogleButton.astro';
@@ -71,17 +72,17 @@ const dashboardUrl = getAppUrl('dashboard');
             </div>
             <div class="mock-mini-stats">
               <div class="mock-mini">
-                <span class="mock-mini-icon">🏃</span>
+                <span class="mock-mini-icon"><Icon name="activity" size={18} /></span>
                 <span class="mock-mini-val">8,420</span>
                 <span class="mock-mini-label">pasos</span>
               </div>
               <div class="mock-mini">
-                <span class="mock-mini-icon">🔥</span>
+                <span class="mock-mini-icon"><Icon name="flame" size={18} /></span>
                 <span class="mock-mini-val">45</span>
                 <span class="mock-mini-label">min ejercicio</span>
               </div>
               <div class="mock-mini">
-                <span class="mock-mini-icon">🍽️</span>
+                <span class="mock-mini-icon"><Icon name="utensils" size={18} /></span>
                 <span class="mock-mini-val">3</span>
                 <span class="mock-mini-label">comidas</span>
               </div>

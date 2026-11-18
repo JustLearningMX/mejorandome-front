@@ -1,4 +1,5 @@
 ---
+import Icon from '../ui/Icon.astro';
 import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
 ---
 
@@ -7,7 +8,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
     <!-- Header -->
     <div class="app-modal-header">
       <div class="app-modal-title-wrap">
-        <span class="app-modal-icon" aria-hidden="true">🏃</span>
+        <span class="app-modal-icon" aria-hidden="true"><Icon name="activity" size={24} /></span>
         <div>
           <h2 id="activity-modal-title" class="app-modal-title">Registrar actividad física</h2>
           <span class="caption text-mute">Pasos diarios de Apple Health y sesiones de ejercicio</span>
@@ -31,7 +32,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
         aria-selected="true"
         aria-controls="pane-steps"
       >
-        <span class="tab-icon">👟</span>
+        <span class="tab-icon"><Icon name="footsteps" size={16} /></span>
         <span>Pasos del día</span>
       </button>
       <button
@@ -42,7 +43,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
         aria-selected="false"
         aria-controls="pane-exercise"
       >
-        <span class="tab-icon">⚡</span>
+        <span class="tab-icon"><Icon name="zap" size={16} /></span>
         <span>Sesión de ejercicio</span>
       </button>
     </div>
@@ -134,7 +135,7 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
                   class="sr-only exercise-type-input"
                 />
                 <span class="chip-content">
-                  <span class="chip-icon">{type.icon}</span>
+                  <span class="chip-icon"><Icon name={type.icon} size={20} /></span>
                   <span class="chip-label">{type.label}</span>
                 </span>
               </label>

@@ -1,4 +1,5 @@
 ---
+import Icon from '../../components/ui/Icon.astro';
 import MainLayout from '../../layouts/MainLayout.astro';
 import Header from '../../components/ui/Header.astro';
 import GoogleButton from '../../components/ui/GoogleButton.astro';
@@ -52,13 +53,13 @@ const homeUrl = getAppUrl();
         <span class="body-sm text-body-strong">Acciones rápidas:</span>
         <div class="quick-buttons">
           <button type="button" class="btn-action" id="action-peso">
-            <span class="action-icon">⚖️</span> Registrar peso
+            <span class="action-icon" aria-hidden="true"><Icon name="scale" size={14} /></span> Registrar peso
           </button>
           <button type="button" class="btn-action" id="action-comida">
-            <span class="action-icon">🍽️</span> Registrar comida y saciedad
+            <span class="action-icon" aria-hidden="true"><Icon name="utensils" size={14} /></span> Registrar comida y saciedad
           </button>
           <button type="button" class="btn-action" id="action-actividad">
-            <span class="action-icon">🏃</span> Registrar pasos / ejercicio
+            <span class="action-icon" aria-hidden="true"><Icon name="activity" size={14} /></span> Registrar pasos / ejercicio
           </button>
         </div>
       </div>
@@ -227,14 +228,14 @@ const homeUrl = getAppUrl();
           </div>
           <div class="meals-log-actions">
             <button type="button" class="btn-action-sm btn-ghost-sm" id="btn-history-meals-section" data-history-initial="meals" title="Consultar historial por fecha">
-              <span class="action-icon">📅</span> Historial
+              <span class="action-icon" aria-hidden="true"><Icon name="calendar" size={14} /></span> Historial
             </button>
           </div>
         </div>
 
         <div id="meals-list-container" class="meals-list-container">
           <div class="meals-empty-state" id="meals-empty-state">
-            <span class="meals-empty-icon" aria-hidden="true">🥗</span>
+            <span class="meals-empty-icon" aria-hidden="true"><Icon name="salad" size={32} /></span>
             <p class="body-sm text-body">Aún no has registrado comidas el día de hoy.</p>
             <span class="caption text-mute">Registra lo que comiste y cómo te sentiste para identificar patrones de saciedad y apetito.</span>
           </div>
@@ -248,7 +249,7 @@ const homeUrl = getAppUrl();
       <div class="app-modal-content">
         <div class="app-modal-header">
           <div class="app-modal-title-wrap">
-            <span class="app-modal-icon" aria-hidden="true">⚖️</span>
+            <span class="app-modal-icon" aria-hidden="true"><Icon name="scale" size={24} /></span>
             <div>
               <h2 id="weight-modal-title" class="app-modal-title">Registrar peso corporal</h2>
               <span class="caption text-mute">Seguimiento diario de evolución</span>
@@ -1025,11 +1026,21 @@ const homeUrl = getAppUrl();
   } from '../../utils/date';
   import { showAuthNotification } from '../../utils/auth-client';
   import { confirmAction } from '../../utils/confirm-dialog';
+  import { iconSvg } from '../../utils/icons';
+  import type { IconName } from '../../utils/icons';
+  import { MEAL_TYPES } from '../../types/nutrition';
+  import { EXERCISE_TYPES } from '../../types/activity';
   import { buildSparkline, buildWeekBars, latestWeightPerDay } from '../../utils/chart';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
   import type { MealType } from '../../types/nutrition';
   import type { ExerciseType, ExerciseIntensity } from '../../types/activity';
+
+  const findMealType = (type: string) =>
+    MEAL_TYPES.find((option) => option.value === type) ?? { label: type, icon: 'utensils' as IconName };
+
+  const findExerciseType = (type: string) =>
+    EXERCISE_TYPES.find((option) => option.value === type) ?? { label: type, icon: 'zap' as IconName };
 
   async function initializeDashboard() {
     const gateView = document.getElementById('auth-required-view');
@@ -1463,14 +1474,7 @@ const homeUrl = getAppUrl();
           itemsList.style.display = 'flex';
           itemsList.innerHTML = todaysMeals
             .map((meal) => {
-              const typeLabels: Record<string, { label: string; icon: string }> = {
-                breakfast: { label: 'Desayuno', icon: '🌅' },
-                lunch: { label: 'Comida', icon: '☀️' },
-                dinner: { label: 'Cena', icon: '🌙' },
-                snack: { label: 'Colación', icon: '🍎' },
-                other: { label: 'Otro', icon: '🍽️' },
-              };
-              const meta = typeLabels[meal.mealType] || { label: meal.mealType, icon: '🍽️' };
+              const meta = findMealType(meal.mealType);
               const timeStr = new Date(meal.occurredAt).toLocaleTimeString('es-MX', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -1480,7 +1484,7 @@ const homeUrl = getAppUrl();
                 <div class="meal-item-card">
                   <div class="meal-item-top">
                     <div class="meal-item-header">
-                      <span class="meal-item-icon">${meta.icon}</span>
+                      <span class="meal-item-icon">${iconSvg(meta.icon, 18)}</span>
                       <span class="meal-item-type">${meta.label}</span>
                     </div>
                     <div class="meal-item-actions">
@@ -1504,9 +1508,9 @@ const homeUrl = getAppUrl();
                     <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${meal.hungerBefore}/10</span>
                     <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${meal.satietyAfter}/10</span>
                     ${meal.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
-                    ${meal.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ✓</span>' : ''}
+                    ${meal.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>' : ''}
                   </div>
-                  ${meal.extraEatingContext ? `<div class="meal-item-context">💭 "${escapeHtml(meal.extraEatingContext)}"</div>` : ''}
+                  ${meal.extraEatingContext ? `<div class="meal-item-context">${iconSvg('message', 12)} "${escapeHtml(meal.extraEatingContext)}"</div>` : ''}
                 </div>
               `;
             })
@@ -2138,11 +2142,11 @@ const homeUrl = getAppUrl();
       const hasAny = meals.length > 0 || steps > 0 || totalExerciseMinutes > 0 || weights.length > 0;
       if (overviewBannerTitle && overviewBannerDesc && overviewBannerIcon) {
         if (hasAny) {
-          overviewBannerIcon.textContent = '✨';
+          overviewBannerIcon.innerHTML = iconSvg('sparkles', 24);
           overviewBannerTitle.textContent = 'Día con actividad registrada';
           overviewBannerDesc.textContent = `Registraste ${meals.length} comida(s), ${steps.toLocaleString()} pasos y ${weights.length} medición(es) de peso.`;
         } else {
-          overviewBannerIcon.textContent = '🌱';
+          overviewBannerIcon.innerHTML = iconSvg('leaf', 24);
           overviewBannerTitle.textContent = 'Sin registros en esta fecha';
           overviewBannerDesc.textContent = 'No hay capturas registradas en este día. Puedes navegar hacia atrás para ver tus registros previos.';
         }
@@ -2162,13 +2166,6 @@ const homeUrl = getAppUrl();
         if (mealsEmpty) mealsEmpty.style.display = 'none';
         if (mealsList) {
           mealsList.style.display = 'flex';
-          const typeLabels: Record<string, { label: string; icon: string }> = {
-            breakfast: { label: 'Desayuno', icon: '🌅' },
-            lunch: { label: 'Comida', icon: '☀️' },
-            dinner: { label: 'Cena', icon: '🌙' },
-            snack: { label: 'Colación', icon: '🍎' },
-            other: { label: 'Otro', icon: '🍽️' },
-          };
 
           const totalSat = meals.reduce((acc, m) => acc + (Number(m.satietyAfter) || 0), 0);
           const avgSat = Math.round((totalSat / meals.length) * 10) / 10;
@@ -2181,12 +2178,12 @@ const homeUrl = getAppUrl();
           if (mealsStatRepeats) mealsStatRepeats.textContent = `${repeated} vez${repeated === 1 ? '' : 'es'}`;
 
           mealsList.innerHTML = meals.map((m) => {
-            const meta = typeLabels[m.mealType] || { label: m.mealType, icon: '🍽️' };
+            const meta = findMealType(m.mealType);
             const timeStr = new Date(m.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
             return `
               <div class="history-meal-card">
                 <div class="history-item-top">
-                  <span class="history-item-badge">${meta.icon} ${meta.label}</span>
+                  <span class="history-item-badge">${iconSvg(meta.icon, 14)} ${meta.label}</span>
                   <span class="history-item-time">${timeStr}</span>
                 </div>
                 <p class="history-item-desc">${escapeHtml(m.description || '')}</p>
@@ -2194,9 +2191,9 @@ const homeUrl = getAppUrl();
                   <span class="meal-tag-pill meal-tag-pill--hunger">Hambre previa: ${m.hungerBefore}/10</span>
                   <span class="meal-tag-pill meal-tag-pill--satiety">Saciedad final: ${m.satietyAfter}/10</span>
                   ${m.wantedMoreEvenIfFull ? '<span class="meal-tag-pill meal-tag-pill--repeat">Deseo de repetir</span>' : ''}
-                  ${m.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ✓</span>' : ''}
+                  ${m.pausedBeforeMore ? '<span class="meal-tag-pill meal-tag-pill--pause">Pausa consciente ${iconSvg('check', 12)}</span>' : ''}
                 </div>
-                ${m.extraEatingContext ? `<div class="history-item-context">💭 "${escapeHtml(m.extraEatingContext)}"</div>` : ''}
+                ${m.extraEatingContext ? `<div class="history-item-context">${iconSvg('message', 12)} "${escapeHtml(m.extraEatingContext)}"</div>` : ''}
               </div>
             `;
           }).join('');
@@ -2232,31 +2229,21 @@ const homeUrl = getAppUrl();
         if (actExerciseEmpty) actExerciseEmpty.style.display = 'none';
         if (actExerciseList) {
           actExerciseList.style.display = 'flex';
-          const exTypeLabels: Record<string, { label: string; icon: string }> = {
-            walking: { label: 'Caminata', icon: '🚶' },
-            running: { label: 'Carrera', icon: '🏃' },
-            cycling: { label: 'Ciclismo', icon: '🚴' },
-            swimming: { label: 'Natación', icon: '🏊' },
-            gym: { label: 'Gimnasio / Pesas', icon: '🏋️' },
-            yoga: { label: 'Yoga / Estiramiento', icon: '🧘' },
-            other: { label: 'Otro ejercicio', icon: '⚡' },
-          };
-
           actExerciseList.innerHTML = exercises.map((ex) => {
-            const meta = exTypeLabels[ex.exerciseType] || { label: ex.exerciseType, icon: '⚡' };
+            const meta = findExerciseType(ex.exerciseType);
             const timeStr = ex.occurredAt
               ? new Date(ex.occurredAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
               : '--:--';
             return `
               <div class="history-exercise-card">
                 <div class="history-item-top">
-                  <span class="history-item-badge">${meta.icon} ${meta.label}</span>
+                  <span class="history-item-badge">${iconSvg(meta.icon, 14)} ${meta.label}</span>
                   <span class="history-item-time">${timeStr}</span>
                 </div>
                 <div class="history-item-tags">
                   <span class="meal-tag-pill meal-tag-pill--pause">⏱️ ${ex.durationMinutes} minutos</span>
                   ${ex.intensity ? `<span class="meal-tag-pill">Intensidad: ${escapeHtml(ex.intensity)}</span>` : ''}
-                  ${ex.caloriesBurned ? `<span class="meal-tag-pill">🔥 ${ex.caloriesBurned} kcal</span>` : ''}
+                  ${ex.caloriesBurned ? `<span class="meal-tag-pill">${iconSvg('flame', 12)} ${ex.caloriesBurned} kcal</span>` : ''}
                 </div>
                 ${ex.notes ? `<p class="history-item-desc">${escapeHtml(ex.notes)}</p>` : ''}
               </div>

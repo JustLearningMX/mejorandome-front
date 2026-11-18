@@ -1,4 +1,5 @@
 ---
+import Icon from '../ui/Icon.astro';
 /**
  * Componente modal para explorar el historial diario de salud (HealthDay Journey).
  * Permite navegar día a día o seleccionar fechas pasadas y ver el desglose
@@ -11,7 +12,7 @@
     <!-- Header principal -->
     <div class="app-modal-header">
       <div class="app-modal-title-wrap">
-        <span class="app-modal-icon" aria-hidden="true">📅</span>
+        <span class="app-modal-icon" aria-hidden="true"><Icon name="calendar" size={24} /></span>
         <div>
           <h2 id="day-history-modal-title" class="app-modal-title">Historial diario</h2>
           <span class="caption text-mute">Explora tus registros día por día</span>
@@ -41,7 +42,7 @@
 
       <div class="day-nav-center">
         <label class="day-nav-date-wrap" for="history-date-picker-input">
-          <span class="day-nav-icon">🗓️</span>
+          <span class="day-nav-icon" aria-hidden="true"><Icon name="calendar" size={14} /></span>
           <span id="history-date-display" class="day-nav-label">Hoy, 3 de nov.</span>
           <span class="day-nav-caret" aria-hidden="true">▾</span>
           <input
@@ -88,7 +89,7 @@
         aria-controls="pane-history-overview"
         data-history-tab="overview"
       >
-        <span>📊 Resumen</span>
+        <Icon name="chart" size={14} /><span>Resumen</span>
       </button>
       <button
         type="button"
@@ -99,7 +100,7 @@
         aria-controls="pane-history-meals"
         data-history-tab="meals"
       >
-        <span>🍽️ Comidas</span>
+        <Icon name="utensils" size={14} /><span>Comidas</span>
         <span class="tab-count-badge" id="history-count-meals">0</span>
       </button>
       <button
@@ -111,7 +112,7 @@
         aria-controls="pane-history-activity"
         data-history-tab="activity"
       >
-        <span>🏃 Actividad</span>
+        <Icon name="activity" size={14} /><span>Actividad</span>
       </button>
       <button
         type="button"
@@ -122,7 +123,7 @@
         aria-controls="pane-history-weight"
         data-history-tab="weight"
       >
-        <span>⚖️ Peso</span>
+        <Icon name="scale" size={14} /><span>Peso</span>
       </button>
     </div>
 
@@ -146,7 +147,7 @@
           <article class="overview-card" id="overview-card-meals">
             <div class="overview-card-top">
               <span class="caption text-mute">Alimentación</span>
-              <span class="overview-icon">🍽️</span>
+              <span class="overview-icon" aria-hidden="true"><Icon name="utensils" size={14} /></span>
             </div>
             <div class="overview-main-metric">
               <span class="overview-number" id="overview-meals-val">0</span>
@@ -159,7 +160,7 @@
           <article class="overview-card" id="overview-card-activity">
             <div class="overview-card-top">
               <span class="caption text-mute">Pasos y Ejercicio</span>
-              <span class="overview-icon">🏃</span>
+              <span class="overview-icon" aria-hidden="true"><Icon name="activity" size={14} /></span>
             </div>
             <div class="overview-main-metric">
               <span class="overview-number" id="overview-steps-val">0</span>
@@ -172,7 +173,7 @@
           <article class="overview-card" id="overview-card-weight">
             <div class="overview-card-top">
               <span class="caption text-mute">Peso corporal</span>
-              <span class="overview-icon">⚖️</span>
+              <span class="overview-icon" aria-hidden="true"><Icon name="scale" size={14} /></span>
             </div>
             <div class="overview-main-metric">
               <span class="overview-number" id="overview-weight-val">--</span>
@@ -184,7 +185,7 @@
 
         <!-- Banner motivacional o empty state integral -->
         <div class="overview-status-banner" id="overview-status-banner">
-          <span class="overview-status-icon" id="overview-banner-icon">🌱</span>
+          <span class="overview-status-icon" id="overview-banner-icon" aria-hidden="true"><Icon name="leaf" size={24} /></span>
           <div class="overview-status-info">
             <h4 class="overview-status-title" id="overview-banner-title">Jornada de salud</h4>
             <p class="caption text-body" id="overview-banner-desc">Registra tus hábitos diarios para identificar patrones de saciedad y movimiento.</p>
@@ -221,7 +222,7 @@
         </div>
 
         <div id="history-meals-empty" class="history-empty-state">
-          <span class="empty-icon" aria-hidden="true">🥗</span>
+          <span class="empty-icon" aria-hidden="true"><Icon name="salad" size={28} /></span>
           <p class="body-sm text-body">No hay comidas registradas en esta fecha.</p>
           <span class="caption text-mute">Puedes usar el botón "Registrar comida" del dashboard para añadir capturas de cualquier día.</span>
         </div>
@@ -269,7 +270,7 @@
         </div>
 
         <div id="history-exercise-empty" class="history-empty-state">
-          <span class="empty-icon" aria-hidden="true">🏃</span>
+          <span class="empty-icon" aria-hidden="true"><Icon name="activity" size={28} /></span>
           <p class="body-sm text-body">No hay sesiones de ejercicio registradas este día.</p>
         </div>
 
