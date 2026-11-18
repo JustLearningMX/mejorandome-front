@@ -122,6 +122,7 @@ const homeUrl = getAppUrl();
           <div class="metric-trend-wrap" id="metric-peso-trend-wrap">
             <span class="metric-empty-notice" id="metric-peso-status-text">Sin mediciones registradas en el historial.</span>
           </div>
+          <div id="metric-peso-chart" class="metric-chart" hidden></div>
           <div id="metric-peso-cta-wrap" class="metric-cta-wrap">
             <button type="button" class="btn-card-cta" id="btn-card-register-peso">
               + Registrar primer peso
@@ -187,6 +188,7 @@ const homeUrl = getAppUrl();
               <span class="body-sm text-body-strong" id="metric-ejercicio-min">0 min</span>
             </div>
           </div>
+          <div id="metric-pasos-week" class="metric-chart" hidden></div>
           <div id="metric-activity-cta-wrap" class="metric-cta-wrap">
             <button type="button" class="btn-card-cta" id="btn-card-register-activity">
               + Registrar pasos o ejercicio
@@ -385,6 +387,55 @@ const homeUrl = getAppUrl();
 
   html[data-session="user"] #dashboard-view {
     display: flex;
+  }
+
+  /* Gráficas de tendencia */
+  .metric-chart svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .week-bars {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-xs);
+  }
+
+  .week-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .week-bar-track {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 44px;
+    background-color: var(--color-canvas);
+    border-radius: var(--rounded-xs);
+    overflow: hidden;
+  }
+
+  .week-bar-fill {
+    width: 100%;
+    min-height: 2px;
+    background-color: var(--color-mute);
+  }
+
+  .week-bar.is-goal .week-bar-fill {
+    background-color: var(--color-primary);
+  }
+
+  .week-bar-label {
+    font-size: 12px;
+    color: var(--color-mute);
+  }
+
+  .week-bar.is-today .week-bar-label {
+    color: var(--color-ink);
+    font-weight: 500;
   }
 
   /* Estado de carga de métricas */
@@ -1100,6 +1151,7 @@ const homeUrl = getAppUrl();
   } from '../../utils/date';
   import { showAuthNotification } from '../../utils/auth-client';
   import { confirmAction } from '../../utils/confirm-dialog';
+  import { buildSparkline, buildWeekBars, latestWeightPerDay } from '../../utils/chart';
   import type { AuthenticatedUser } from '../../types/auth';
   import type { DashboardSummary } from '../../types/dashboard';
   import type { MealType } from '../../types/nutrition';
@@ -1304,10 +1356,73 @@ const homeUrl = getAppUrl();
       }
     };
 
+    const renderWeightChart = (weights: Awaited<ReturnType<typeof weightService.getWeightHistory>>) => {
+      const container = document.getElementById('metric-peso-chart');
+      if (!container) return;
+
+      const values = latestWeightPerDay(weights).slice(-30);
+      const geometry = buildSparkline(values, 280, 64, 4);
+      if (!geometry) {
+        container.hidden = true;
+        container.innerHTML = '';
+        return;
+      }
+
+      const label = `Evolución del peso en ${values.length} días con registro: de ${values[0].toFixed(1)} kg a ${values[values.length - 1].toFixed(1)} kg`;
+      container.hidden = false;
+      container.innerHTML = `
+        <svg viewBox="0 0 280 64" role="img" aria-label="${label}">
+          <polygon points="${geometry.areaPoints}" fill="var(--color-wash-md)" />
+          <polyline points="${geometry.linePoints}" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+          <circle cx="${geometry.lastPoint.x}" cy="${geometry.lastPoint.y}" r="3" fill="var(--color-primary)" />
+        </svg>
+      `;
+    };
+
+    const renderWeekBars = (items: Awaited<ReturnType<typeof activityService.getStepsHistory>>) => {
+      const container = document.getElementById('metric-pasos-week');
+      if (!container) return;
+
+      const goal = items?.items[0]?.goal || 10000;
+      const bars = buildWeekBars(items?.items ?? [], goal);
+      if (!bars.some((bar) => bar.steps > 0)) {
+        container.hidden = true;
+        container.innerHTML = '';
+        return;
+      }
+
+      const label = `Pasos de los últimos 7 días: ${bars.map((bar) => `${bar.localDate} ${bar.steps.toLocaleString()}`).join(', ')}`;
+      container.hidden = false;
+      container.innerHTML = `
+        <div class="week-bars" role="img" aria-label="${label}">
+          ${bars
+            .map(
+              (bar) => `
+            <div class="week-bar ${bar.goalReached ? 'is-goal' : ''} ${bar.isToday ? 'is-today' : ''}">
+              <span class="week-bar-track"><span class="week-bar-fill" style="height: ${bar.heightPct}%"></span></span>
+              <span class="week-bar-label">${bar.dayLabel}</span>
+            </div>`
+            )
+            .join('')}
+        </div>
+      `;
+    };
+
+    const refreshTrendCharts = async () => {
+      const today = getLocalDateString();
+      const [weights, steps] = await Promise.all([
+        weightService.getWeightHistory(30, token),
+        activityService.getStepsHistory({ startDate: shiftLocalDate(today, -6), endDate: today, limit: 7 }, token),
+      ]);
+      renderWeightChart(weights);
+      renderWeekBars(steps);
+    };
+
     // Consultar datos reales de dashboard desde el backend
     try {
       const summary = await dashboardService.getSummary(token);
       renderMetrics(summary);
+      void refreshTrendCharts();
     } catch (err) {
       console.warn('Error al obtener datos reales de dashboard:', err);
     } finally {
@@ -1410,6 +1525,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente con la nueva medición
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+                void refreshTrendCharts();
         invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg =
@@ -1532,6 +1648,7 @@ const homeUrl = getAppUrl();
                 showAuthNotification('Comida eliminada exitosamente', 'info');
                 const freshSummary = await dashboardService.getSummary(token);
                 renderMetrics(freshSummary);
+                void refreshTrendCharts();
         invalidateTodayHistoryCache();
                 await loadAndRenderTodayMeals();
               } catch (err: unknown) {
@@ -1721,6 +1838,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard y listado de comidas inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+                void refreshTrendCharts();
         invalidateTodayHistoryCache();
         await loadAndRenderTodayMeals();
       } catch (err: unknown) {
@@ -1875,6 +1993,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+                void refreshTrendCharts();
         invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar los pasos';
@@ -1941,6 +2060,7 @@ const homeUrl = getAppUrl();
         // Actualizar dashboard inmediatamente
         const freshSummary = await dashboardService.getSummary(token);
         renderMetrics(freshSummary);
+                void refreshTrendCharts();
         invalidateTodayHistoryCache();
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Error al registrar el ejercicio';
