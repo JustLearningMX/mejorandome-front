@@ -490,7 +490,7 @@ const homeUrl = getAppUrl();
   .user-hero-eyebrow {
     font-size: 12px;
     font-weight: 500;
-    color: #4ade80;
+    color: var(--color-success);
     display: flex;
     align-items: center;
     gap: var(--space-xs);
@@ -500,8 +500,8 @@ const homeUrl = getAppUrl();
     width: 8px;
     height: 8px;
     border-radius: var(--rounded-full);
-    background-color: #22c55e;
-    box-shadow: 0 0 8px #22c55e;
+    background-color: var(--color-success-strong);
+    box-shadow: 0 0 8px var(--color-success-strong);
   }
 
   .user-hero-motto {
@@ -575,7 +575,7 @@ const homeUrl = getAppUrl();
   }
 
   .btn-action:hover {
-    background-color: #443e3a;
+    background-color: var(--color-hover);
     border-color: var(--color-mute);
   }
 
@@ -661,7 +661,7 @@ const homeUrl = getAppUrl();
   .btn-metric-history:hover {
     color: var(--color-ink);
     border-color: var(--color-mute);
-    background-color: #443e3a;
+    background-color: var(--color-hover);
   }
 
   .meals-log-actions {
@@ -687,7 +687,7 @@ const homeUrl = getAppUrl();
   .btn-metric-add:hover {
     color: var(--color-ink);
     border-color: var(--color-mute);
-    background-color: #443e3a;
+    background-color: var(--color-hover);
   }
 
   .metric-value-wrap {
@@ -746,7 +746,7 @@ const homeUrl = getAppUrl();
   .btn-card-cta:hover {
     color: var(--color-ink);
     border-color: var(--color-mute);
-    background-color: #443e3a;
+    background-color: var(--color-hover);
   }
 
   .metric-trend {
@@ -755,11 +755,11 @@ const homeUrl = getAppUrl();
   }
 
   .metric-trend--down {
-    color: #4ade80;
+    color: var(--color-success);
   }
 
   .metric-trend--up {
-    color: #f87171;
+    color: var(--color-danger);
   }
 
   .progress-bar-bg {
@@ -800,9 +800,9 @@ const homeUrl = getAppUrl();
   .satiety-badge {
     display: inline-block;
     padding: var(--space-xs) var(--space-sm);
-    background-color: rgba(74, 222, 128, 0.1);
-    color: #4ade80;
-    border: 1px solid rgba(74, 222, 128, 0.2);
+    background-color: color-mix(in srgb, var(--color-success) 10%, transparent);
+    color: var(--color-success);
+    border: 1px solid color-mix(in srgb, var(--color-success) 20%, transparent);
     border-radius: var(--rounded-sm);
     font-size: 13px;
     font-weight: 500;
@@ -958,8 +958,8 @@ const homeUrl = getAppUrl();
   }
 
   .btn-delete-meal:hover {
-    color: #f87171;
-    background-color: rgba(239, 68, 68, 0.12);
+    color: var(--color-danger);
+    background-color: color-mix(in srgb, var(--color-danger-strong) 12%, transparent);
   }
 
   .meal-item-header {
@@ -1008,27 +1008,27 @@ const homeUrl = getAppUrl();
   }
 
   .meal-tag-pill--hunger {
-    border-color: rgba(234, 179, 8, 0.3);
-    color: #fde047;
-    background-color: rgba(234, 179, 8, 0.1);
+    border-color: color-mix(in srgb, var(--color-tag-hunger) 30%, transparent);
+    color: var(--color-tag-hunger);
+    background-color: color-mix(in srgb, var(--color-tag-hunger) 10%, transparent);
   }
 
   .meal-tag-pill--satiety {
-    border-color: rgba(34, 197, 94, 0.3);
-    color: #86efac;
-    background-color: rgba(34, 197, 94, 0.1);
+    border-color: color-mix(in srgb, var(--color-success-strong) 30%, transparent);
+    color: var(--color-success);
+    background-color: color-mix(in srgb, var(--color-success-strong) 10%, transparent);
   }
 
   .meal-tag-pill--pause {
-    border-color: rgba(56, 189, 248, 0.3);
-    color: #7dd3fc;
-    background-color: rgba(56, 189, 248, 0.1);
+    border-color: color-mix(in srgb, var(--color-tag-pause) 30%, transparent);
+    color: var(--color-tag-pause);
+    background-color: color-mix(in srgb, var(--color-tag-pause) 10%, transparent);
   }
 
   .meal-tag-pill--repeat {
-    border-color: rgba(244, 114, 182, 0.3);
-    color: #f472b6;
-    background-color: rgba(244, 114, 182, 0.1);
+    border-color: color-mix(in srgb, var(--color-tag-repeat) 30%, transparent);
+    color: var(--color-tag-repeat);
+    background-color: color-mix(in srgb, var(--color-tag-repeat) 10%, transparent);
   }
 
   .meal-item-context {

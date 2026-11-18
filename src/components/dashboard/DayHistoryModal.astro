@@ -352,7 +352,7 @@
   }
 
   .day-nav-arrow:hover:not(:disabled) {
-    background-color: #443e3a;
+    background-color: var(--color-hover);
     border-color: var(--color-hairline);
   }
 
@@ -376,14 +376,14 @@
     gap: var(--space-xs);
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--rounded-sm);
-    background-color: rgba(255, 255, 255, 0.04);
+    background-color: var(--color-wash-md);
     border: 1px solid transparent;
     cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 
   .day-nav-date-wrap:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: var(--color-wash-lg);
     border-color: var(--color-hairline);
   }
 
@@ -592,7 +592,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: var(--color-wash-sm);
     border: 1px dashed var(--color-hairline);
     border-radius: var(--rounded-sm);
     padding: var(--space-md);
@@ -645,7 +645,7 @@
     justify-content: center;
     text-align: center;
     padding: var(--space-xl) var(--space-md);
-    background-color: rgba(255, 255, 255, 0.015);
+    background-color: var(--color-wash-sm);
     border: 1px dashed var(--color-hairline);
     border-radius: var(--rounded-sm);
     gap: var(--space-xs);
@@ -767,7 +767,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--space-xs) var(--space-sm);
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: var(--color-wash-sm);
     border: 1px solid var(--color-hairline);
     border-radius: var(--rounded-xs);
     font-size: 12px;
@@ -775,7 +775,7 @@
 
   .weight-recent-item.is-current-day {
     border-color: var(--color-mute);
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--color-wash-lg);
   }
 
   .weight-recent-date {
