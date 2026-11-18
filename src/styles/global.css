@@ -460,7 +460,6 @@ html:not([data-session="user"]) [data-auth-user] {
 @media (pointer: coarse) {
   .btn-dialog-close,
   .btn-metric-history,
-  .btn-metric-add,
   .btn-delete-meal,
   .day-nav-arrow {
     min-width: 44px;

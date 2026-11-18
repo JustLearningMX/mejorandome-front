@@ -35,27 +35,15 @@ const homeUrl = getAppUrl();
 
     <!-- Estado 2: Vista de Usuario Autenticado -->
     <section id="dashboard-view" class="dashboard-content">
-      <!-- Hero de bienvenida del usuario -->
-      <header class="user-hero-card">
-        <div class="user-hero-main">
-          <div class="user-avatar-lg" id="view-user-avatar-wrap">
-            <img class="user-avatar-lg-img" id="view-user-photo" src="" alt="" style="display: none;" />
-            <span id="view-user-avatar">U</span>
-          </div>
-          <div class="user-hero-text">
-            <div class="user-hero-eyebrow">
-              <span class="status-indicator"></span> Sesión activa
-            </div>
-            <h1 class="display-md" id="view-user-name">Usuario</h1>
-            <p class="body-sm text-body" id="view-user-email">usuario@ejemplo.com</p>
-          </div>
+      <!-- Saludo compacto del usuario -->
+      <header class="user-bar">
+        <div class="user-avatar-lg" id="view-user-avatar-wrap">
+          <img class="user-avatar-lg-img" id="view-user-photo" src="" alt="" style="display: none;" />
+          <span id="view-user-avatar">U</span>
         </div>
-
-        <div class="user-hero-motto">
-          <div class="motto-badge">
-            <span class="motto-icon" aria-hidden="true">🌱</span>
-            <span class="motto-text">Hábitos conscientes y progreso constante, un día a la vez.</span>
-          </div>
+        <div class="user-bar-text">
+          <h1 class="user-bar-title">Hola, <span id="view-user-name">Usuario</span></h1>
+          <p class="caption text-mute" id="view-user-email">usuario@ejemplo.com</p>
         </div>
       </header>
 
@@ -101,18 +89,6 @@ const homeUrl = getAppUrl();
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </button>
-              <button
-                type="button"
-                class="btn-metric-add"
-                id="btn-add-weight-card"
-                title="Registrar nuevo peso"
-                aria-label="Registrar nueva medición de peso"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </button>
             </div>
           </div>
           <div class="metric-value-wrap">
@@ -120,7 +96,7 @@ const homeUrl = getAppUrl();
             <span class="metric-unit" id="metric-peso-unit">kg</span>
           </div>
           <div class="metric-trend-wrap" id="metric-peso-trend-wrap">
-            <span class="metric-empty-notice" id="metric-peso-status-text">Sin mediciones registradas en el historial.</span>
+            
           </div>
           <div id="metric-peso-chart" class="metric-chart" hidden></div>
           <div id="metric-peso-cta-wrap" class="metric-cta-wrap">
@@ -155,18 +131,6 @@ const homeUrl = getAppUrl();
                   <line x1="16" y1="2" x2="16" y2="6"/>
                   <line x1="8" y1="2" x2="8" y2="6"/>
                   <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="btn-metric-add"
-                id="btn-add-activity-card"
-                title="Registrar pasos o ejercicio"
-                aria-label="Registrar pasos o ejercicio"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               </button>
             </div>
@@ -223,18 +187,6 @@ const homeUrl = getAppUrl();
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </button>
-              <button
-                type="button"
-                class="btn-metric-add"
-                id="btn-add-meal-card"
-                title="Registrar nueva comida"
-                aria-label="Registrar nueva comida y nivel de saciedad"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </button>
             </div>
           </div>
           <div class="metric-value-wrap">
@@ -276,9 +228,6 @@ const homeUrl = getAppUrl();
           <div class="meals-log-actions">
             <button type="button" class="btn-action-sm btn-ghost-sm" id="btn-history-meals-section" data-history-initial="meals" title="Consultar historial por fecha">
               <span class="action-icon">📅</span> Historial
-            </button>
-            <button type="button" class="btn-action-sm" id="btn-header-add-meal">
-              <span class="action-icon">➕</span> Registrar comida
             </button>
           </div>
         </div>
@@ -527,45 +476,26 @@ const homeUrl = getAppUrl();
     gap: var(--space-2xl);
   }
 
-  /* User Hero Card */
-  .user-hero-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xl);
-    padding: var(--space-2xl);
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-md);
-  }
-
-  @media (min-width: 768px) {
-    .user-hero-card {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
-
-  .user-hero-main {
+  /* Saludo compacto */
+  .user-bar {
     display: flex;
     align-items: center;
-    gap: var(--space-lg);
+    gap: var(--space-md);
   }
 
   .user-avatar-lg {
-    width: 64px;
-    height: 64px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--rounded-full);
     background-color: var(--color-primary);
     color: var(--color-on-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     flex-shrink: 0;
     overflow: hidden;
-    position: relative;
   }
 
   .user-avatar-lg-img {
@@ -575,64 +505,21 @@ const homeUrl = getAppUrl();
     border-radius: var(--rounded-full);
   }
 
-  .user-hero-text {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
+  .user-bar-text {
+    min-width: 0;
   }
 
-  .user-hero-eyebrow {
-    font-size: 12px;
+  .user-bar-title {
+    font-size: 20px;
     font-weight: 500;
-    color: var(--color-success);
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
+    letter-spacing: -0.4px;
+    line-height: 1.2;
   }
 
-  .status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: var(--rounded-full);
-    background-color: var(--color-success-strong);
-    box-shadow: 0 0 8px var(--color-success-strong);
-  }
-
-  .user-hero-motto {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  @media (min-width: 768px) {
-    .user-hero-motto {
-      align-items: flex-end;
-      text-align: right;
-    }
-  }
-
-  .motto-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-md);
-    background-color: var(--color-canvas);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--rounded-full);
-    font-size: 13px;
-    color: var(--color-body);
-    font-style: italic;
-    max-width: 380px;
-  }
-
-  .motto-icon {
-    font-style: normal;
-    font-size: 14px;
-  }
-
-  .motto-text {
+  .user-bar-text .caption {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* Quick Actions Bar */
@@ -682,7 +569,7 @@ const homeUrl = getAppUrl();
 
   @media (min-width: 900px) {
     .metrics-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1.4fr 1fr 1fr;
     }
   }
 
@@ -764,25 +651,7 @@ const homeUrl = getAppUrl();
     gap: var(--space-xs);
   }
 
-  .btn-metric-add {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: var(--rounded-xs);
-    background-color: var(--color-canvas);
-    border: 1px solid var(--color-hairline);
-    color: var(--color-mute);
-    cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-  }
 
-  .btn-metric-add:hover {
-    color: var(--color-ink);
-    border-color: var(--color-mute);
-    background-color: var(--color-hover);
-  }
 
   .metric-value-wrap {
     display: flex;
@@ -791,11 +660,16 @@ const homeUrl = getAppUrl();
   }
 
   .metric-number {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 400;
     letter-spacing: -1px;
     line-height: 1;
     color: var(--color-primary);
+  }
+
+  #peso .metric-number {
+    font-size: 48px;
+    letter-spacing: -1.2px;
   }
 
   .metric-number.metric-empty {
@@ -1214,6 +1088,11 @@ const homeUrl = getAppUrl();
     }
 
     // 2. Renderizar métricas reales en las cards (Sin datos dummy)
+    const setCardFooterVisible = (footerText: HTMLElement | null, visible: boolean) => {
+      const footer = footerText?.closest<HTMLElement>(".metric-footer");
+      if (footer) footer.hidden = !visible;
+    };
+
     const renderMetrics = (summary: DashboardSummary) => {
       // Card 1: Peso corporal
       const pesoVal = document.getElementById('metric-peso-val');
@@ -1229,6 +1108,7 @@ const homeUrl = getAppUrl();
         }
         if (pesoTag) pesoTag.textContent = summary.weight.latestDate || 'Último';
         if (pesoCtaWrap) pesoCtaWrap.style.display = 'none';
+        setCardFooterVisible(pesoFooter, true);
 
         if (pesoTrendWrap) {
           if (summary.weight.differenceKg != null) {
@@ -1258,10 +1138,10 @@ const homeUrl = getAppUrl();
         if (pesoTag) pesoTag.textContent = 'Sin registro';
         if (pesoCtaWrap) pesoCtaWrap.style.display = 'block';
         if (pesoTrendWrap) {
-          pesoTrendWrap.innerHTML = '<span class="metric-empty-notice">Sin mediciones registradas en el historial.</span>';
+          pesoTrendWrap.innerHTML = '';
         }
         if (pesoFooter) {
-          pesoFooter.textContent = 'Promedio mensual: Sin datos aún';
+          setCardFooterVisible(pesoFooter, false);
         }
       }
 
@@ -1283,6 +1163,7 @@ const homeUrl = getAppUrl();
         if (pasosGoal) pasosGoal.textContent = `${goal.toLocaleString()} pasos`;
         if (ejercicioMin) ejercicioMin.textContent = `${summary.activity.exerciseMinutes} min`;
         if (activityCtaWrap) activityCtaWrap.style.display = 'none';
+        setCardFooterVisible(actividadFooter, true);
         if (actividadFooter) {
           actividadFooter.textContent = summary.activity.weeklyAverageSteps != null
             ? `Promedio semanal: ${summary.activity.weeklyAverageSteps.toLocaleString()} pasos / día`
@@ -1295,7 +1176,7 @@ const homeUrl = getAppUrl();
         if (pasosGoal) pasosGoal.textContent = `${(summary.activity.stepsGoal || 10000).toLocaleString()} pasos`;
         if (ejercicioMin) ejercicioMin.textContent = '0 min';
         if (activityCtaWrap) activityCtaWrap.style.display = 'block';
-        if (actividadFooter) actividadFooter.textContent = 'Sin actividad registrada el día de hoy';
+        setCardFooterVisible(actividadFooter, false);
       }
 
       // Card 3: Alimentación y Saciedad
@@ -1316,6 +1197,7 @@ const homeUrl = getAppUrl();
           comidasUnit.textContent = summary.nutrition.mealsCount === 1 ? 'comida hoy' : 'comidas hoy';
         }
         if (mealCtaWrap) mealCtaWrap.style.display = 'none';
+        setCardFooterVisible(alimentacionFooter, true);
 
         if (saciedadBadge) {
           if (summary.nutrition.averageSatietyLevel != null) {
@@ -1350,9 +1232,7 @@ const homeUrl = getAppUrl();
         }
         if (pausasVal) pausasVal.textContent = '0 registradas';
         if (repeticionVal) repeticionVal.textContent = '0 veces';
-        if (alimentacionFooter) {
-          alimentacionFooter.textContent = 'Registra tu primera comida para comenzar el seguimiento';
-        }
+        setCardFooterVisible(alimentacionFooter, false);
       }
     };
 
@@ -1469,7 +1349,6 @@ const homeUrl = getAppUrl();
     };
 
     document.getElementById('action-peso')?.addEventListener('click', openWeightModal);
-    document.getElementById('btn-add-weight-card')?.addEventListener('click', openWeightModal);
     document.getElementById('btn-card-register-peso')?.addEventListener('click', openWeightModal);
     document.getElementById('btn-close-weight-modal')?.addEventListener('click', closeWeightModal);
     document.getElementById('btn-cancel-weight')?.addEventListener('click', closeWeightModal);
@@ -1771,9 +1650,7 @@ const homeUrl = getAppUrl();
     };
 
     document.getElementById('action-comida')?.addEventListener('click', openMealModal);
-    document.getElementById('btn-add-meal-card')?.addEventListener('click', openMealModal);
     document.getElementById('btn-card-register-meal')?.addEventListener('click', openMealModal);
-    document.getElementById('btn-header-add-meal')?.addEventListener('click', openMealModal);
     document.getElementById('btn-close-meal-modal')?.addEventListener('click', closeMealModal);
     document.getElementById('btn-cancel-meal')?.addEventListener('click', closeMealModal);
 
@@ -1937,7 +1814,6 @@ const homeUrl = getAppUrl();
     tabBtnExercise?.addEventListener('click', () => switchActivityTab('exercise'));
 
     document.getElementById('action-actividad')?.addEventListener('click', () => openActivityModal('steps'));
-    document.getElementById('btn-add-activity-card')?.addEventListener('click', () => openActivityModal('steps'));
     document.getElementById('btn-card-register-activity')?.addEventListener('click', () => openActivityModal('steps'));
     document.getElementById('btn-close-activity-modal')?.addEventListener('click', closeActivityModal);
     document.getElementById('btn-cancel-steps')?.addEventListener('click', closeActivityModal);
