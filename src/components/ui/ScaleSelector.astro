@@ -1,0 +1,72 @@
+---
+interface Props {
+  name: string;
+  labelledBy: string;
+  value: number;
+  min?: number;
+  max?: number;
+}
+
+const { name, labelledBy, value, min = 1, max = 10 } = Astro.props;
+const options = Array.from({ length: max - min + 1 }, (_, index) => min + index);
+---
+
+<div class="scale" role="radiogroup" aria-labelledby={labelledBy}>
+  {options.map((option) => (
+    <label class="scale-option">
+      <input
+        type="radio"
+        class="sr-only"
+        name={name}
+        value={option}
+        checked={option === value}
+      />
+      <span class="scale-cell">{option}</span>
+    </label>
+  ))}
+</div>
+
+<style is:global>
+  .scale {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: var(--space-xs);
+    margin: var(--space-sm) 0 var(--space-xs);
+  }
+
+  .scale-option {
+    display: block;
+    cursor: pointer;
+  }
+
+  .scale-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-body);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--rounded-sm);
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .scale-option:hover .scale-cell {
+    background-color: var(--color-hover);
+    color: var(--color-ink);
+  }
+
+  .scale-option input:checked + .scale-cell {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+
+  .scale-option input:focus-visible + .scale-cell {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+</style>

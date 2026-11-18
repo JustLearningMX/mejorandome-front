@@ -1554,10 +1554,8 @@ const homeUrl = getAppUrl();
     const mealForm = document.getElementById('meal-form') as HTMLFormElement | null;
     const mealDateInput = document.getElementById('input-meal-date') as HTMLInputElement | null;
     const mealDescInput = document.getElementById('input-meal-desc') as HTMLTextAreaElement | null;
-    const hungerRange = document.getElementById('input-hunger-level') as HTMLInputElement | null;
     const hungerNum = document.getElementById('hunger-level-number');
     const hungerBadge = document.getElementById('hunger-level-badge');
-    const satietyRange = document.getElementById('input-satiety-level') as HTMLInputElement | null;
     const satietyNum = document.getElementById('satiety-level-number');
     const satietyBadge = document.getElementById('satiety-level-badge');
     const checkWantedMore = document.getElementById('check-wanted-more') as HTMLInputElement | null;
@@ -1567,6 +1565,14 @@ const homeUrl = getAppUrl();
     const mealErrorBanner = document.getElementById('meal-form-error');
     const submitMealBtn = document.getElementById('btn-submit-meal') as HTMLButtonElement | null;
     const submitMealText = document.getElementById('btn-submit-meal-text');
+
+    const readScale = (name: string): number =>
+      parseInt(document.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)?.value ?? '', 10);
+
+    const writeScale = (name: string, value: number) => {
+      const option = document.querySelector<HTMLInputElement>(`input[name="${name}"][value="${value}"]`);
+      if (option) option.checked = true;
+    };
 
     const updateHungerUI = (val: number) => {
       if (hungerNum) hungerNum.textContent = String(val);
@@ -1601,12 +1607,12 @@ const homeUrl = getAppUrl();
       }
     };
 
-    hungerRange?.addEventListener('input', (e) => {
-      updateHungerUI(parseInt((e.target as HTMLInputElement).value, 10));
+    document.querySelectorAll('input[name="hungerBefore"]').forEach((option) => {
+      option.addEventListener('change', () => updateHungerUI(readScale('hungerBefore')));
     });
 
-    satietyRange?.addEventListener('input', (e) => {
-      updateSatietyUI(parseInt((e.target as HTMLInputElement).value, 10));
+    document.querySelectorAll('input[name="satietyAfter"]').forEach((option) => {
+      option.addEventListener('change', () => updateSatietyUI(readScale('satietyAfter')));
     });
 
     checkWantedMore?.addEventListener('change', () => {
@@ -1622,9 +1628,9 @@ const homeUrl = getAppUrl();
         mealErrorBanner.textContent = '';
       }
       if (mealDescInput) mealDescInput.value = '';
-      if (hungerRange) hungerRange.value = '5';
+      writeScale('hungerBefore', 5);
       updateHungerUI(5);
-      if (satietyRange) satietyRange.value = '7';
+      writeScale('satietyAfter', 7);
       updateSatietyUI(7);
       if (checkWantedMore) checkWantedMore.checked = false;
       if (checkPausedBefore) checkPausedBefore.checked = false;
@@ -1674,8 +1680,8 @@ const homeUrl = getAppUrl();
 
       const selectedTypeInput = mealModal?.querySelector('input[name="mealType"]:checked') as HTMLInputElement | null;
       const mealType = (selectedTypeInput?.value || 'lunch') as MealType;
-      const hungerBefore = hungerRange ? parseInt(hungerRange.value, 10) : 5;
-      const satietyAfter = satietyRange ? parseInt(satietyRange.value, 10) : 7;
+      const hungerBefore = readScale('hungerBefore') || 5;
+      const satietyAfter = readScale('satietyAfter') || 7;
       const wantedMore = checkWantedMore ? checkWantedMore.checked : false;
       const pausedBefore = wantedMore ? (checkPausedBefore ? checkPausedBefore.checked : false) : null;
       const extraContext = (wantedMore && extraContextInput && extraContextInput.value.trim()) ? extraContextInput.value.trim() : null;

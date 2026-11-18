@@ -2,7 +2,7 @@
 import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
 ---
 
-<dialog id="activity-modal" class="app-modal activity-modal" aria-labelledby="activity-modal-title">
+<dialog id="activity-modal" class="app-modal app-modal--wide activity-modal" aria-labelledby="activity-modal-title">
   <div class="app-modal-content activity-modal-content">
     <!-- Header -->
     <div class="app-modal-header">
@@ -258,9 +258,6 @@ import { EXERCISE_TYPES, EXERCISE_INTENSITIES } from '../../types/activity';
 </dialog>
 
 <style>
-  dialog.activity-modal {
-    max-width: 580px;
-  }
 
   .activity-modal-content {
     padding: var(--space-xl);

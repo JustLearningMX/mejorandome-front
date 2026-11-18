@@ -289,6 +289,51 @@ html:not([data-session="user"]) [data-auth-user] {
   -webkit-backdrop-filter: blur(4px);
 }
 
+.app-modal--wide {
+  max-width: 580px;
+}
+
+@media (max-width: 640px) {
+  .app-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh;
+    border-width: 1px 0 0;
+    border-radius: var(--rounded-lg) var(--rounded-lg) 0 0;
+    animation: sheet-up 0.2s ease-out;
+  }
+
+  .app-modal-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 0 calc(var(--space-xl) * -1) calc(var(--space-xl) * -1);
+    padding: var(--space-md) var(--space-xl);
+    background-color: var(--color-canvas);
+    border-top: 1px solid var(--color-hairline);
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-modal {
+    animation: none !important;
+  }
+}
+
 .app-modal-content {
   padding: var(--space-xl);
   display: flex;

@@ -1,8 +1,9 @@
 ---
 import { MEAL_TYPES } from '../../types/nutrition';
+import ScaleSelector from '../ui/ScaleSelector.astro';
 ---
 
-<dialog id="meal-modal" class="app-modal meal-modal" aria-labelledby="meal-modal-title">
+<dialog id="meal-modal" class="app-modal app-modal--wide meal-modal" aria-labelledby="meal-modal-title">
   <div class="app-modal-content meal-modal-content">
     <div class="app-modal-header">
       <div class="app-modal-title-wrap">
@@ -80,24 +81,15 @@ import { MEAL_TYPES } from '../../types/nutrition';
       <!-- 4. Escala de Hambre previa (1 a 10) -->
       <div class="form-field slider-field">
         <div class="slider-header">
-          <label for="input-hunger-level" class="form-label">
+          <span id="hunger-label" class="form-label">
             Hambre antes de comer <span class="required-star">*</span>
-          </label>
+          </span>
           <div class="level-indicator">
             <span class="level-number" id="hunger-level-number">5</span>
             <span class="level-badge" id="hunger-level-badge">Hambre moderada</span>
           </div>
         </div>
-        <input
-          type="range"
-          id="input-hunger-level"
-          name="hungerBefore"
-          min="1"
-          max="10"
-          value="5"
-          step="1"
-          class="level-range"
-        />
+        <ScaleSelector name="hungerBefore" labelledBy="hunger-label" value={5} />
         <div class="range-labels">
           <span class="caption text-mute">1: Nada de hambre</span>
           <span class="caption text-mute">5: Normal</span>
@@ -108,24 +100,15 @@ import { MEAL_TYPES } from '../../types/nutrition';
       <!-- 5. Escala de Saciedad al terminar (1 a 10) -->
       <div class="form-field slider-field">
         <div class="slider-header">
-          <label for="input-satiety-level" class="form-label">
+          <span id="satiety-label" class="form-label">
             Saciedad al terminar de comer <span class="required-star">*</span>
-          </label>
+          </span>
           <div class="level-indicator">
             <span class="level-number" id="satiety-level-number">7</span>
             <span class="level-badge level-badge--success" id="satiety-level-badge">Satisfecho pleno</span>
           </div>
         </div>
-        <input
-          type="range"
-          id="input-satiety-level"
-          name="satietyAfter"
-          min="1"
-          max="10"
-          value="7"
-          step="1"
-          class="level-range"
-        />
+        <ScaleSelector name="satietyAfter" labelledBy="satiety-label" value={7} />
         <div class="range-labels">
           <span class="caption text-mute">1: Sigo con hambre</span>
           <span class="caption text-mute">5: Cómodo</span>
@@ -197,9 +180,6 @@ import { MEAL_TYPES } from '../../types/nutrition';
 </dialog>
 
 <style>
-  dialog.meal-modal {
-    max-width: 580px;
-  }
 
   .meal-modal-content {
     padding: var(--space-xl);
@@ -325,44 +305,6 @@ import { MEAL_TYPES } from '../../types/nutrition';
     background-color: color-mix(in srgb, var(--color-success-strong) 12%, transparent);
     border-color: color-mix(in srgb, var(--color-success-strong) 30%, transparent);
     color: var(--color-success);
-  }
-
-  .level-range {
-    width: 100%;
-    height: 6px;
-    appearance: none;
-    -webkit-appearance: none;
-    background: var(--color-hairline);
-    border-radius: 3px;
-    margin: var(--space-sm) 0 var(--space-xs);
-    cursor: pointer;
-  }
-
-  .level-range::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: var(--rounded-full);
-    background: var(--color-primary);
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    border: 2px solid var(--color-canvas);
-    transition: transform 0.1s ease;
-  }
-
-  .level-range::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-  }
-
-  .level-range::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: var(--rounded-full);
-    background: var(--color-primary);
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    border: 2px solid var(--color-canvas);
   }
 
   .range-labels {
