@@ -1,0 +1,95 @@
+---
+import MainLayout from './MainLayout.astro';
+import Footer from '../components/ui/Footer.astro';
+import { getAppUrl } from '../utils/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  updatedAt: string;
+}
+
+const { title, description, updatedAt } = Astro.props;
+const homeUrl = getAppUrl();
+---
+
+<MainLayout title={title} description={description}>
+  <header class="legal-bar">
+    <a href={homeUrl} class="legal-brand" aria-label="Ir a inicio de Mejorándome">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-primary)" opacity="0.9"/>
+        <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-primary)" opacity="0.45"/>
+      </svg>
+      <span>Mejorándome</span>
+    </a>
+  </header>
+
+  <main class="legal-main">
+    <article class="legal-article">
+      <p class="caption text-mute legal-updated">Última actualización: {updatedAt}</p>
+      <h1 class="display-lg">{title}</h1>
+      <slot />
+    </article>
+  </main>
+
+  <Footer />
+</MainLayout>
+
+<style>
+  .legal-bar {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .legal-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 500;
+  }
+
+  .legal-main {
+    padding: var(--space-3xl) var(--space-lg);
+  }
+
+  .legal-article {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .legal-article :global(h2) {
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: var(--space-xl);
+  }
+
+  .legal-article :global(p),
+  .legal-article :global(li) {
+    line-height: 1.6;
+    color: var(--color-body);
+  }
+
+  .legal-article :global(ul) {
+    padding-left: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .legal-article :global(a) {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .legal-bar {
+      padding: var(--space-md) var(--space-xl);
+    }
+
+    .legal-main {
+      padding: var(--space-4xl) var(--space-xl);
+    }
+  }
+</style>
