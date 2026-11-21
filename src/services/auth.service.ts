@@ -1,5 +1,4 @@
-import { apiRequest } from './api.client';
-import { isJwtExpired } from '../utils/jwt';
+import { apiRequest, ApiClientError } from './api.client';
 import type {
   AuthResponse,
   AuthenticatedUser,
@@ -8,7 +7,8 @@ import type {
 
 const TOKEN_KEY = 'accessToken';
 const USER_KEY = 'user';
-const SESSION_EXPIRED_FLAG = 'sessionExpired';
+
+let refreshInFlight: Promise<string | null> | null = null;
 
 function extractGooglePicture(idToken: string): string | undefined {
   try {
@@ -46,6 +46,34 @@ export const authService = {
     return response;
   },
 
+  refreshAccessToken(): Promise<string | null> {
+    refreshInFlight ??= this.requestRefresh().finally(() => {
+      refreshInFlight = null;
+    });
+    return refreshInFlight;
+  },
+
+  async requestRefresh(): Promise<string | null> {
+    try {
+      const response = await apiRequest<AuthResponse>('auth/refresh', { method: 'POST' });
+      this.saveSession(response);
+      return response.accessToken;
+    } catch (error) {
+      if (error instanceof ApiClientError) return null;
+      throw error;
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await apiRequest<void>('auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.warn('No se pudo revocar la sesión en el servidor:', error);
+    } finally {
+      this.clearSession();
+    }
+  },
+
   async getMe(token?: string | null): Promise<AuthenticatedUser> {
     const activeToken = token ?? this.getStoredToken();
     if (!activeToken) {
@@ -80,33 +108,7 @@ export const authService = {
 
   getStoredToken(): string | null {
     if (typeof window === 'undefined') return null;
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return null;
-    if (isJwtExpired(token)) {
-      this.expireSession();
-      return null;
-    }
-    return token;
-  },
-
-  expireSession(): void {
-    this.clearSession();
-    try {
-      sessionStorage.setItem(SESSION_EXPIRED_FLAG, 'true');
-    } catch {
-      // sessionStorage no disponible: se pierde solo el aviso
-    }
-  },
-
-  consumeSessionExpiredNotice(): boolean {
-    if (typeof window === 'undefined') return false;
-    try {
-      const expired = sessionStorage.getItem(SESSION_EXPIRED_FLAG) === 'true';
-      sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
-      return expired;
-    } catch {
-      return false;
-    }
+    return localStorage.getItem(TOKEN_KEY);
   },
 
   getStoredUser(): AuthenticatedUser | null {

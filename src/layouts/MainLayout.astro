@@ -32,10 +32,7 @@ const faviconUrl = getAppUrl('favicon.svg');
     <title>{title} — Mejorándome</title>
     <script is:inline>
       try {
-        const token = localStorage.getItem('accessToken');
-        const exp = token ? JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp : null;
-        const isExpired = typeof exp === 'number' && exp * 1000 <= Date.now();
-        const hasSession = token && !isExpired && localStorage.getItem('user');
+        const hasSession = localStorage.getItem('accessToken') && localStorage.getItem('user');
         document.documentElement.dataset.session = hasSession ? 'user' : 'guest';
       } catch {
         document.documentElement.dataset.session = 'guest';
