@@ -2,6 +2,7 @@
 import Icon from '../components/ui/Icon.astro';
 import MainLayout from '../layouts/MainLayout.astro';
 import Header from '../components/ui/Header.astro';
+import Footer from '../components/ui/Footer.astro';
 import GoogleButton from '../components/ui/GoogleButton.astro';
 import { getAppUrl } from '../utils/paths';
 
@@ -238,25 +239,7 @@ const dashboardUrl = getAppUrl('dashboard');
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16 4 L24 12 L16 20 L8 12 Z" fill="var(--color-body)" opacity="0.9"/>
-          <path d="M16 12 L24 20 L16 28 L8 20 Z" fill="var(--color-body)" opacity="0.45"/>
-        </svg>
-        <span class="body-sm text-body">Mejorándome</span>
-      </div>
-      <nav class="footer-links" aria-label="Pie de página">
-        <a href="#funcionalidades" class="caption text-mute">Funcionalidades</a>
-        <a href="#como-funciona" class="caption text-mute">Cómo funciona</a>
-        <a href="#comenzar" class="caption text-mute">Comenzar</a>
-      </nav>
-      <p class="caption text-mute">
-        Herramienta personal de seguimiento. No sustituye una evaluación médica profesional.
-      </p>
-    </div>
-  </footer>
+  <Footer />
 </MainLayout>
 
 <style>
@@ -646,33 +629,6 @@ const dashboardUrl = getAppUrl('dashboard');
     max-width: 320px;
   }
 
-  /* ─── Footer ─── */
-  .footer {
-    padding: var(--space-3xl) var(--space-lg);
-  }
-
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-lg);
-  }
-
-  .footer-links a:hover {
-    color: var(--color-ink);
-  }
-
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
   /* ─── Tablet (768px+) ─── */
   @media (min-width: 768px) {
     .nav-bar {
@@ -698,16 +654,6 @@ const dashboardUrl = getAppUrl('dashboard');
 
     .step-connector {
       transform: none;
-    }
-
-    .footer {
-      padding: var(--space-3xl) var(--space-xl);
-    }
-
-    .footer-content {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
     }
   }
 
@@ -756,11 +702,6 @@ const dashboardUrl = getAppUrl('dashboard');
     .features-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: var(--space-xl);
-    }
-
-    .footer {
-      max-width: 1200px;
-      margin: 0 auto;
     }
   }
 </style>
