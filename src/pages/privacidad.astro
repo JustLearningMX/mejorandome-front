@@ -1,0 +1,88 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { getAppUrl } from '../utils/paths';
+
+const contactEmail = 'virtual.liga@gmail.com';
+const termsUrl = getAppUrl('terminos');
+---
+
+<LegalLayout
+  title="Política de privacidad"
+  description="Cómo Mejorándome recibe, usa y protege tus datos."
+  updatedAt="21 de noviembre de 2026"
+>
+  <p>
+    Mejorándome es una herramienta personal para registrar el peso, la alimentación, la saciedad y la
+    actividad física. Esta política explica qué datos recibe la aplicación, para qué los usa y cómo puedes
+    pedir su eliminación.
+  </p>
+
+  <h2>Datos que recibimos de tu cuenta de Google</h2>
+  <p>
+    Iniciar sesión con Google solo solicita los permisos básicos de identidad (<code>openid</code>,
+    <code>email</code> y <code>profile</code>). A partir de ellos recibimos:
+  </p>
+  <ul>
+    <li>Tu correo electrónico.</li>
+    <li>Tu nombre.</li>
+    <li>Tu foto de perfil, que se muestra únicamente en tu sesión.</li>
+  </ul>
+  <p>No accedemos a tus contactos, correos, archivos ni a ningún otro dato de tu cuenta de Google.</p>
+
+  <h2>Datos que tú registras</h2>
+  <ul>
+    <li>Mediciones de peso y su fecha.</li>
+    <li>Comidas, porciones, nivel de hambre y saciedad, y notas sobre el contexto de comer.</li>
+    <li>Ejercicio (tipo y duración) y pasos diarios.</li>
+    <li>Tu zona horaria, para asignar cada registro al día correcto.</li>
+  </ul>
+  <p>
+    Estos datos se consideran información de salud. Se usan únicamente para mostrarte tu historial, gráficas
+    y resúmenes dentro de la aplicación.
+  </p>
+
+  <h2>Uso limitado de los datos de Google</h2>
+  <p>
+    El uso que Mejorándome hace de la información recibida de las API de Google cumple con la
+    <a
+      href="https://developers.google.com/terms/api-services-user-data-policy"
+      target="_blank"
+      rel="noopener noreferrer"
+    >Política de datos de usuario de los servicios de las API de Google</a>, incluidos los requisitos de uso
+    limitado. Los datos de tu cuenta de Google se usan solo para identificarte y mantener tu sesión. No se
+    venden, no se usan para publicidad y no se comparten con terceros.
+  </p>
+
+  <h2>Cómo se almacenan y protegen</h2>
+  <ul>
+    <li>Los datos se guardan en una base de datos en un servidor propio, accesible mediante conexión cifrada (HTTPS).</li>
+    <li>Tu sesión se mantiene con un token almacenado en el navegador (almacenamiento local). No usamos cookies de seguimiento.</li>
+    <li>La aplicación carga tipografías desde Google Fonts, por lo que Google puede recibir tu dirección IP al cargar la página.</li>
+  </ul>
+
+  <h2>Con quién compartimos tus datos</h2>
+  <p>Con nadie. No vendemos ni cedemos tus datos, y no usamos herramientas de publicidad o analítica de terceros.</p>
+
+  <h2>Conservación y eliminación</h2>
+  <p>
+    Conservamos tus datos mientras tengas una cuenta. Puedes pedir que eliminemos tu cuenta y todos tus
+    registros escribiendo a <a href={`mailto:${contactEmail}`}>{contactEmail}</a> desde el correo con el que
+    iniciaste sesión. Atenderemos la solicitud en un plazo razonable.
+  </p>
+  <p>
+    También puedes revocar el acceso de Mejorándome a tu cuenta de Google desde la
+    <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">página de permisos de tu cuenta</a>.
+  </p>
+
+  <h2>Alcance</h2>
+  <p>
+    La información que muestra la aplicación es informativa y no sustituye una evaluación ni un diagnóstico
+    médico. Consulta también las <a href={termsUrl}>Condiciones del servicio</a>.
+  </p>
+
+  <h2>Cambios y contacto</h2>
+  <p>
+    Si esta política cambia, actualizaremos la fecha al inicio de la página. Para cualquier duda, escribe a
+    <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+  </p>
+</LegalLayout>

@@ -1,0 +1,61 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { getAppUrl } from '../utils/paths';
+
+const contactEmail = 'virtual.liga@gmail.com';
+const privacyUrl = getAppUrl('privacidad');
+---
+
+<LegalLayout
+  title="Condiciones del servicio"
+  description="Condiciones de uso de Mejorándome."
+  updatedAt="21 de noviembre de 2026"
+>
+  <p>
+    Al iniciar sesión y usar Mejorándome aceptas estas condiciones. Si no estás de acuerdo, no uses la
+    aplicación.
+  </p>
+
+  <h2>El servicio</h2>
+  <p>
+    Mejorándome es una herramienta gratuita y personal para registrar y consultar tu peso, alimentación,
+    saciedad y actividad física. Se ofrece tal cual, sin garantía de disponibilidad continua.
+  </p>
+
+  <h2>Tu cuenta</h2>
+  <ul>
+    <li>Accedes con tu cuenta de Google y eres responsable de mantenerla segura.</li>
+    <li>Los datos que registras son tuyos. Debes registrar solo información propia y veraz.</li>
+    <li>Puedes dejar de usar el servicio y pedir la eliminación de tus datos en cualquier momento.</li>
+  </ul>
+
+  <h2>No es consejo médico</h2>
+  <p>
+    Las estadísticas, gráficas y resúmenes son informativos. Mejorándome no ofrece diagnóstico, tratamiento
+    ni asesoría médica o nutricional. Consulta a un profesional de la salud antes de tomar decisiones sobre tu
+    alimentación, ejercicio o salud.
+  </p>
+
+  <h2>Uso aceptable</h2>
+  <p>
+    No debes intentar acceder a datos de otras personas, interrumpir el servicio, ni usarlo con fines
+    ilegales o abusivos. Podemos suspender cuentas que incumplan estas condiciones.
+  </p>
+
+  <h2>Limitación de responsabilidad</h2>
+  <p>
+    En la medida permitida por la ley, no nos hacemos responsables por pérdidas derivadas del uso del
+    servicio, de la interrupción del mismo o de decisiones tomadas a partir de la información mostrada.
+  </p>
+
+  <h2>Privacidad</h2>
+  <p>
+    El tratamiento de tus datos se describe en la <a href={privacyUrl}>Política de privacidad</a>.
+  </p>
+
+  <h2>Cambios y contacto</h2>
+  <p>
+    Podemos actualizar estas condiciones; la fecha al inicio de la página indica la última revisión. Para
+    cualquier duda, escribe a <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+  </p>
+</LegalLayout>
