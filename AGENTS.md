@@ -170,6 +170,10 @@ Astro mostrará en la terminal la URL local de la aplicación.
 npm run build
 ```
 
+## Despliegue a producción
+
+El despliegue es manual al VPS (`https://hiram-oci-mty.duckdns.org/mejorandome-front/`): se ejecuta `npm run build:prod` y se copia el contenido de `dist/` al VPS. No se usa GitHub Pages. En local, por el `base` de Astro, las rutas cuelgan de `/mejorandome-front/` (ej. `http://localhost:4321/mejorandome-front/privacidad`).
+
 ## Previsualización de producción
 
 ```bash
