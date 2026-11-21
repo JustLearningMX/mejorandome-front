@@ -1,7 +1,7 @@
 import { showToast } from './toast';
 import { authService } from '../services/auth.service';
 import { getAppUrl } from './paths';
-import { setUnauthorizedHandler } from '../services/api.client';
+import { setSessionHandlers } from '../services/api.client';
 
 declare global {
   interface Window {
@@ -46,7 +46,11 @@ function handleSessionExpired(): void {
   updateAuthUI();
 }
 
-setUnauthorizedHandler(handleSessionExpired);
+setSessionHandlers({
+  getCurrentToken: () => authService.getStoredToken(),
+  refreshToken: () => authService.refreshAccessToken(),
+  expireSession: handleSessionExpired,
+});
 
 export async function handleGoogleCredential(credential: string): Promise<void> {
   try {
@@ -155,10 +159,6 @@ export function updateAuthUI(): void {
   const isLoggedIn = Boolean(token && user);
   document.documentElement.dataset.session = isLoggedIn ? 'user' : 'guest';
 
-  if (authService.consumeSessionExpiredNotice()) {
-    showToast(SESSION_EXPIRED_MESSAGE, 'info');
-  }
-
   document.querySelectorAll<HTMLElement>('[data-auth-guest]').forEach((el) => {
     el.style.display = isLoggedIn ? 'none' : '';
   });
@@ -209,8 +209,8 @@ export function updateAuthUI(): void {
     if (btn.dataset.bound === 'true') return;
     btn.dataset.bound = 'true';
 
-    btn.addEventListener('click', () => {
-      authService.clearSession();
+    btn.addEventListener('click', async () => {
+      await authService.logout();
       showToast('Sesión finalizada', 'info');
       setTimeout(() => {
         window.location.href = getAppUrl();
