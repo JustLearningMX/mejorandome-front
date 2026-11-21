@@ -1,6 +1,7 @@
 import { showToast } from './toast';
 import { authService } from '../services/auth.service';
 import { getAppUrl } from './paths';
+import { setUnauthorizedHandler } from '../services/api.client';
 
 declare global {
   interface Window {
@@ -33,6 +34,19 @@ declare global {
 }
 
 let isInitialized = false;
+let sessionExpiryHandled = false;
+
+const SESSION_EXPIRED_MESSAGE = 'Tu sesión expiró. Inicia sesión de nuevo con Google.';
+
+function handleSessionExpired(): void {
+  if (sessionExpiryHandled) return;
+  sessionExpiryHandled = true;
+  authService.clearSession();
+  showToast(SESSION_EXPIRED_MESSAGE, 'info');
+  updateAuthUI();
+}
+
+setUnauthorizedHandler(handleSessionExpired);
 
 export async function handleGoogleCredential(credential: string): Promise<void> {
   try {
@@ -140,7 +154,10 @@ export function updateAuthUI(): void {
   const token = authService.getStoredToken();
   const isLoggedIn = Boolean(token && user);
   document.documentElement.dataset.session = isLoggedIn ? 'user' : 'guest';
-  document.documentElement.dataset.session = isLoggedIn ? 'user' : 'guest';
+
+  if (authService.consumeSessionExpiredNotice()) {
+    showToast(SESSION_EXPIRED_MESSAGE, 'info');
+  }
 
   document.querySelectorAll<HTMLElement>('[data-auth-guest]').forEach((el) => {
     el.style.display = isLoggedIn ? 'none' : '';

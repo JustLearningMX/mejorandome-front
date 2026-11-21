@@ -15,6 +15,14 @@ export class ApiClientError extends Error {
   }
 }
 
+type UnauthorizedHandler = () => void;
+
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
+  unauthorizedHandler = handler;
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -35,6 +43,10 @@ export async function apiRequest<T>(
     ...options,
     headers,
   });
+
+  if (response.status === 401 && token) {
+    unauthorizedHandler?.();
+  }
 
   if (!response.ok) {
     let errorMessage = `HTTP error ${response.status}`;

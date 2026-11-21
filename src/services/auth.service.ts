@@ -1,4 +1,5 @@
 import { apiRequest } from './api.client';
+import { isJwtExpired } from '../utils/jwt';
 import type {
   AuthResponse,
   AuthenticatedUser,
@@ -7,6 +8,7 @@ import type {
 
 const TOKEN_KEY = 'accessToken';
 const USER_KEY = 'user';
+const SESSION_EXPIRED_FLAG = 'sessionExpired';
 
 function extractGooglePicture(idToken: string): string | undefined {
   try {
@@ -78,7 +80,33 @@ export const authService = {
 
   getStoredToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return null;
+    if (isJwtExpired(token)) {
+      this.expireSession();
+      return null;
+    }
+    return token;
+  },
+
+  expireSession(): void {
+    this.clearSession();
+    try {
+      sessionStorage.setItem(SESSION_EXPIRED_FLAG, 'true');
+    } catch {
+      // sessionStorage no disponible: se pierde solo el aviso
+    }
+  },
+
+  consumeSessionExpiredNotice(): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+      const expired = sessionStorage.getItem(SESSION_EXPIRED_FLAG) === 'true';
+      sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
+      return expired;
+    } catch {
+      return false;
+    }
   },
 
   getStoredUser(): AuthenticatedUser | null {
